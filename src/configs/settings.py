@@ -13,11 +13,10 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASSWORD: str
     
-    # GCP Vertex AI Config
-    GCP_PROJECT: str
-    GCP_REGION: str
+    # Google AI Config (API Key)
+    GEMINI_API_KEY: str
     EMBEDDING_MODEL: str = "text-embedding-004"
-    LLM_JUDGE_MODEL: str = "gemini-1.5-pro-preview-0409"
+    LLM_JUDGE_MODEL: str = "gemini-1.5-pro"
     
     # Proxy Config (Global toggle for LLM/Embeddings access from restricted regions)
     ENABLE_PROXY: bool = False
