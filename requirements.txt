@@ -1,0 +1,20 @@
+# Database & Vector Store
+psycopg[binary,pool]>=3.1.18  # Modern PostgreSQL driver with Async and Connection Pool support
+pgvector>=0.2.5             # Official pgvector support for Psycopg 3 (provides register_vector_async)
+
+# Document Parsing & Chunking
+PyMuPDF>=1.24.0             # Extremely fast PDF parser (fitz)
+langchain-text-splitters>=0.0.1  # For RecursiveCharacterTextSplitter
+
+# LLM & Embeddings (GCP Vertex AI)
+google-cloud-aiplatform>=1.46.0  # Official GCP Vertex AI SDK (Embeddings & LLM)
+# google-genai>=0.1.0        # (Optional) Modern GenAI SDK if needed for Gemini
+
+# Configuration & Utilities
+python-dotenv>=1.0.1        # Manage environment variables (.env)
+pydantic>=2.6.4             # Data validation and typed schemas (critical for the Evaluator JSON outputs)
+tenacity>=8.2.3             # Retry logic for GCP API Rate Limits
+tqdm>=4.66.2                # Progress bars for CLI scripts
+
+# Dev Tools (Linting & Formatting)
+ruff>=0.3.4                 # The fastest Python linter and formatter written in Rust
