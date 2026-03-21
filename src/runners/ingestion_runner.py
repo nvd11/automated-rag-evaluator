@@ -59,7 +59,7 @@ async def main():
         # 4. Execute the Pipeline
         doc_id = await pipeline.run(file_path=pdf_file_path, topics=topics)
         
-        if doc_id > 0:
+        if doc_id:
             logger.info(f"Ingestion successful! Document committed with DB ID: {doc_id}")
         else:
             logger.error("Ingestion pipeline failed or aborted.")
