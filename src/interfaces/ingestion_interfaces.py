@@ -31,9 +31,9 @@ class BaseDAO(ABC):
         pass
         
     @abstractmethod
-    async def clean_document_data(self, cursor, doc_id: str, created_by: str) -> None:
+    async def clean_document_data(self, cursor, doc_name: str, created_by: str) -> None:
         """
-        Soft-deletes all existing chunks and topic mappings for a specific doc_id.
-        This must be called within an active transaction (hence the cursor parameter).
+        Soft-deletes all existing document records, chunks, and topic mappings 
+        for a specific doc_name to preserve historical snapshots.
         """
         pass
