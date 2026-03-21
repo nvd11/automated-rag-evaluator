@@ -12,9 +12,11 @@ google-cloud-aiplatform>=1.46.0  # Official GCP Vertex AI SDK (Embeddings & LLM)
 
 # Configuration & Utilities
 python-dotenv>=1.0.1        # Manage environment variables (.env)
-pydantic>=2.6.4             # Data validation and typed schemas (critical for the Evaluator JSON outputs)
+pydantic>=2.6.4             # Data validation
+pydantic-settings>=2.2.1    # Strongly typed config management
 tenacity>=8.2.3             # Retry logic for GCP API Rate Limits
 tqdm>=4.66.2                # Progress bars for CLI scripts
+loguru>=0.7.2               # Modern logging framework
 
 # Dev Tools (Linting & Formatting)
 ruff>=0.3.4                 # The fastest Python linter and formatter written in Rust
