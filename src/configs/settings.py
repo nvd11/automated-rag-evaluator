@@ -1,6 +1,8 @@
 import os
 from pydantic_settings import BaseSettings, SettingsConfigDict, PydanticBaseSettingsSource
 from pydantic import Field
+from .log_config import setup_logging
+from loguru import logger
 
 class Settings(BaseSettings):
     # App Config
@@ -49,8 +51,16 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
+# Initialize global logging configuration immediately after settings are loaded
+# This ensures all modules importing 'settings' automatically get the correct log format and level
+setup_logging(settings.APP_ENV)
+
+
 # Apply Global Proxy if ENABLE_PROXY is true
 if settings.ENABLE_PROXY:
+    logger.info("Global proxy enabled. Setting HTTP_PROXY and HTTPS_PROXY environment variables.")
+    logger.info(f"HTTP_PROXY: {settings.HTTP_PROXY}")
+    logger.info(f"HTTPS_PROXY: {settings.HTTPS_PROXY}")
     if settings.HTTP_PROXY:
         os.environ["http_proxy"] = settings.HTTP_PROXY
         os.environ["HTTP_PROXY"] = settings.HTTP_PROXY
@@ -58,7 +68,5 @@ if settings.ENABLE_PROXY:
         os.environ["https_proxy"] = settings.HTTPS_PROXY
         os.environ["HTTPS_PROXY"] = settings.HTTPS_PROXY
 
-# Initialize global logging configuration immediately after settings are loaded
-# This ensures all modules importing 'settings' automatically get the correct log format and level
-from .log_config import setup_logging
-setup_logging(settings.APP_ENV)
+
+
