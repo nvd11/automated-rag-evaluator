@@ -28,7 +28,10 @@ class GeminiEmbedder(BaseEmbedder):
             response = self.client.models.embed_content(
                 model=self.model_name,
                 contents=texts,
-                config=types.EmbedContentConfig(task_type="RETRIEVAL_DOCUMENT")
+                config=types.EmbedContentConfig(
+                    task_type="RETRIEVAL_DOCUMENT",
+                    output_dimensionality=768  # Force the model to truncate/project to 768 dimensions!
+                )
             )
             # Extracted list of float vectors
             return [emb.values for emb in response.embeddings]
