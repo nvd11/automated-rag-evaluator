@@ -23,6 +23,11 @@ class Settings(BaseSettings):
     HTTP_PROXY: str | None = None
     HTTPS_PROXY: str | None = None
 
+    # Note on Pydantic V2 Architecture:
+    # 'model_config' is a reserved class variable used by Pydantic's internal Rust engine.
+    # It acts as a configuration blueprint. When 'Settings()' is instantiated, the engine implicitly
+    # reads this dictionary to determine how to parse the '.env' file, cast types, and handle extra fields.
+    # This eliminates the need for manual 'load_dotenv()' boilerplate.
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
