@@ -26,7 +26,7 @@ class DataIngestionPipeline:
         """
         Executes the full ingestion pipeline: Load -> Chunk -> Embed -> Save (ACID)
         """
-        logger.info(f"🚀 Starting Ingestion Pipeline for: {file_path}")
+        logger.info(f"Starting Ingestion Pipeline for: {file_path}")
         logger.info(f"Assigning metadata topics: {topics}")
         
         # 1. Parsing the PDF
@@ -56,7 +56,7 @@ class DataIngestionPipeline:
             created_by=self.created_by_user
         )
         
-        logger.info(f"✅ Ingestion Pipeline Finished. Document ID: {document_id}")
+        logger.info(f"Ingestion Pipeline Finished. Document ID: {document_id}")
         return document_id
 
 if __name__ == "__main__":
