@@ -8,6 +8,16 @@ class PgVectorDAO(BaseDAO):
     Implementation of BaseDAO using Psycopg v3.
     Provides strict ACID transactional upserts, idempotency cleanup, and pgvector bulk inserts.
     """
+    
+    async def clean_document_data(self, cursor, document_id: int) -> None:
+        """
+        Deletes all existing chunks and topic mappings for a specific document_id.
+        This is an internal helper executed within an active transaction cursor to ensure idempotency.
+        """
+        logger.debug(f"Executing clean_document_data() for doc_id: {document_id}")
+        await cursor.execute("DELETE FROM document_chunks WHERE document_id = %s;", (document_id,))
+        await cursor.execute("DELETE FROM document_topics_map WHERE document_id = %s;", (document_id,))
+
     async def upsert_document_transactionally(self, document: Document, created_by: str) -> int:
         logger.info(f"Persisting document {document.document_name} to database transactionally...")
         
@@ -33,8 +43,7 @@ class PgVectorDAO(BaseDAO):
                     logger.debug(f"Document ID resolved: {doc_id}")
 
                     # 2. Cleanup old chunks (Idempotency Enforcement)
-                    await cur.execute("DELETE FROM document_chunks WHERE document_id = %s;", (doc_id,))
-                    await cur.execute("DELETE FROM document_topics_map WHERE document_id = %s;", (doc_id,))
+                    await self.clean_document_data(cursor=cur, document_id=doc_id)
                     
                     # 3. Handle Metadata Topics Upsert
                     topic_ids = []

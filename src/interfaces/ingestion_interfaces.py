@@ -29,3 +29,11 @@ class BaseDAO(ABC):
         Returns the new or existing document_id.
         """
         pass
+        
+    @abstractmethod
+    async def clean_document_data(self, cursor, document_id: int) -> None:
+        """
+        Deletes all existing chunks and topic mappings for a specific document_id.
+        This must be called within an active transaction (hence the cursor parameter).
+        """
+        pass
