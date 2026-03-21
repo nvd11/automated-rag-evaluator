@@ -21,10 +21,3 @@ variable "db_instance_name" {
   type        = string
   default     = "rag-eval-pgvector-db"
 }
-
-variable "db_password" {
-  description = "Superuser password for PostgreSQL"
-  type        = string
-  sensitive   = true
-  default     = "dummy_password_for_review"
-}
