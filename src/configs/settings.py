@@ -44,3 +44,8 @@ if settings.ENABLE_PROXY:
     if settings.HTTPS_PROXY:
         os.environ["https_proxy"] = settings.HTTPS_PROXY
         os.environ["HTTPS_PROXY"] = settings.HTTPS_PROXY
+
+# Initialize global logging configuration immediately after settings are loaded
+# This ensures all modules importing 'settings' automatically get the correct log format and level
+from .log_config import setup_logging
+setup_logging(settings.APP_ENV)

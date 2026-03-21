@@ -9,7 +9,6 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 from src.configs.settings import settings
-from src.configs.log_config import setup_logging
 from src.configs.db import init_db_pool, close_db_pool
 
 from src.ingestion.loaders.pdf_loader import PyMuPDFLoader
@@ -20,7 +19,6 @@ from src.pipelines.data_ingestion_pipeline import DataIngestionPipeline
 
 async def main():
     # 1. Initialize Logging
-    setup_logging(settings.APP_ENV)
     logger.info("Initializing Data Ingestion Runner...")
 
     # Validate API Key
