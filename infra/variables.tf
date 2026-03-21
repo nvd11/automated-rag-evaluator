@@ -19,5 +19,5 @@ variable "zone" {
 variable "db_instance_name" {
   description = "The name of the Cloud SQL instance"
   type        = string
-  default     = "rag-eval-pgvector-db"
+  default     = "my-database-instance"
 }
