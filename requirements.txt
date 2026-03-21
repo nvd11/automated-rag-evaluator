@@ -20,3 +20,7 @@ loguru>=0.7.2               # Modern logging framework
 
 # Dev Tools (Linting & Formatting)
 ruff>=0.3.4                 # The fastest Python linter and formatter written in Rust
+
+# Testing
+pytest>=8.1.1                 # Standard testing framework
+pytest-asyncio>=0.23.6        # Asyncio support for pytest
