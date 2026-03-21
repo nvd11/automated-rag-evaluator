@@ -22,7 +22,7 @@ class BaseEmbedder(ABC):
 
 class BaseDAO(ABC):
     @abstractmethod
-    async def upsert_document_transactionally(self, document: Document, created_by: str) -> int:
+    async def upsert_document_transactionally(self, document: Document, created_by: str) -> str:
         """
         Persists the Document, its Topics, and its embedded Chunks into the database
         within a single ACID transaction. Performs idempotency cleanup if needed.
@@ -31,9 +31,9 @@ class BaseDAO(ABC):
         pass
         
     @abstractmethod
-    async def clean_document_data(self, cursor, document_id: int) -> None:
+    async def clean_document_data(self, cursor, doc_id: str, created_by: str) -> None:
         """
-        Deletes all existing chunks and topic mappings for a specific document_id.
+        Soft-deletes all existing chunks and topic mappings for a specific doc_id.
         This must be called within an active transaction (hence the cursor parameter).
         """
         pass
