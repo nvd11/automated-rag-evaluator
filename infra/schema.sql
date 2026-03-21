@@ -103,3 +103,35 @@ CREATE TABLE IF NOT EXISTS evaluation_metrics (
 );
 
 CREATE INDEX IF NOT EXISTS idx_eval_metrics_diagnoser ON evaluation_metrics (run_id, metric_category, metric_name) WHERE is_deleted = FALSE;
+
+-- ====================================================================
+-- 7. Role-Based Access Control (RBAC) - Least Privilege Principle
+-- ====================================================================
+-- In a production environment, the application service account (e.g., 'nvd11')
+-- should only have DML access (SELECT, INSERT, UPDATE, DELETE) and not DDL.
+
+-- Create the application role if it doesn't exist (Idempotent wrapper)
+DO
+$do$
+BEGIN
+   IF NOT EXISTS (
+      SELECT FROM pg_catalog.pg_roles
+      WHERE  rolname = 'nvd11') THEN
+      CREATE ROLE nvd11 LOGIN PASSWORD 'placeholder_password';
+   END IF;
+END
+$do$;
+
+-- Grant connection and schema usage
+GRANT CONNECT ON DATABASE rag_evaluation_db TO nvd11;
+GRANT USAGE ON SCHEMA public TO nvd11;
+
+-- Grant strict DML permissions on all current tables
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO nvd11;
+
+-- Ensure future tables created by the admin also inherit these exact DML permissions for 'nvd11'
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO nvd11;
+
+-- Grant sequence usage (if any auto-incrementing IDs/UUID generators are used)
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO nvd11;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO nvd11;
