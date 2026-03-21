@@ -1,37 +1,19 @@
 # ---------------------------------------------------------
-# 1. VPC Network & Subnets
+# 1. Existing Enterprise Network & NAT (Data Sources)
 # ---------------------------------------------------------
-resource "google_compute_network" "rag_vpc" {
-  name                    = "rag-eval-vpc"
-  auto_create_subnetworks = false
+# In an enterprise environment (e.g., HSBC), the core network infrastructure
+# is managed by a central platform team. We reference the existing VPC and Subnet.
+data "google_compute_network" "tf_vpc0" {
+  name = "tf-vpc0"
 }
 
-resource "google_compute_subnetwork" "rag_subnet" {
-  name          = "rag-eval-subnet"
-  ip_cidr_range = "10.0.1.0/24"
-  region        = var.region
-  network       = google_compute_network.rag_vpc.id
-}
-
-# ---------------------------------------------------------
-# 2. Cloud NAT (For secure outbound traffic & LLM API Calls)
-# ---------------------------------------------------------
-resource "google_compute_router" "nat_router" {
-  name    = "rag-eval-nat-router"
-  network = google_compute_network.rag_vpc.name
-  region  = var.region
-}
-
-resource "google_compute_router_nat" "nat_gateway" {
-  name                               = "rag-eval-cloud-nat"
-  router                             = google_compute_router.nat_router.name
-  region                             = google_compute_router.nat_router.region
-  nat_ip_allocate_option             = "AUTO_ONLY"
-  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+data "google_compute_subnetwork" "tf_vpc0_subnet0" {
+  name   = "tf-vpc0-subnet0"
+  region = var.region
 }
 
 # ---------------------------------------------------------
-# 3. Cloud SQL (PostgreSQL with pgvector extension)
+# 2. Cloud SQL (PostgreSQL with pgvector extension)
 # ---------------------------------------------------------
 resource "google_sql_database_instance" "pgvector_instance" {
   name             = var.db_instance_name
@@ -71,7 +53,7 @@ resource "google_sql_user" "rag_user" {
 }
 
 # ---------------------------------------------------------
-# 4. Envoy Proxy Gateway (Compute Engine)
+# 3. Envoy Proxy Gateway (Compute Engine)
 # ---------------------------------------------------------
 resource "google_compute_address" "envoy_static_ip" {
   name   = "static-ip-envoy-proxy"
@@ -91,8 +73,8 @@ resource "google_compute_instance" "envoy_proxy" {
   }
 
   network_interface {
-    network    = google_compute_network.rag_vpc.name
-    subnetwork = google_compute_subnetwork.rag_subnet.name
+    network    = data.google_compute_network.tf_vpc0.id
+    subnetwork = data.google_compute_subnetwork.tf_vpc0_subnet0.id
 
     access_config {
       nat_ip = google_compute_address.envoy_static_ip.address
@@ -103,11 +85,11 @@ resource "google_compute_instance" "envoy_proxy" {
 }
 
 # ---------------------------------------------------------
-# 5. Security & Firewall Rules
+# 4. Security & Firewall Rules
 # ---------------------------------------------------------
 resource "google_compute_firewall" "allow_postgres_to_envoy" {
   name    = "allow-postgres-5432"
-  network = google_compute_network.rag_vpc.name
+  network = data.google_compute_network.tf_vpc0.id
 
   allow {
     protocol = "tcp"
