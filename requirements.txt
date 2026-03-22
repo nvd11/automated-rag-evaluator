@@ -23,3 +23,4 @@ ruff>=0.3.4                 # The fastest Python linter and formatter written in
 # Testing
 pytest>=8.1.1                 # Standard testing framework
 pytest-asyncio>=0.23.6        # Asyncio support for pytest
+langchain-google-genai==2.0.0
