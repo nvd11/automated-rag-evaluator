@@ -55,7 +55,7 @@ Stores the metadata for each distinct hyperparameter sweep (a unique combination
 | `reranking_config`  | VARCHAR   | e.g., 'cross_encoder_miniLM'. |
 | `prompting_config`  | VARCHAR   | e.g., 'step_back'. |
 | `generation_config` | VARCHAR   | e.g., 'strict_citation_low_temp'. |
-| `latency_seconds`   | FLOAT     | Average latency across all queries in this run. |
+| `average_latency_ms`| INT       | Average latency (in milliseconds) across all queries in this run. |
 | `cost_estimate`     | FLOAT     | Estimated API cost (token usage) for this run. |
 | `created_by`       | VARCHAR   | Audit field: Actor who created the record. |
 | `created_at`       | TIMESTAMP | Audit field: Record creation time. |
@@ -173,7 +173,7 @@ Stores the actual user questions, the retrieved context chunks, and the final ge
 | `question`           | TEXT      | The raw query asked by the user (or the evaluation dataset). |
 | `retrieved_contexts` | JSONB     | An array of objects containing the retrieved `chunk_id`, raw `text`, and `similarity_score`. |
 | `generated_answer`   | TEXT      | The final synthesized answer produced by the LLM (Generator). |
-| `latency_seconds`    | FLOAT     | Time taken in seconds from receiving the query to returning the final answer. |
+| `latency_ms`         | INT       | Time taken in milliseconds from receiving the query to returning the final answer. |
 | `ground_truth`       | TEXT      | (Optional) The expected standard answer, used for direct metrics like Recall. |
 | `created_by`         | VARCHAR   | Audit field: Actor who created the record (e.g., 'user_123' or 'eval_runner'). |
 | `created_at`         | TIMESTAMP | Audit field: Record creation time. |
