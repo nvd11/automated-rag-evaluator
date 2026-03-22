@@ -95,7 +95,7 @@ sequenceDiagram
     participant Embedder as GeminiQueryEmbedder
     participant DAO as PgVectorRetrieverDAO
     participant DB as Cloud SQL (pgvector)
-    participant LLM as Gemini 1.5 Pro (Generator)
+    participant LLM as Gemini 2.5 Pro (Generator)
 
     Client->>RAG: ask("What is HSBC's profit?", topics=["Financial Performance"])
     activate RAG
