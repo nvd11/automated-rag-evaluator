@@ -259,6 +259,28 @@ Enforces **strict separation of concerns** between dynamic operational logs (`qu
 CREATE INDEX idx_eval_query_mappings ON evaluation_query_mappings (golden_record_id, query_id) WHERE is_deleted = FALSE;
 ```
 
+
+---
+
+## 📊 View 1: `v_evaluation_metrics_pivot` (RAG Triad Analysis View)
+While the underlying `evaluation_metrics` uses a flexible EAV (Entity-Attribute-Value) "long table" design to support infinite new metrics without schema changes, analysts and BI dashboards often require a "wide table" format. 
+
+This PostgreSQL view pivots the core RAG Triad metrics (Context Relevance, Faithfulness, Answer Relevance) into columns grouped by `(run_id, query_id)`. This provides a human-readable, flattened dataset perfect for immediate diagnosis and exporting to CSVs or Pandas DataFrames.
+
+```sql
+CREATE OR REPLACE VIEW v_evaluation_metrics_pivot AS
+SELECT 
+    run_id,
+    query_id,
+    MAX(CASE WHEN metric_name = 'context_relevance' THEN metric_value END) AS context_relevance_score,
+    MAX(CASE WHEN metric_name = 'faithfulness' THEN metric_value END) AS faithfulness_score,
+    MAX(CASE WHEN metric_name = 'answer_relevance' THEN metric_value END) AS answer_relevance_score,
+    MAX(CASE WHEN metric_name = 'recall_at_k' THEN metric_value END) AS recall_at_k_score
+FROM evaluation_metrics
+WHERE is_deleted = FALSE
+GROUP BY run_id, query_id;
+```
+
 ## 💡 Architecture Note: Metadata Pre-filtering (Hybrid Search) & Auditability
 By introducing the `documents` and `document_topics` tables, this architecture natively supports **Metadata Pre-filtering (or Hybrid Vector Search)**. 
 When the RAG Agent processes a user query that implies a specific domain (e.g., *"What are the credit risks..."*), the system can first execute a standard SQL `JOIN` on `document_topics` to isolate the relevant `doc_id`s for 'credit_risk'. The dense vector search (ANN / k-NN) is then executed **strictly within this filtered subset of `document_chunks`** (optimized via `idx_doc_chunks_filter`). 
