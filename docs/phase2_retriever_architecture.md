@@ -28,7 +28,8 @@ classDiagram
     }
 
     %% Interfaces (Contract Layer)
-    class IQueryEmbedder {
+    %% Reusing BaseEmbedder from Ingestion
+    class BaseEmbedder {
         <<Interface>>
         +embed_query(text: String) List[float]
     }
@@ -49,7 +50,7 @@ classDiagram
     }
 
     %% Implementations (Concrete Layer)
-    class GeminiQueryEmbedder {
+    class GeminiEmbedder {
         +embed_query(text: String) List[float]
     }
     
@@ -62,7 +63,7 @@ classDiagram
     }
     
     class SemanticRetriever {
-        -IQueryEmbedder embedder
+        -BaseEmbedder embedder
         -IRetrieverDAO dao
         +retrieve(text: String, top_k: int, filters: List) List[RetrievedContext]
     }
@@ -80,12 +81,12 @@ classDiagram
     SearchQuery <-- IRetrieverDAO : Consumes
     RetrievedContext <-- IRetrieverDAO : Produces
     
-    IQueryEmbedder <|.. GeminiQueryEmbedder : Implements
+    BaseEmbedder <|.. GeminiEmbedder : Implements
     IRetrieverDAO <|.. PgVectorRetrieverDAO : Implements
     ILLMGenerator <|.. GeminiLLMGenerator : Implements
     BaseRetriever <|.. SemanticRetriever : Implements
     
-    SemanticRetriever o-- IQueryEmbedder : Dependency Injection
+    SemanticRetriever o-- BaseEmbedder : Dependency Injection
     SemanticRetriever o-- IRetrieverDAO : Dependency Injection
 ```
 
@@ -103,7 +104,7 @@ sequenceDiagram
     actor Client as User / Evaluator
     participant RAG as RAGAgent (Orchestrator)
     participant Retriever as SemanticRetriever
-    participant Embedder as GeminiQueryEmbedder
+    participant Embedder as GeminiEmbedder
     participant DAO as PgVectorRetrieverDAO
     participant DB as Cloud SQL (pgvector)
     participant LLM as Gemini 2.5 Pro (Generator)
@@ -160,12 +161,12 @@ Located in `src/domain/models.py`.
 ### 3.2 Interface Layer (Contracts)
 Located in `src/interfaces/retriever_interfaces.py`.
 By programming against interfaces rather than concrete classes, we follow the **Dependency Inversion Principle**.
-*   **`IQueryEmbedder`**: Exposes a single method `embed_query()`. Unlike the batch embedder in Phase 1, this is optimized for low-latency, real-time single query embedding.
+*   **`BaseEmbedder` (Reused from Phase 1)**: By extending our existing interface with `embed_query()`, we unify the embedding model for both ingestion and retrieval, ensuring vector space alignment.
 *   **`IRetrieverDAO`**: Defines the contract for vector databases. Accepts a `SearchQuery` and returns a list of `RetrievedContext`.
 
 ### 3.3 Concrete Implementations
 Located in `src/retrieval/`.
-*   **`GeminiQueryEmbedder`**: Implements `IQueryEmbedder` using the `google-genai` SDK. Translates the user's question into a 768-dimensional float array.
+*   **`GeminiEmbedder`**: We reuse the implementation from Phase 1, adding a new `embed_query()` method explicitly configured with `task_type="RETRIEVAL_QUERY"` to match the documents embedded with `RETRIEVAL_DOCUMENT`.
 *   **`PgVectorRetrieverDAO`**: Implements `IRetrieverDAO` using `psycopg` and `pgvector`. 
     *   **Query Strategy**: Utilizes the `<=>` operator for Cosine Distance.
     *   **Pre-filtering**: Dynamically constructs SQL `WHERE` clauses if `topic_filters` are provided. By joining `document_chunks` with `document_topics`, we narrow the vector search space *before* computing distances, drastically improving precision and query speed.

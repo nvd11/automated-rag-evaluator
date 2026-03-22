@@ -61,3 +61,23 @@ class GeminiEmbedder(BaseEmbedder):
                     raise
                 
         return chunks
+
+    async def embed_query(self, text: str) -> List[float]:
+        """
+        Generates a single vector embedding for a user query.
+        Unlike batch embedding (RETRIEVAL_DOCUMENT), this is optimized for RETRIEVAL_QUERY.
+        """
+        loop = asyncio.get_running_loop()
+        
+        def do_embed():
+            response = self.client.models.embed_content(
+                model=self.model_name,
+                contents=[text],
+                config=types.EmbedContentConfig(
+                    task_type="RETRIEVAL_QUERY",
+                    output_dimensionality=768
+                )
+            )
+            return response.embeddings[0].values
+            
+        return await loop.run_in_executor(None, do_embed)

@@ -20,6 +20,11 @@ class BaseEmbedder(ABC):
         """Generates vector embeddings for a batch of Chunks and mutates the objects."""
         pass
 
+    @abstractmethod
+    async def embed_query(self, text: str) -> List[float]:
+        """Generates a single vector embedding for a user query."""
+        pass
+
 class BaseDAO(ABC):
     @abstractmethod
     async def upsert_document_transactionally(self, document: Document, created_by: str) -> dict:
