@@ -69,10 +69,16 @@ classDiagram
         +retrieve(text: String, top_k: int, filters: List) List[RetrievedContext]
     }
 
+    class RAGResponse {
+        +String query
+        +String generated_answer
+        +List[RetrievedContext] retrieved_contexts
+    }
+
     class RAGAgent {
         -BaseRetriever retriever
         -ILLMGenerator generator
-        +ask(question: String) String
+        +ask(question: String, top_k: int, topics: List) RAGResponse
     }
 
     RAGAgent o-- BaseRetriever : Dependency Injection
@@ -148,7 +154,8 @@ sequenceDiagram
     LLM-->>RAG: return Synthesized Final Answer
     deactivate LLM
     
-    RAG-->>Client: Return Answer & Cited Sources
+    Note over RAG: Packages Answer and List[RetrievedContext] into RAGResponse DTO
+    RAG-->>Client: return RAGResponse
     deactivate RAG
 ```
 
@@ -157,6 +164,7 @@ sequenceDiagram
 ### 3.1 Domain Models (DTOs)
 Located in `src/domain/models.py`.
 *   **`SearchQuery`**: Encapsulates the user's raw text, the generated embedding vector, the `top_k` parameter, and any optional metadata filters (e.g., `topic_filters = ["Risk Management"]`).
+*   **`RAGResponse`**: The ultimate output payload. By returning a structured object containing both the `generated_answer` and the full array of `retrieved_contexts` (including their raw `text` and `similarity_score`), this design satisfies both user-facing citation requirements and downstream machine-driven RAG evaluation (e.g., calculating Faithfulness).
 *   **`RetrievedContext`**: Represents the output of a search. Contains the chunk text, the parent `doc_id`, the origin page number, and critically, the `similarity_score` (calculated via cosine distance).
 
 ### 3.2 Interface Layer (Contracts)
