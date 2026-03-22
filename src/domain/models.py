@@ -18,3 +18,25 @@ class Document(BaseModel):
     raw_pages_text: List[str] = Field(description="List of text extracted per page, where index = page_number - 1")
     topics: List[str] = Field(default_factory=list, description="List of topics associated with this document for metadata pre-filtering")
     chunks: List[Chunk] = Field(default_factory=list, description="The processed chunks of this document")
+
+class SearchQuery(BaseModel):
+    """Encapsulates a semantic search request for the retriever."""
+    query_text: str = Field(description="The raw text of the user's query")
+    embedding: List[float] = Field(description="The vector representation of the query")
+    top_k: int = Field(default=5, description="Maximum number of chunks to retrieve")
+    similarity_threshold: float = Field(default=0.5, description="Minimum cosine similarity score [-1, 1]")
+    topic_filters: Optional[List[str]] = Field(default=None, description="Optional metadata topics for pre-filtering")
+
+class RetrievedContext(BaseModel):
+    """Represents a single chunk of context retrieved from the vector database."""
+    doc_id: str = Field(description="The ID of the parent document")
+    chunk_id: str = Field(description="The unique ID of this specific chunk")
+    text: str = Field(description="The actual text content of the retrieved chunk")
+    similarity_score: float = Field(description="The calculated cosine similarity score [-1, 1]")
+    metadata: dict = Field(default_factory=dict, description="Additional chunk metadata (e.g., page_number, token_count)")
+
+class RAGResponse(BaseModel):
+    """The ultimate structured payload returned by the RAG Agent."""
+    query: str = Field(description="The original user query")
+    generated_answer: str = Field(description="The final answer synthesized by the LLM")
+    retrieved_contexts: List[RetrievedContext] = Field(description="The exact context chunks used to generate the answer, preserved for downstream evaluation")
