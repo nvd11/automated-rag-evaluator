@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional, Any, Dict, AsyncIterator
-from langchain_core.runnables import Runnable
+from langchain_core.runnables import Runnable, RunnableConfig
 from src.domain.models import SearchQuery, RetrievedContext, RAGResponse
 
 class IRetrieverDAO(ABC):
@@ -16,7 +16,7 @@ class BaseRetriever(Runnable, ABC):
     .invoke(), .ainvoke(), and can be seamlessly piped into LCEL chains.
     """
     @abstractmethod
-    async def ainvoke(self, input: str, config: Optional[Dict[str, Any]] = None, **kwargs) -> List[RetrievedContext]:
+    async def ainvoke(self, input: str, config: Optional[RunnableConfig] = None, **kwargs) -> List[RetrievedContext]:
         """
         The standard LangChain async entry point.
         Takes a raw query string, embeds it, and returns the relevant context chunks.
@@ -30,7 +30,7 @@ class ILLMGenerator(Runnable, ABC):
     Inherits from Runnable to participate natively in LCEL pipelines.
     """
     @abstractmethod
-    async def ainvoke(self, input: Dict[str, Any], config: Optional[Dict[str, Any]] = None, **kwargs) -> str:
+    async def ainvoke(self, input: Dict[str, Any], config: Optional[RunnableConfig] = None, **kwargs) -> str:
         """
         Takes a dictionary (typically containing 'context' and 'question'),
         formats the prompt, and generates the final answer.
@@ -38,6 +38,6 @@ class ILLMGenerator(Runnable, ABC):
         pass
         
     @abstractmethod
-    async def astream(self, input: Dict[str, Any], config: Optional[Dict[str, Any]] = None, **kwargs) -> AsyncIterator[str]:
+    async def astream(self, input: Dict[str, Any], config: Optional[RunnableConfig] = None, **kwargs) -> AsyncIterator[str]:
         """Supports streaming the generated answer token-by-token."""
         pass

@@ -74,7 +74,7 @@ class PgVectorRetrieverDAO(IRetrieverDAO):
                 rows = await cur.fetchall()
                 
                 for row in rows:
-                    chunk_id = row[0]
+                    chunk_id = str(row[0])
                     doc_id = row[1]
                     text = row[2]
                     metadata_dict = row[3] if isinstance(row[3], dict) else json.loads(row[3] or "{}")

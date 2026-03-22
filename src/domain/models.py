@@ -40,3 +40,4 @@ class RAGResponse(BaseModel):
     query: str = Field(description="The original user query")
     generated_answer: str = Field(description="The final answer synthesized by the LLM")
     retrieved_contexts: List[RetrievedContext] = Field(description="The exact context chunks used to generate the answer, preserved for downstream evaluation")
+
