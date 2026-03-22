@@ -68,8 +68,8 @@ async def main():
     try:
         # 3. Assemble the Pipeline (Dependency Injection)
         loader = PyMuPDFLoader()
-        chunker = LangchainRecursiveChunker(chunk_size=1000, chunk_overlap=200)
-        embedder = GeminiEmbedder(batch_size=100)
+        chunker = LangchainRecursiveChunker()
+        embedder = GeminiEmbedder()
         dao = PgVectorDAO()
 
         pipeline = DataIngestionPipeline(

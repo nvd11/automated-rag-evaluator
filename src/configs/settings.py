@@ -18,6 +18,12 @@ class Settings(BaseSettings):
     # Google AI Config (API Key)
     GEMINI_API_KEY: str
     EMBEDDING_MODEL: str = "models/gemini-embedding-001"
+    EMBEDDING_DIMENSION: int = 768
+    EMBEDDING_BATCH_SIZE: int = 100
+    
+    # Text Chunking Config
+    CHUNK_SIZE: int = 1000
+    CHUNK_OVERLAP: int = 200
     LLM_JUDGE_MODEL: str = "gemini-2.5-pro"
     
     # Proxy Config (Global toggle for LLM/Embeddings access from restricted regions)

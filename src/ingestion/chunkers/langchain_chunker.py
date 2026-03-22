@@ -3,13 +3,14 @@ from loguru import logger
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from src.domain.models import Document, Chunk
 from src.interfaces.ingestion_interfaces import BaseChunker
+from src.configs.settings import settings
 
 class LangchainRecursiveChunker(BaseChunker):
     """
     Langchain RecursiveCharacterTextSplitter wrapper.
     
     """
-    def __init__(self, chunk_size: int = 1000, chunk_overlap: int = 200):
+    def __init__(self, chunk_size: int = settings.CHUNK_SIZE, chunk_overlap: int = settings.CHUNK_OVERLAP):
         self.splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap,

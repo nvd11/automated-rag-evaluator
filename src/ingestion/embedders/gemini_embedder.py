@@ -14,7 +14,7 @@ class GeminiEmbedder(BaseEmbedder):
     Gemini Embedder using modern google-genai SDK.
     
     """
-    def __init__(self, batch_size: int = 100):
+    def __init__(self, batch_size: int = settings.EMBEDDING_BATCH_SIZE):
         self.client = genai.Client(api_key=settings.GEMINI_API_KEY)
         self.model_name = settings.EMBEDDING_MODEL
         self.batch_size = batch_size
@@ -34,7 +34,7 @@ class GeminiEmbedder(BaseEmbedder):
                     # We use task_type="RETRIEVAL_DOCUMENT" for chunks because they are long, factual statements.
                     # The embedding model maps these into the vector space as "knowledge anchors".
                     task_type="RETRIEVAL_DOCUMENT",
-                    output_dimensionality=768  # Force the model to truncate/project to 768 dimensions
+                    output_dimensionality=settings.EMBEDDING_DIMENSION  # Force the model to truncate/project to 768 dimensions
                 )
             )
             # Extracted list of float vectors
@@ -83,7 +83,7 @@ class GeminiEmbedder(BaseEmbedder):
                     # towards the region of the vector space where the answering "RETRIEVAL_DOCUMENT" resides.
                     # This dramatically improves hit rates compared to symmetric search (which might just return a similar question).
                     task_type="RETRIEVAL_QUERY",
-                    output_dimensionality=768
+                    output_dimensionality=settings.EMBEDDING_DIMENSION
                 )
             )
             return response.embeddings[0].values
