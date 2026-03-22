@@ -173,6 +173,7 @@ Stores the actual user questions, the retrieved context chunks, and the final ge
 | `question`           | TEXT      | The raw query asked by the user (or the evaluation dataset). |
 | `retrieved_contexts` | JSONB     | An array of objects containing the retrieved `chunk_id`, raw `text`, and `similarity_score`. |
 | `generated_answer`   | TEXT      | The final synthesized answer produced by the LLM (Generator). |
+| `latency_seconds`    | FLOAT     | Time taken in seconds from receiving the query to returning the final answer. |
 | `ground_truth`       | TEXT      | (Optional) The expected standard answer, used for direct metrics like Recall. |
 | `created_by`         | VARCHAR   | Audit field: Actor who created the record (e.g., 'user_123' or 'eval_runner'). |
 | `created_at`         | TIMESTAMP | Audit field: Record creation time. |
