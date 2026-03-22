@@ -164,26 +164,49 @@ CREATE INDEX idx_doc_topics_reverse ON document_topics (topic_id, doc_id) WHERE 
 ---
 
 ## Table 7: `query_history` (RAG Interaction Logs)
-Stores the actual user questions, the retrieved context chunks, and the final generated answers for each evaluation run. This table serves as the **foundational input dataset** for the downstream `RAGEvaluator` and `RAGDiagnoser`.
+Stores the actual user questions, the retrieved context chunks, and the final generated answers for every RAG interaction. This serves as the system's operational log for both regular users and automated evaluations.
 
 | Column Name          | Data Type | Description |
 | :---                 | :---      | :---        |
 | `query_id`           | UUID (PK) | Unique identifier for this specific Q&A interaction. |
-| `run_id`             | UUID (FK) | Links back to `evaluation_runs.run_id`. Identifies the hyperparameters used. |
+| `session_id`         | VARCHAR   | (Optional) Associates the query with a specific user session. |
 | `question`           | TEXT      | The raw query asked by the user (or the evaluation dataset). |
 | `retrieved_contexts` | JSONB     | An array of objects containing the retrieved `chunk_id`, raw `text`, and `similarity_score`. |
 | `generated_answer`   | TEXT      | The final synthesized answer produced by the LLM (Generator). |
-| `ground_truth`       | TEXT      | (Optional) The expected standard answer, used for Case 1 (Direct Evaluation) metrics like Recall@K. |
-| `created_by`         | VARCHAR   | Audit field: Actor who created the record. |
+| `ground_truth`       | TEXT      | (Optional) The expected standard answer, used for direct metrics like Recall. |
+| `created_by`         | VARCHAR   | Audit field: Actor who created the record (e.g., 'user_123' or 'eval_runner'). |
 | `created_at`         | TIMESTAMP | Audit field: Record creation time. |
 | `updated_by`         | VARCHAR   | Audit field: Actor who last modified the record. |
 | `updated_at`         | TIMESTAMP | Audit field: Record last modification time. |
 | `is_deleted`         | BOOLEAN   | Soft delete flag (default: FALSE). |
 
 **Index Strategy:**
-**Query by Run Index:** A B-tree index on `run_id` to allow the `RAGEvaluator` to rapidly fetch all interactions belonging to a specific parameter sweep in order to run batch evaluations (e.g., RAG Triad scoring).
+**Session Lookup Index:** A B-tree index on `session_id` to quickly retrieve user conversation history for chat UI restoration.
 ```sql
-CREATE INDEX idx_query_hist_run ON query_history (run_id) WHERE is_deleted = FALSE;
+CREATE INDEX idx_query_hist_session ON query_history (session_id) WHERE is_deleted = FALSE;
+```
+
+
+---
+
+## Table 8: `run_queries` (Evaluation Run to Query Mapping)
+Resolves the many-to-many relationship between `evaluation_runs` and `query_history`.
+In an enterprise RAG system, `query_history` logs all traffic (real users + automated tests). This table isolates specific subsets of queries that belong to a managed hyperparameter sweep (a "Run").
+
+| Column Name | Data Type | Description |
+| :--- | :--- | :--- |
+| `run_id`    | UUID (FK) | Links back to `evaluation_runs.run_id`. |
+| `query_id`  | UUID (FK) | Links back to `query_history.query_id`. |
+| `created_by`       | VARCHAR   | Audit field: Actor who created the record. |
+| `created_at`       | TIMESTAMP | Audit field: Record creation time. |
+| `updated_by`       | VARCHAR   | Audit field: Actor who last modified the record. |
+| `updated_at`       | TIMESTAMP | Audit field: Record last modification time. |
+| `is_deleted`       | BOOLEAN   | Soft delete flag (default: FALSE). |
+
+**Index Strategy:**
+**Reverse Lookup Index:** An explicit reverse B-tree index on `(query_id, run_id)` to rapidly find which evaluation runs a specific query was included in, supporting cross-run diagnostics.
+```sql
+CREATE INDEX idx_run_queries_reverse ON run_queries (query_id, run_id) WHERE is_deleted = FALSE;
 ```
 
 ## 💡 Architecture Note: Metadata Pre-filtering (Hybrid Search) & Auditability
