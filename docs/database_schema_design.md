@@ -209,6 +209,53 @@ In an enterprise RAG system, `query_history` logs all traffic (real users + auto
 CREATE INDEX idx_run_queries_reverse ON run_queries (query_id, run_id) WHERE is_deleted = FALSE;
 ```
 
+
+---
+
+## Table 9: `golden_records` (Evaluation Benchmark Dataset)
+The "North Star" asset for RAG evaluation. Authored by human domain experts (SMEs), these static records contain the perfect baseline answers required for Case 1 (Direct Evaluation).
+
+| Column Name       | Data Type | Description |
+| :---              | :---      | :---        |
+| `id`              | UUID (PK) | Unique identifier for this specific golden test case. |
+| `dataset_name`    | VARCHAR   | Logical grouping of the test cases (e.g., 'v1_hsbc_2025_annual_report_q1'). |
+| `question`        | TEXT      | The exact, canonical query string to be fed into the RAG pipeline. |
+| `ground_truth`    | TEXT      | The human-expert verified "perfect answer" to serve as the benchmark baseline. |
+| `expected_topics` | JSONB     | (Optional) Array of `topic_name` strings the retrieval *should* theoretically hit. |
+| `complexity`      | VARCHAR   | (Optional) Categorization (e.g., 'Factoid', 'Multi-hop', 'Reasoning') for granular metric analysis. |
+| `created_by`      | VARCHAR   | Audit field: Actor who created the record. |
+| `created_at`      | TIMESTAMP | Audit field: Record creation time. |
+| `updated_by`      | VARCHAR   | Audit field: Actor who last modified the record. |
+| `updated_at`      | TIMESTAMP | Audit field: Record last modification time. |
+| `is_deleted`      | BOOLEAN   | Soft delete flag (default: FALSE). |
+
+**Index Strategy:**
+**Dataset Lookup Index:** A B-tree index on `dataset_name` to allow the automated evaluation runner to swiftly load hundreds of golden questions for a batch parameter sweep.
+```sql
+CREATE INDEX idx_golden_records_dataset ON golden_records (dataset_name) WHERE is_deleted = FALSE;
+```
+
+---
+
+## Table 10: `evaluation_query_mappings` (Ground Truth to Query Resolution)
+Enforces **strict separation of concerns** between dynamic operational logs (`query_history`) and static evaluation benchmarks (`golden_records`). By extracting this 1:1 relationship into a dedicated mapping table, we prevent the core `query_history` table from being polluted by nullable, evaluation-specific foreign keys (`golden_record_id`).
+
+| Column Name         | Data Type | Description |
+| :---                | :---      | :---        |
+| `query_id`          | UUID (FK) | Links back to `query_history.query_id`. The specific generation attempt. |
+| `golden_record_id`  | UUID (FK) | Links back to `golden_records.id`. The human-verified baseline. |
+| `created_by`        | VARCHAR   | Audit field: Actor who created the record. |
+| `created_at`        | TIMESTAMP | Audit field: Record creation time. |
+| `updated_by`        | VARCHAR   | Audit field: Actor who last modified the record. |
+| `updated_at`        | TIMESTAMP | Audit field: Record last modification time. |
+| `is_deleted`        | BOOLEAN   | Soft delete flag (default: FALSE). |
+
+**Index Strategy:**
+**Evaluation Join Index:** An explicit reverse B-tree index on `(golden_record_id, query_id)` to rapidly join generated answers with their corresponding ground truth baselines during the automated grading phase without performing full table scans.
+```sql
+CREATE INDEX idx_eval_query_mappings ON evaluation_query_mappings (golden_record_id, query_id) WHERE is_deleted = FALSE;
+```
+
 ## 💡 Architecture Note: Metadata Pre-filtering (Hybrid Search) & Auditability
 By introducing the `documents` and `document_topics` tables, this architecture natively supports **Metadata Pre-filtering (or Hybrid Vector Search)**. 
 When the RAG Agent processes a user query that implies a specific domain (e.g., *"What are the credit risks..."*), the system can first execute a standard SQL `JOIN` on `document_topics` to isolate the relevant `doc_id`s for 'credit_risk'. The dense vector search (ANN / k-NN) is then executed **strictly within this filtered subset of `document_chunks`** (optimized via `idx_doc_chunks_filter`). 
