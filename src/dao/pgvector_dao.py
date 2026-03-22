@@ -44,73 +44,95 @@ class PgVectorDAO(BaseDAO):
         if old_doc_ids:
             logger.info(f"Soft-deleted {len(old_doc_ids)} previous versions of document: {doc_name}")
 
-    async def upsert_document_transactionally(self, document: Document, created_by: str) -> str:
-        logger.info(f"Persisting NEW version of document {document.document_name} to database transactionally...")
-        
-        # Generate a completely new UUID for this ingestion version
-        new_doc_id = str(uuid.uuid4())
-        
+    async def _insert_document_record(self, cursor, document: Document, new_doc_id: str, created_by: str) -> str:
         doc_metadata = json.dumps({
             "file_path": document.file_path,
             "total_pages": document.total_pages,
             "md5_hash": document.md5_hash
         })
+        await cursor.execute("""
+            INSERT INTO documents (doc_id, doc_name, metadata, created_by)
+            VALUES (%s, %s, %s, %s)
+            RETURNING doc_id;
+        """, (new_doc_id, document.document_name, doc_metadata, created_by))
+        
+        returned_doc_id = (await cursor.fetchone())[0]
+        logger.debug(f"New Document ID created: {returned_doc_id}")
+        return returned_doc_id
+
+    async def _upsert_topics(self, cursor, topics: list, created_by: str) -> list:
+        topic_ids = []
+        for topic_name in topics:
+            topic_uuid = str(uuid.uuid5(uuid.NAMESPACE_OID, topic_name))
+            await cursor.execute("""
+                INSERT INTO topics (topic_id, topic_name, created_by)
+                VALUES (%s, %s, %s)
+                ON CONFLICT (topic_id) DO UPDATE SET 
+                    updated_at = CURRENT_TIMESTAMP,
+                    is_deleted = FALSE
+                RETURNING topic_id;
+            """, (topic_uuid, topic_name, created_by))
+            topic_ids.append((await cursor.fetchone())[0])
+        return topic_ids
+
+    async def _map_document_topics(self, cursor, doc_id: str, topic_ids: list, created_by: str) -> None:
+        for topic_id in topic_ids:
+            await cursor.execute("""
+                INSERT INTO document_topics (doc_id, topic_id, created_by)
+                VALUES (%s, %s, %s);
+            """, (doc_id, topic_id, created_by))
+
+    async def _bulk_insert_chunks(self, cursor, document: Document, doc_id: str, created_by: str) -> None:
+        if not document.chunks:
+            return
+            
+        query = """
+            INSERT INTO document_chunks 
+            (id, doc_id, chunking_strategy, chunk_index, content, metadata, embedding, created_by)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+        """
+        chunk_data = []
+        for c in document.chunks:
+            chunk_uuid = str(uuid.uuid4())
+            chunk_meta = json.dumps({"page_number": c.page_number, "token_count": c.token_count})
+            chunk_data.append((
+                chunk_uuid, doc_id, "RecursiveCharacterTextSplitter",
+                c.chunk_index, c.text, chunk_meta, c.embedding, created_by
+            ))
+            
+        await cursor.executemany(query, chunk_data)
+        logger.debug(f"Bulk inserted {len(chunk_data)} chunks for document {doc_id}")
+
+    async def upsert_document_transactionally(self, document: Document, created_by: str) -> str:
+        logger.info(f"Persisting NEW version of document {document.document_name} to database transactionally...")
+        
+        new_doc_id = str(uuid.uuid4())
         
         async with get_db_connection() as conn:
             try:
                 async with conn.cursor() as cur:
-                    # 1. Clean up (Soft Delete) any existing versions of this document
+                    # 1. Clean up (Soft Delete) any existing versions
                     await self.clean_document_data(cursor=cur, doc_name=document.document_name, created_by=created_by)
 
                     # 2. Insert Brand New Document Record
-                    await cur.execute("""
-                        INSERT INTO documents (doc_id, doc_name, metadata, created_by)
-                        VALUES (%s, %s, %s, %s)
-                        RETURNING doc_id;
-                    """, (new_doc_id, document.document_name, doc_metadata, created_by))
-                    
-                    returned_doc_id = (await cur.fetchone())[0]
-                    logger.debug(f"New Document ID created: {returned_doc_id}")
+                    returned_doc_id = await self._insert_document_record(
+                        cursor=cur, document=document, new_doc_id=new_doc_id, created_by=created_by
+                    )
                     
                     # 3. Handle Metadata Topics Upsert
-                    topic_ids = []
-                    for topic_name in document.topics:
-                        topic_uuid = str(uuid.uuid5(uuid.NAMESPACE_OID, topic_name))
-                        await cur.execute("""
-                            INSERT INTO topics (topic_id, topic_name, created_by)
-                            VALUES (%s, %s, %s)
-                            ON CONFLICT (topic_id) DO UPDATE SET 
-                                updated_at = CURRENT_TIMESTAMP,
-                                is_deleted = FALSE
-                            RETURNING topic_id;
-                        """, (topic_uuid, topic_name, created_by))
-                        topic_ids.append((await cur.fetchone())[0])
+                    topic_ids = await self._upsert_topics(
+                        cursor=cur, topics=document.topics, created_by=created_by
+                    )
                     
                     # 4. Map Topics to the NEW Document (N-to-N)
-                    for topic_id in topic_ids:
-                        await cur.execute("""
-                            INSERT INTO document_topics (doc_id, topic_id, created_by)
-                            VALUES (%s, %s, %s);
-                        """, (returned_doc_id, topic_id, created_by))
+                    await self._map_document_topics(
+                        cursor=cur, doc_id=returned_doc_id, topic_ids=topic_ids, created_by=created_by
+                    )
                         
-                    # 5. Bulk Insert Text Chunks and Vectors to the NEW Document
-                    if document.chunks:
-                        query = """
-                            INSERT INTO document_chunks 
-                            (id, doc_id, chunking_strategy, chunk_index, content, metadata, embedding, created_by)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
-                        """
-                        chunk_data = []
-                        for c in document.chunks:
-                            chunk_uuid = str(uuid.uuid4())
-                            chunk_meta = json.dumps({"page_number": c.page_number, "token_count": c.token_count})
-                            chunk_data.append((
-                                chunk_uuid, returned_doc_id, "RecursiveCharacterTextSplitter",
-                                c.chunk_index, c.text, chunk_meta, c.embedding, created_by
-                            ))
-                            
-                        await cur.executemany(query, chunk_data)
-                        logger.debug(f"Bulk inserted {len(chunk_data)} chunks for document {returned_doc_id}")
+                    # 5. Bulk Insert Text Chunks and Vectors
+                    await self._bulk_insert_chunks(
+                        cursor=cur, document=document, doc_id=returned_doc_id, created_by=created_by
+                    )
 
                 # Commit transaction explicitly
                 await conn.commit()
