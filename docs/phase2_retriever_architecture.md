@@ -38,6 +38,11 @@ classDiagram
         +semantic_search(query: SearchQuery) List[RetrievedContext]
     }
     
+    class ILLMGenerator {
+        <<Interface>>
+        +generate_answer(prompt: String) String
+    }
+    
     class BaseRetriever {
         <<Interface>>
         +retrieve(text: String, top_k: int, filters: List) List[RetrievedContext]
@@ -46,6 +51,10 @@ classDiagram
     %% Implementations (Concrete Layer)
     class GeminiQueryEmbedder {
         +embed_query(text: String) List[float]
+    }
+    
+    class GeminiLLMGenerator {
+        +generate_answer(prompt: String) String
     }
     
     class PgVectorRetrieverDAO {
@@ -60,11 +69,12 @@ classDiagram
 
     class RAGAgent {
         -BaseRetriever retriever
-        -LLMGenerator generator
+        -ILLMGenerator generator
         +ask(question: String) String
     }
 
     RAGAgent o-- BaseRetriever : Dependency Injection
+    RAGAgent o-- ILLMGenerator : Dependency Injection
     
     %% Relationships
     SearchQuery <-- IRetrieverDAO : Consumes
@@ -72,6 +82,7 @@ classDiagram
     
     IQueryEmbedder <|.. GeminiQueryEmbedder : Implements
     IRetrieverDAO <|.. PgVectorRetrieverDAO : Implements
+    ILLMGenerator <|.. GeminiLLMGenerator : Implements
     BaseRetriever <|.. SemanticRetriever : Implements
     
     SemanticRetriever o-- IQueryEmbedder : Dependency Injection
