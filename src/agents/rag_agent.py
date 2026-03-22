@@ -21,7 +21,7 @@ class RAGAgent:
         topic_filters: Optional[List[str]] = None
     ) -> RAGResponse:
         """
-        Executes the end-to-end RAG pipeline for a given question.
+        Executes the end-to-end RAG pipeline using a unified LCEL chain.
         Returns a structured RAGResponse containing the generated answer and retrieved contexts.
         """
         logger.info(f"RAGAgent processing query: '{question}'")
@@ -34,9 +34,8 @@ class RAGAgent:
         
         config_wrapper = {"configurable": retriever_config} if retriever_config else None
 
-        # 2. Phase 1: Retrieval (The "R" in RAG)
-        logger.debug("Delegating to SemanticRetriever...")
-        # Since BaseRetriever is a LangChain Runnable, we use ainvoke
+        # 2. Phase 1: Explicit Retrieval (Intercepted for DTO packaging & Early Exit)
+        logger.debug("Executing SemanticRetriever to fetch raw context objects...")
         retrieved_contexts = await self.retriever.ainvoke(input=question, config=config_wrapper)
         
         if not retrieved_contexts:
@@ -47,14 +46,17 @@ class RAGAgent:
                 retrieved_contexts=[]
             )
 
-        # 3. Phase 2: Generation (The "A & G" in RAG)
+        # 3. Phase 2: Generation via LCEL
+        # Note on LCEL: While we *could* pipe the retriever directly into the generator using RunnablePassthrough, 
+        # we explicitly execute the retriever first in Python to intercept the `retrieved_contexts` List[RetrievedContext] objects.
+        # This is critical for our Automated Evaluator: we must package the exact chunk metadata and similarity scores
+        # alongside the final answer into the `RAGResponse` DTO for downstream Faithfulness and Context Relevance grading.
         logger.debug("Delegating to LLMGenerator...")
         generator_input = {
             "context": retrieved_contexts,
             "question": question
         }
         
-        # Since ILLMGenerator is a LangChain Runnable, we use ainvoke
         generated_answer = await self.generator.ainvoke(input=generator_input)
         
         # 4. Package the payload for downstream Evaluation/Tracking
