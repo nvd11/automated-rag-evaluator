@@ -22,7 +22,7 @@ async def test_embed_batch_success(mock_client_class, dummy_chunks):
     """
     mock_client = MagicMock()
     
-    # We set side_effect to return different responses per batch call
+    # Set side_effect per batch call
     response_batch_1 = MagicMock()
     response_batch_1.embeddings = [
         MagicMock(values=[0.1, 0.2, 0.3]),
@@ -87,6 +87,6 @@ async def test_embed_batch_fatal_error(mock_client_class, dummy_chunks):
     # Fast-forward retries by replacing wait
     embedder._embed_text_batch.retry.wait = MagicMock(return_value=0)
 
-    # We catch generic Exception because Tenacity throws a RetryError 
+    # Catch generic Exception since Tenacity raises RetryError 
     with pytest.raises(Exception):
         await embedder.embed_batch(dummy_chunks)

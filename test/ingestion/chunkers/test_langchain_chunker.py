@@ -9,7 +9,7 @@ def test_langchain_recursive_chunker():
     # Arrange
     chunker = LangchainRecursiveChunker(chunk_size=50, chunk_overlap=10)
     
-    # We create a dummy Document
+    # Create mock Document
     doc = Document(
         document_name="test_doc.pdf",
         file_path="/fake/test_doc.pdf",

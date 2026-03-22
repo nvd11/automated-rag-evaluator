@@ -7,8 +7,8 @@ from src.interfaces.ingestion_interfaces import BaseLoader
 
 class PyMuPDFLoader(BaseLoader):
     """
-    Implementation of BaseLoader using PyMuPDF (fitz) for extremely fast
-    and accurate text and page number extraction from PDF files.
+    PyMuPDF loader for fast
+    PDF extraction.
     """
     async def load(self, file_path: str) -> Document:
         if not os.path.exists(file_path):

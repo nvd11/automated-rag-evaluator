@@ -6,8 +6,8 @@ from src.interfaces.ingestion_interfaces import BaseChunker
 
 class LangchainRecursiveChunker(BaseChunker):
     """
-    Implementation of BaseChunker using Langchain's RecursiveCharacterTextSplitter
-    to safely slice text into semantic blocks with overlapping buffers.
+    Langchain RecursiveCharacterTextSplitter wrapper.
+    
     """
     def __init__(self, chunk_size: int = 1000, chunk_overlap: int = 200):
         self.splitter = RecursiveCharacterTextSplitter(

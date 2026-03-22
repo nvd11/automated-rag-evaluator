@@ -11,8 +11,8 @@ from src.configs.settings import settings
 
 class GeminiEmbedder(BaseEmbedder):
     """
-    Implementation of BaseEmbedder using modern google-genai SDK.
-    Features async thread-pool offloading, exponential backoff retries, and progress tracking.
+    Gemini Embedder using modern google-genai SDK.
+    
     """
     def __init__(self, batch_size: int = 100):
         self.client = genai.Client(api_key=settings.GEMINI_API_KEY)
