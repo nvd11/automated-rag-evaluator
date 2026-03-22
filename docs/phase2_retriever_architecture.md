@@ -54,8 +54,9 @@ classDiagram
         +embed_query(text: String) List[float]
     }
     
-    class GeminiLLMGenerator {
+    class LangchainGeminiGenerator {
         +generate_answer(prompt: String) String
+        %% Note: Uses LCEL (LangChain Expression Language)
     }
     
     class PgVectorRetrieverDAO {
@@ -83,7 +84,7 @@ classDiagram
     
     BaseEmbedder <|.. GeminiEmbedder : Implements
     IRetrieverDAO <|.. PgVectorRetrieverDAO : Implements
-    ILLMGenerator <|.. GeminiLLMGenerator : Implements
+    ILLMGenerator <|.. LangchainGeminiGenerator : Implements
     BaseRetriever <|.. SemanticRetriever : Implements
     
     SemanticRetriever o-- BaseEmbedder : Dependency Injection
@@ -107,7 +108,7 @@ sequenceDiagram
     participant Embedder as GeminiEmbedder
     participant DAO as PgVectorRetrieverDAO
     participant DB as Cloud SQL (pgvector)
-    participant LLM as Gemini 2.5 Pro (Generator)
+    participant LLM as LangchainGeminiGenerator (LCEL)
 
     Client->>RAG: ask("What is HSBC's profit?", topics=["Financial Performance"])
     activate RAG
