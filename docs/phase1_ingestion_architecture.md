@@ -51,7 +51,95 @@ graph TD
 
 ---
 
-## 3. Core Modules & Classes Deep Dive
+
+## 3. Class Diagram (UML)
+
+```mermaid
+classDiagram
+    %% Domain Models
+    class Document {
+        +String document_name
+        +String file_path
+        +String md5_hash
+        +int total_pages
+        +List[String] raw_pages_text
+        +List[String] topics
+        +List[Chunk] chunks
+    }
+    
+    class Chunk {
+        +String text
+        +int page_number
+        +int chunk_index
+        +int token_count
+        +List[float] embedding
+    }
+
+    Document "1" *-- "*" Chunk : Contains
+
+    %% Interfaces
+    class BaseLoader {
+        <<Interface>>
+        +load(file_path: String) Document
+    }
+    
+    class BaseChunker {
+        <<Interface>>
+        +chunk(document: Document) List[Chunk]
+    }
+    
+    class BaseEmbedder {
+        <<Interface>>
+        +embed_batch(chunks: List[Chunk]) List[Chunk]
+    }
+    
+    class BaseDAO {
+        <<Interface>>
+        +upsert_document_transactionally(document: Document, created_by: String) dict
+    }
+
+    %% Concrete Implementations
+    class PyMuPDFLoader {
+        +load(file_path: String) Document
+    }
+    
+    class LangchainRecursiveChunker {
+        +chunk(document: Document) List[Chunk]
+    }
+    
+    class GeminiEmbedder {
+        +embed_batch(chunks: List[Chunk]) List[Chunk]
+    }
+    
+    class PgVectorDAO {
+        +upsert_document_transactionally(document: Document, created_by: String) dict
+    }
+
+    BaseLoader <|.. PyMuPDFLoader : Implements
+    BaseChunker <|.. LangchainRecursiveChunker : Implements
+    BaseEmbedder <|.. GeminiEmbedder : Implements
+    BaseDAO <|.. PgVectorDAO : Implements
+
+    %% Orchestrator
+    class DataIngestionPipeline {
+        -BaseLoader loader
+        -BaseChunker chunker
+        -BaseEmbedder embedder
+        -BaseDAO dao
+        +run(file_path: String, topics: List[String]) dict
+    }
+
+    DataIngestionPipeline o-- BaseLoader : Dependency Injection
+    DataIngestionPipeline o-- BaseChunker : Dependency Injection
+    DataIngestionPipeline o-- BaseEmbedder : Dependency Injection
+    DataIngestionPipeline o-- BaseDAO : Dependency Injection
+    
+    DataIngestionPipeline ..> Document : Creates / Mutates
+```
+
+---
+
+## 4. Core Modules & Classes Deep Dive
 
 ### 3.1 Domain Layer (`src/domain/models.py`)
 Data Transfer Objects (DTOs) powered by Pydantic for strict type validation.
