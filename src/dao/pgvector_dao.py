@@ -104,6 +104,24 @@ class PgVectorDAO(BaseDAO):
         logger.debug(f"Bulk inserted {len(chunk_data)} chunks for document {doc_id}")
 
     async def upsert_document_transactionally(self, document: Document, created_by: str) -> str:
+        """
+        Main entry point for transactionally inserting a document and its components.
+        
+        ARCHITECTURE NOTE: Why pass `cursor` instead of a `db session`?
+        1. We are using a raw DB-API async driver (e.g., psycopg), not an ORM (like SQLAlchemy),
+           so there is no high-level `Session` object.
+        2. A `cursor` is inherently bound to a specific `connection`.
+        3. Transaction boundaries (ACID properties) are managed at the `connection` level,
+           not the `cursor` level. 
+        4. By creating a cursor (`async with conn.cursor() as cur:`) and passing this identical `cur` 
+           instance to all helper methods, we guarantee that all Data Manipulation Language (DML) 
+           operations executed by these helpers are grouped within the exact same transaction block.
+           
+        CONCLUSION:
+        - `conn.commit()` will atomically persist all DMLs executed by this cursor.
+        - If any helper fails, `conn.rollback()` will cleanly wipe out all partial DMLs, 
+          leaving absolutely no dirty data behind.
+        """
         logger.info(f"Persisting NEW version of document {document.document_name} to database transactionally...")
         
         new_doc_id = str(uuid.uuid4())
