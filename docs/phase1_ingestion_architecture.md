@@ -166,6 +166,7 @@ Abstract Base Classes (ABCs) that define the contract for the pipeline component
 ### 3.4 Data Access Layer (`src/dao/pgvector_dao.py`)
 * **`PgVectorDAO`**:
   * Uses the `psycopg` (v3) async DB-API driver.
+  * **Architecture Rationale: Native `psycopg3` vs SQLAlchemy**: Deliberately bypasses heavy ORM abstractions (SQLAlchemy) in favor of the lightweight, highly performant `psycopg3` async driver. This eliminates AST compilation overhead for raw SQL and provides a significantly simpler, deadlock-free mechanism to register `pgvector` C-extensions at the connection pool level via the `configure` hook.
   * **Strict ACID Transactions**: Instead of relying on an ORM `Session`, it creates a single database `cursor` and passes it to private helper methods (`_insert_document_record`, `_bulk_insert_chunks`, etc.). This guarantees that all inserts belong to a single transaction block (`conn.commit()` or `conn.rollback()`).
   * **Idempotency & Snapshots**: Executes `clean_document_data` first to logically soft-delete (`is_deleted = TRUE`) any prior versions of the document, ensuring historical data isn't destroyed while keeping the active state clean.
   * **Advanced SQL**: Uses `ON CONFLICT DO UPDATE` combined with the implicit system column `xmax` to accurately distinguish between newly inserted vs. updated metadata topics.
