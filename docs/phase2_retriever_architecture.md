@@ -42,12 +42,13 @@ classDiagram
     
     class ILLMGenerator {
         <<Interface>>
-        +generate_answer(prompt: String) String
+        +ainvoke(input: Dict, config: Dict) String
+        +astream(input: Dict, config: Dict) AsyncIterator[String]
     }
     
     class BaseRetriever {
         <<Interface>>
-        +retrieve(text: String, top_k: int, filters: List) List[RetrievedContext]
+        +ainvoke(input: String, config: Dict) List[RetrievedContext]
     }
 
     %% Implementations (Concrete Layer)
@@ -56,7 +57,8 @@ classDiagram
     }
     
     class LangchainGeminiGenerator {
-        +generate_answer(prompt: String) String
+        +ainvoke(input: Dict, config: Dict) String
+        +astream(input: Dict, config: Dict) AsyncIterator[String]
         %% Note: Uses LCEL (LangChain Expression Language)
     }
     
@@ -67,7 +69,7 @@ classDiagram
     class SemanticRetriever {
         -BaseEmbedder embedder
         -IRetrieverDAO dao
-        +retrieve(text: String, top_k: int, filters: List) List[RetrievedContext]
+        +ainvoke(input: String, config: Dict) List[RetrievedContext]
     }
 
     class RAGResponse {
@@ -122,7 +124,7 @@ sequenceDiagram
 
     %% PHASE 1: Retrieval
     Note over RAG, DB: PHASE 1: Semantic Retrieval (The "R" in RAG)
-    RAG->>Retriever: retrieve("What is HSBC's profit?", top_k=5, topics=[...])
+    RAG->>Retriever: ainvoke("What is HSBC's profit?", config={top_k: 5, topic_filters: [...]})
     activate Retriever
     
     Retriever->>Embedder: embed_query("What is HSBC's profit?")
@@ -150,7 +152,7 @@ sequenceDiagram
     Note over RAG, LLM: PHASE 2: Augmented Generation (The "A & G" in RAG)
     Note over RAG: Constructs Prompt:<br/>"Based on {Context}, answer {Query}"
     
-    RAG->>LLM: generate_content(Prompt)
+    RAG->>LLM: ainvoke({context: List, question: String})
     activate LLM
     LLM-->>RAG: return Synthesized Final Answer
     deactivate LLM
