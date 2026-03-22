@@ -17,6 +17,30 @@ from src.ingestion.embedders.gemini_embedder import GeminiEmbedder
 from src.dao.pgvector_dao import PgVectorDAO
 from src.pipelines.data_ingestion_pipeline import DataIngestionPipeline
 
+def print_human_readable_summary(result: dict):
+    doc_id = result.get("doc_id")
+    stats = result.get("stats", {})
+    deleted = stats.get("soft_deleted", {})
+    inserted = stats.get("inserted", {})
+    
+    border = "=" * 60
+    logger.info(border)
+    logger.info("🎉 DATA INGESTION PIPELINE SUMMARY 🎉")
+    logger.info(border)
+    logger.info(f"📄 Generated Document ID : {doc_id}")
+    logger.info("-" * 60)
+    logger.info("🗑️  SOFT DELETED (Historical Data cleanup)")
+    logger.info(f"   • `documents` table       : {deleted.get('documents', 0):>5} rows")
+    logger.info(f"   • `document_topics` table : {deleted.get('document_topics', 0):>5} rows")
+    logger.info(f"   • `document_chunks` table : {deleted.get('document_chunks', 0):>5} rows")
+    logger.info("-" * 60)
+    logger.info("✨ INSERTED (New Data)")
+    logger.info(f"   • `documents` table       : {inserted.get('documents', 0):>5} rows")
+    logger.info(f"   • `topics` table          : {inserted.get('topics', 0):>5} rows")
+    logger.info(f"   • `document_topics` table : {inserted.get('document_topics', 0):>5} rows")
+    logger.info(f"   • `document_chunks` table : {inserted.get('document_chunks', 0):>5} rows (with Embeddings)")
+    logger.info(border)
+
 async def main():
     # 1. Initialize Logging
     logger.info("Initializing Data Ingestion Runner...")
@@ -57,10 +81,10 @@ async def main():
         )
 
         # 4. Execute the Pipeline
-        doc_id = await pipeline.run(file_path=pdf_file_path, topics=topics)
+        result = await pipeline.run(file_path=pdf_file_path, topics=topics)
         
-        if doc_id:
-            logger.info(f"Ingestion successful! Document committed with DB ID: {doc_id}")
+        if result and result.get("doc_id"):
+            print_human_readable_summary(result)
         else:
             logger.error("Ingestion pipeline failed or aborted.")
 

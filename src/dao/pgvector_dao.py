@@ -7,12 +7,14 @@ import json
 
 class PgVectorDAO(BaseDAO):
     
-    async def clean_document_data(self, cursor, doc_name: str, created_by: str) -> None:
+    async def clean_document_data(self, cursor, doc_name: str, created_by: str) -> dict:
         """
         Soft-deletes all existing document records, chunks, and topic mappings 
         for a specific document_name. This ensures immutable historical snapshots.
         """
         logger.debug(f"Soft-deleting historical data for doc_name: {doc_name}")
+        
+        deleted_stats = {"documents": 0, "document_chunks": 0, "document_topics": 0}
         
         # 1. Find all active document IDs for this name
         await cursor.execute("SELECT doc_id FROM documents WHERE doc_name = %s AND is_deleted = FALSE;", (doc_name,))
@@ -26,6 +28,7 @@ class PgVectorDAO(BaseDAO):
                 SET is_deleted = TRUE, updated_by = %s, updated_at = CURRENT_TIMESTAMP
                 WHERE doc_id = %s AND is_deleted = FALSE;
             """, (created_by, old_id))
+            deleted_stats["document_chunks"] += cursor.rowcount
             
             # Soft delete topic mappings
             await cursor.execute("""
@@ -33,6 +36,7 @@ class PgVectorDAO(BaseDAO):
                 SET is_deleted = TRUE, updated_by = %s, updated_at = CURRENT_TIMESTAMP
                 WHERE doc_id = %s AND is_deleted = FALSE;
             """, (created_by, old_id))
+            deleted_stats["document_topics"] += cursor.rowcount
             
             # Soft delete the document core record
             await cursor.execute("""
@@ -40,9 +44,12 @@ class PgVectorDAO(BaseDAO):
                 SET is_deleted = TRUE, updated_by = %s, updated_at = CURRENT_TIMESTAMP
                 WHERE doc_id = %s AND is_deleted = FALSE;
             """, (created_by, old_id))
+            deleted_stats["documents"] += cursor.rowcount
             
         if old_doc_ids:
             logger.info(f"Soft-deleted {len(old_doc_ids)} previous versions of document: {doc_name}")
+            
+        return deleted_stats
 
     async def _insert_document_record(self, cursor, document: Document, new_doc_id: str, created_by: str) -> str:
         doc_metadata = json.dumps({
@@ -103,7 +110,7 @@ class PgVectorDAO(BaseDAO):
         await cursor.executemany(query, chunk_data)
         logger.debug(f"Bulk inserted {len(chunk_data)} chunks for document {doc_id}")
 
-    async def upsert_document_transactionally(self, document: Document, created_by: str) -> str:
+    async def upsert_document_transactionally(self, document: Document, created_by: str) -> dict:
         """
         Main entry point for transactionally inserting a document and its components.
         
@@ -130,7 +137,7 @@ class PgVectorDAO(BaseDAO):
             try:
                 async with conn.cursor() as cur:
                     # 1. Clean up (Soft Delete) any existing versions
-                    await self.clean_document_data(cursor=cur, doc_name=document.document_name, created_by=created_by)
+                    deleted_stats = await self.clean_document_data(cursor=cur, doc_name=document.document_name, created_by=created_by)
 
                     # 2. Insert Brand New Document Record
                     returned_doc_id = await self._insert_document_record(
@@ -155,7 +162,20 @@ class PgVectorDAO(BaseDAO):
                 # Commit transaction explicitly
                 await conn.commit()
                 logger.info("Transaction committed successfully. Data safely persisted.")
-                return returned_doc_id
+                
+                # Format final return dict containing all operation statistics
+                return {
+                    "doc_id": returned_doc_id,
+                    "stats": {
+                        "soft_deleted": deleted_stats,
+                        "inserted": {
+                            "documents": 1,
+                            "topics": len(topic_ids),
+                            "document_topics": len(topic_ids),
+                            "document_chunks": len(document.chunks) if document.chunks else 0
+                        }
+                    }
+                }
                 
             except Exception as e:
                 # Catch-all Rollback

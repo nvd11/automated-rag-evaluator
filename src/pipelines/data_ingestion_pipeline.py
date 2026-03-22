@@ -22,7 +22,7 @@ class DataIngestionPipeline:
         self.dao = dao
         self.created_by_user = created_by_user
 
-    async def run(self, file_path: str, topics: list[str]) -> int:
+    async def run(self, file_path: str, topics: list[str]) -> dict:
         """
         Executes the full ingestion pipeline: Load -> Chunk -> Embed -> Save (ACID)
         """
@@ -42,7 +42,7 @@ class DataIngestionPipeline:
         
         if not document.chunks:
             logger.warning("No text was extracted or chunked. Aborting pipeline.")
-            return -1
+            return {"doc_id": None, "stats": {}}
 
         # 3. Embedding
         logger.debug(f"Stage 3: Embedding {len(document.chunks)} chunks via {self.embedder.__class__.__name__}")
@@ -51,13 +51,13 @@ class DataIngestionPipeline:
         
         # 4. Transactional Upsert
         logger.debug(f"Stage 4: Transactional Database Upsert via {self.dao.__class__.__name__}")
-        document_id = await self.dao.upsert_document_transactionally(
+        result = await self.dao.upsert_document_transactionally(
             document=document,
             created_by=self.created_by_user
         )
         
-        logger.info(f"Ingestion Pipeline Finished. Document ID: {document_id}")
-        return document_id
+        logger.info(f"Ingestion Pipeline Finished. Document ID: {result.get('doc_id')}")
+        return result
 
 if __name__ == "__main__":
     logger.info("This module defines the DataIngestionPipeline class.")

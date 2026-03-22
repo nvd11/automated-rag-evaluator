@@ -22,7 +22,7 @@ class BaseEmbedder(ABC):
 
 class BaseDAO(ABC):
     @abstractmethod
-    async def upsert_document_transactionally(self, document: Document, created_by: str) -> str:
+    async def upsert_document_transactionally(self, document: Document, created_by: str) -> dict:
         """
         Persists the Document, its Topics, and its embedded Chunks into the database
         within a single ACID transaction. Performs idempotency cleanup if needed.
