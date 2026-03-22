@@ -163,7 +163,7 @@ CREATE INDEX idx_doc_topics_reverse ON document_topics (topic_id, doc_id) WHERE 
 
 ---
 
-## Table 7: `evaluation_queries` (RAG Interaction Logs)
+## Table 7: `query_history` (RAG Interaction Logs)
 Stores the actual user questions, the retrieved context chunks, and the final generated answers for each evaluation run. This table serves as the **foundational input dataset** for the downstream `RAGEvaluator` and `RAGDiagnoser`.
 
 | Column Name          | Data Type | Description |
@@ -183,7 +183,7 @@ Stores the actual user questions, the retrieved context chunks, and the final ge
 **Index Strategy:**
 **Query by Run Index:** A B-tree index on `run_id` to allow the `RAGEvaluator` to rapidly fetch all interactions belonging to a specific parameter sweep in order to run batch evaluations (e.g., RAG Triad scoring).
 ```sql
-CREATE INDEX idx_eval_queries_run ON evaluation_queries (run_id) WHERE is_deleted = FALSE;
+CREATE INDEX idx_query_hist_run ON query_history (run_id) WHERE is_deleted = FALSE;
 ```
 
 ## 💡 Architecture Note: Metadata Pre-filtering (Hybrid Search) & Auditability
