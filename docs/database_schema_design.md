@@ -169,7 +169,7 @@ Stores the actual user questions, the retrieved context chunks, and the final ge
 | Column Name          | Data Type | Description |
 | :---                 | :---      | :---        |
 | `query_id`           | UUID (PK) | Unique identifier for this specific Q&A interaction. |
-| `session_id`         | VARCHAR   | (Optional) Associates the query with a specific user session. |
+| `queried_by`         | VARCHAR   | The identity of the requester (e.g., 'user:jason.pan', 'system:eval_runner', 'api_key:xxx'). |
 | `question`           | TEXT      | The raw query asked by the user (or the evaluation dataset). |
 | `retrieved_contexts` | JSONB     | An array of objects containing the retrieved `chunk_id`, raw `text`, and `similarity_score`. |
 | `generated_answer`   | TEXT      | The final synthesized answer produced by the LLM (Generator). |
@@ -181,9 +181,9 @@ Stores the actual user questions, the retrieved context chunks, and the final ge
 | `is_deleted`         | BOOLEAN   | Soft delete flag (default: FALSE). |
 
 **Index Strategy:**
-**Session Lookup Index:** A B-tree index on `session_id` to quickly retrieve user conversation history for chat UI restoration.
+**Requester Audit Index:** A B-tree index on `queried_by` to quickly retrieve all queries issued by a specific user, system service, or evaluation runner script for auditing and usage analytics.
 ```sql
-CREATE INDEX idx_query_hist_session ON query_history (session_id) WHERE is_deleted = FALSE;
+CREATE INDEX idx_query_hist_requester ON query_history (queried_by) WHERE is_deleted = FALSE;
 ```
 
 
