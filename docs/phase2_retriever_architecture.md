@@ -82,7 +82,7 @@ This sequence diagram illustrates the runtime behavior of the Retriever and how 
 ```mermaid
 sequenceDiagram
     actor Client as User / Evaluator
-    participant RAG as RAGEngine (Orchestrator)
+    participant RAG as RAGAgent (Orchestrator)
     participant Retriever as SemanticRetriever
     participant Embedder as GeminiQueryEmbedder
     participant DAO as PgVectorRetrieverDAO
