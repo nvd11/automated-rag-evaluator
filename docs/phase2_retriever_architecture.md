@@ -58,6 +58,14 @@ classDiagram
         +retrieve(text: String, top_k: int, filters: List) List[RetrievedContext]
     }
 
+    class RAGAgent {
+        -BaseRetriever retriever
+        -LLMGenerator generator
+        +ask(question: String) String
+    }
+
+    RAGAgent o-- BaseRetriever : Dependency Injection
+    
     %% Relationships
     SearchQuery <-- IRetrieverDAO : Consumes
     RetrievedContext <-- IRetrieverDAO : Produces
