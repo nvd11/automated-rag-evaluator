@@ -67,20 +67,29 @@ class PgVectorDAO(BaseDAO):
         logger.debug(f"New Document ID created: {returned_doc_id}")
         return returned_doc_id
 
-    async def _upsert_topics(self, cursor, topics: list, created_by: str) -> list:
+    async def _upsert_topics(self, cursor, topics: list, created_by: str) -> tuple[list, int]:
         topic_ids = []
+        inserted_count = 0
         for topic_name in topics:
             topic_uuid = str(uuid.uuid5(uuid.NAMESPACE_OID, topic_name))
+            
+            # Use PostgreSQL xmax system column to detect if a row was actually inserted vs updated.
+            # If xmax = 0, it was inserted. If xmax != 0, it was updated.
             await cursor.execute("""
                 INSERT INTO topics (topic_id, topic_name, created_by)
                 VALUES (%s, %s, %s)
                 ON CONFLICT (topic_id) DO UPDATE SET 
                     updated_at = CURRENT_TIMESTAMP,
                     is_deleted = FALSE
-                RETURNING topic_id;
+                RETURNING topic_id, (xmax = 0) AS is_inserted;
             """, (topic_uuid, topic_name, created_by))
-            topic_ids.append((await cursor.fetchone())[0])
-        return topic_ids
+            
+            row = await cursor.fetchone()
+            topic_ids.append(row[0])
+            if row[1]:  # is_inserted
+                inserted_count += 1
+                
+        return topic_ids, inserted_count
 
     async def _map_document_topics(self, cursor, doc_id: str, topic_ids: list, created_by: str) -> None:
         for topic_id in topic_ids:
@@ -135,7 +144,7 @@ class PgVectorDAO(BaseDAO):
                     )
                     
                     # 3. Handle Metadata Topics Upsert
-                    topic_ids = await self._upsert_topics(
+                    topic_ids, inserted_topic_count = await self._upsert_topics(
                         cursor=cur, topics=document.topics, created_by=created_by
                     )
                     
@@ -160,7 +169,7 @@ class PgVectorDAO(BaseDAO):
                         "soft_deleted": deleted_stats,
                         "inserted": {
                             "documents": 1,
-                            "topics": len(topic_ids),
+                            "topics": inserted_topic_count,
                             "document_topics": len(topic_ids),
                             "document_chunks": len(document.chunks) if document.chunks else 0
                         }
