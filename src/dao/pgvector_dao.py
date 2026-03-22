@@ -111,7 +111,7 @@ class PgVectorDAO(BaseDAO):
         logger.debug(f"Bulk inserted {len(chunk_data)} chunks for document {doc_id}")
 
     async def upsert_document_transactionally(self, document: Document, created_by: str) -> dict:
-                """
+        """
         Main entry point for transactionally inserting a document and its components.
         
         Note on Transaction Context:
