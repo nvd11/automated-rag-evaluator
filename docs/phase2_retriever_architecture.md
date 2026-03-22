@@ -72,6 +72,52 @@ classDiagram
 
 ---
 
+
+
+## 2.5 Logic Flow Diagram (Sequence Diagram)
+
+This sequence diagram illustrates the runtime behavior and interaction between the decoupled components during a retrieval request.
+
+```mermaid
+sequenceDiagram
+    actor Client as Evaluator / User
+    participant Orchestrator as SemanticRetriever
+    participant Embedder as GeminiQueryEmbedder
+    participant DAO as PgVectorRetrieverDAO
+    participant DB as Cloud SQL (pgvector)
+
+    Client->>Orchestrator: retrieve("What is HSBC's profit?", top_k=5, topics=["Financial Performance"])
+    
+    activate Orchestrator
+    
+    %% Step 1: Embedding
+    Orchestrator->>Embedder: embed_query("What is HSBC's profit?")
+    activate Embedder
+    Note over Embedder: Calls Google AI Studio API
+    Embedder-->>Orchestrator: return Vector [0.12, -0.45, ... 768d]
+    deactivate Embedder
+    
+    %% Step 2: DTO Creation
+    Note over Orchestrator: Creates SearchQuery DTO
+    
+    %% Step 3: Database Search
+    Orchestrator->>DAO: semantic_search(SearchQuery)
+    activate DAO
+    
+    Note over DAO: 1. Apply Metadata Pre-filter (Topic JOIN)<br/>2. Compute Cosine Distance (<=>)
+    DAO->>DB: Execute SELECT with ORDER BY embedding <=> query_vector LIMIT 5
+    activate DB
+    DB-->>DAO: return Top 5 Rows (text, doc_id, page, score)
+    deactivate DB
+    
+    Note over DAO: Maps Rows -> RetrievedContext DTOs
+    DAO-->>Orchestrator: return List[RetrievedContext]
+    deactivate DAO
+    
+    Orchestrator-->>Client: return Results
+    deactivate Orchestrator
+```
+
 ## 3. Core Components Deep Dive
 
 ### 3.1 Domain Models (DTOs)
