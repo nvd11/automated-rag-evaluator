@@ -16,6 +16,7 @@ classDiagram
         +String query_text
         +List[float] embedding
         +int top_k
+        +float similarity_threshold
         +List[str] topic_filters
     }
     
@@ -163,7 +164,7 @@ sequenceDiagram
 
 ### 3.1 Domain Models (DTOs)
 Located in `src/domain/models.py`.
-*   **`SearchQuery`**: Encapsulates the user's raw text, the generated embedding vector, the `top_k` parameter, and any optional metadata filters (e.g., `topic_filters = ["Risk Management"]`).
+*   **`SearchQuery`**: Encapsulates the user's raw text, the generated embedding vector, the `top_k` parameter, an optional `similarity_threshold` to prune low-quality matches, and any optional metadata filters (e.g., `topic_filters = ["Risk Management"]`).
 *   **`RAGResponse`**: The ultimate output payload. By returning a structured object containing both the `generated_answer` and the full array of `retrieved_contexts` (including their raw `text` and `similarity_score`), this design satisfies both user-facing citation requirements and downstream machine-driven RAG evaluation (e.g., calculating Faithfulness).
 *   **`RetrievedContext`**: Represents the output of a search. Contains the chunk text, the parent `doc_id`, the origin page number, and critically, the `similarity_score` (calculated via cosine distance).
 
@@ -177,7 +178,7 @@ By programming against interfaces rather than concrete classes, we follow the **
 Located in `src/retrieval/`.
 *   **`GeminiEmbedder`**: We reuse the implementation from Phase 1, adding a new `embed_query()` method explicitly configured with `task_type="RETRIEVAL_QUERY"` to match the documents embedded with `RETRIEVAL_DOCUMENT`.
 *   **`PgVectorRetrieverDAO`**: Implements `IRetrieverDAO` using `psycopg` and `pgvector`. 
-    *   **Query Strategy**: Utilizes the `<=>` operator for Cosine Distance.
+    *   **Query Strategy**: Utilizes the `<=>` operator for Cosine Distance. Note: In pgvector, cosine distance is `(1 - cosine_similarity)`. The DAO handles the mathematical inversion to return an intuitive `similarity_score` bounded between [-1, 1], and respects the `similarity_threshold`.
     *   **Pre-filtering**: Dynamically constructs SQL `WHERE` clauses if `topic_filters` are provided. By joining `document_chunks` with `document_topics`, we narrow the vector search space *before* computing distances, drastically improving precision and query speed.
 
 ### 3.4 Orchestration
