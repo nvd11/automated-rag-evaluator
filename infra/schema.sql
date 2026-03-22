@@ -69,13 +69,13 @@ CREATE INDEX IF NOT EXISTS idx_doc_chunks_filter ON document_chunks (doc_id, chu
 -- 5. Evaluation Runs (Hyperparameter Sweep Configs)
 CREATE TABLE IF NOT EXISTS evaluation_runs (
     run_id UUID PRIMARY KEY,
-    timestamp TIMESTAMP NOT NULL,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
     chunking_config VARCHAR(100),
     indexing_config VARCHAR(100),
     reranking_config VARCHAR(100),
     prompting_config VARCHAR(100),
     generation_config VARCHAR(100),
-    latency_seconds FLOAT,
     cost_estimate FLOAT,
     created_by VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS evaluation_runs (
     is_deleted BOOLEAN DEFAULT FALSE
 );
 
-CREATE INDEX IF NOT EXISTS idx_eval_runs_timestamp ON evaluation_runs (timestamp DESC) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_eval_runs_timestamp ON evaluation_runs (start_time DESC) WHERE is_deleted = FALSE;
 
 -- 6. Evaluation Metrics (Diagnoser Input)
 CREATE TABLE IF NOT EXISTS evaluation_metrics (
@@ -104,8 +104,85 @@ CREATE TABLE IF NOT EXISTS evaluation_metrics (
 
 CREATE INDEX IF NOT EXISTS idx_eval_metrics_diagnoser ON evaluation_metrics (run_id, metric_category, metric_name) WHERE is_deleted = FALSE;
 
+
+-- 7. Query History (RAG Interaction Logs)
+CREATE TABLE IF NOT EXISTS query_history (
+    query_id UUID PRIMARY KEY,
+    queried_by VARCHAR(100) NOT NULL,
+    question TEXT NOT NULL,
+    retrieved_contexts JSONB,
+    generated_answer TEXT,
+    query_time TIMESTAMP NOT NULL,
+    response_time TIMESTAMP NOT NULL,
+    created_by VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_by VARCHAR(100),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_deleted BOOLEAN DEFAULT FALSE
+);
+
+CREATE INDEX IF NOT EXISTS idx_query_hist_requester ON query_history (queried_by) WHERE is_deleted = FALSE;
+
+-- 8. Golden Records (Evaluation Benchmark Dataset)
+CREATE TABLE IF NOT EXISTS golden_records (
+    id UUID PRIMARY KEY,
+    dataset_name VARCHAR(100) NOT NULL,
+    question TEXT NOT NULL,
+    ground_truth TEXT NOT NULL,
+    expected_topics JSONB,
+    complexity VARCHAR(50),
+    created_by VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_by VARCHAR(100),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_deleted BOOLEAN DEFAULT FALSE
+);
+
+CREATE INDEX IF NOT EXISTS idx_golden_records_dataset ON golden_records (dataset_name) WHERE is_deleted = FALSE;
+
+-- 9. Evaluation Query Mappings (Ground Truth to Query Resolution)
+CREATE TABLE IF NOT EXISTS evaluation_query_mappings (
+    query_id UUID REFERENCES query_history(query_id),
+    golden_record_id UUID REFERENCES golden_records(id),
+    created_by VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_by VARCHAR(100),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    PRIMARY KEY (query_id, golden_record_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_eval_query_mappings ON evaluation_query_mappings (golden_record_id, query_id) WHERE is_deleted = FALSE;
+
+-- 10. Run Queries (Evaluation Run to Query Mapping)
+CREATE TABLE IF NOT EXISTS run_queries (
+    run_id UUID REFERENCES evaluation_runs(run_id),
+    query_id UUID REFERENCES query_history(query_id),
+    created_by VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_by VARCHAR(100),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    PRIMARY KEY (run_id, query_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_run_queries_reverse ON run_queries (query_id, run_id) WHERE is_deleted = FALSE;
+
+-- 11. RAG Triad Analysis Pivot View
+CREATE OR REPLACE VIEW v_evaluation_metrics_pivot AS
+SELECT 
+    run_id,
+    query_id,
+    MAX(CASE WHEN metric_name = 'context_relevance' THEN metric_value END) AS context_relevance_score,
+    MAX(CASE WHEN metric_name = 'faithfulness' THEN metric_value END) AS faithfulness_score,
+    MAX(CASE WHEN metric_name = 'answer_relevance' THEN metric_value END) AS answer_relevance_score,
+    MAX(CASE WHEN metric_name = 'recall_at_k' THEN metric_value END) AS recall_at_k_score
+FROM evaluation_metrics
+WHERE is_deleted = FALSE
+GROUP BY run_id, query_id;
+
 -- ====================================================================
--- 7. Role-Based Access Control (RBAC) - Least Privilege Principle
+-- 12. Role-Based Access Control (RBAC) - Least Privilege Principle
 -- ====================================================================
 -- In a production environment, the application service account (e.g., 'nvd11')
 -- should only have DML access (SELECT, INSERT, UPDATE, DELETE) and not DDL.
