@@ -1,39 +1,43 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
-from src.domain.models import SearchQuery, RetrievedContext
+from typing import List, Optional, Any, Dict, AsyncIterator
+from langchain_core.runnables import Runnable
+from src.domain.models import SearchQuery, RetrievedContext, RAGResponse
 
 class IRetrieverDAO(ABC):
     """Contract for the Data Access Object that handles vector similarity search."""
     @abstractmethod
     async def semantic_search(self, query: SearchQuery) -> List[RetrievedContext]:
+        pass
+
+class BaseRetriever(Runnable, ABC):
+    """
+    Contract for the Retriever Orchestrator. 
+    By inheriting from LangChain's Runnable, this class natively supports 
+    .invoke(), .ainvoke(), and can be seamlessly piped into LCEL chains.
+    """
+    @abstractmethod
+    async def ainvoke(self, input: str, config: Optional[Dict[str, Any]] = None, **kwargs) -> List[RetrievedContext]:
         """
-        Executes a vector search in the database based on the provided SearchQuery.
-        Must apply metadata filters and cosine similarity thresholding.
+        The standard LangChain async entry point.
+        Takes a raw query string, embeds it, and returns the relevant context chunks.
+        config can contain 'top_k', 'similarity_threshold', and 'topic_filters'.
         """
         pass
 
-class ILLMGenerator(ABC):
-    """Contract for the LLM component that synthesizes the final answer (using LCEL)."""
+class ILLMGenerator(Runnable, ABC):
+    """
+    Contract for the LLM component.
+    Inherits from Runnable to participate natively in LCEL pipelines.
+    """
     @abstractmethod
-    async def generate_answer(self, context_texts: List[str], query: str) -> str:
+    async def ainvoke(self, input: Dict[str, Any], config: Optional[Dict[str, Any]] = None, **kwargs) -> str:
         """
-        Combines retrieved context chunks with the user's query into a prompt,
-        then calls the LLM to generate the final answer.
+        Takes a dictionary (typically containing 'context' and 'question'),
+        formats the prompt, and generates the final answer.
         """
         pass
-
-class BaseRetriever(ABC):
-    """Contract for the Retriever Orchestrator that combines Embedder and DAO."""
+        
     @abstractmethod
-    async def retrieve(
-        self, 
-        text: str, 
-        top_k: int, 
-        similarity_threshold: float, 
-        filters: Optional[List[str]] = None
-    ) -> List[RetrievedContext]:
-        """
-        Takes raw text, generates its embedding, and returns the top-K relevant chunks
-        that meet the similarity threshold and metadata filters.
-        """
+    async def astream(self, input: Dict[str, Any], config: Optional[Dict[str, Any]] = None, **kwargs) -> AsyncIterator[str]:
+        """Supports streaming the generated answer token-by-token."""
         pass
