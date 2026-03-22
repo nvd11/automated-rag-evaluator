@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     # Text Chunking Config
     CHUNK_SIZE: int = 1000
     CHUNK_OVERLAP: int = 200
+    
+    # Retrieval Config
+    RETRIEVAL_TOP_K: int = 5
+    RETRIEVAL_SIMILARITY_THRESHOLD: float = 0.5
     LLM_JUDGE_MODEL: str = "gemini-2.5-pro"
     
     # Proxy Config (Global toggle for LLM/Embeddings access from restricted regions)
