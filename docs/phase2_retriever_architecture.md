@@ -154,3 +154,45 @@ Located in `src/retrieval/`.
 1.  **Open/Closed Principle**: If we want to switch from PostgreSQL to Pinecone, or from Gemini to OpenAI embeddings, we simply create a new implementation class. The `SemanticRetriever` orchestrator requires zero modifications.
 2.  **Testability**: Because of Dependency Injection, we can trivially unit test the `SemanticRetriever` by injecting a `MockQueryEmbedder` and a `MockRetrieverDAO` without needing an active database connection or spending API credits.
 3.  **Hybrid Search Readiness**: The `SearchQuery` DTO and the `IRetrieverDAO` interface are designed so that future upgrades (like adding keyword-based BM25 search) can be seamlessly integrated.
+
+
+## 5. Context within the Full RAG Pipeline (Retrieval + Generation)
+
+**Architectural Boundary Note:** 
+The `SemanticRetriever` strictly adheres to the **Single Responsibility Principle (SRP)**. Its *only* job is the "R" in RAG: **Retrieval**. It does not synthesize answers. 
+
+The "G" in RAG (Generation)—taking the retrieved chunks, formatting a prompt, and calling an LLM (e.g., Gemini 1.5 Pro) to generate the final human-readable answer—is handled by a higher-level orchestrator (e.g., `RAGPipeline` or `RAGEngine`). 
+
+Here is how the Retriever fits into the complete end-to-end RAG flow:
+
+```mermaid
+sequenceDiagram
+    actor Client as User
+    participant RAG as RAGEngine (Overall Orchestrator)
+    participant Retriever as SemanticRetriever
+    participant DB as Cloud SQL (pgvector)
+    participant Generator as Gemini (LLM)
+
+    Client->>RAG: ask("What is HSBC's profit?")
+    activate RAG
+
+    %% Retrieval Phase
+    Note over RAG, Retriever: PHASE 1: Retrieval (The "R" in RAG)
+    RAG->>Retriever: retrieve(query="What is HSBC's profit?", top_k=5)
+    activate Retriever
+    Retriever->>DB: semantic_search()
+    DB-->>Retriever: Top K Chunks
+    Retriever-->>RAG: List[RetrievedContext]
+    deactivate Retriever
+
+    %% Generation Phase
+    Note over RAG, Generator: PHASE 2: Augmented Generation (The "A" & "G" in RAG)
+    Note over RAG: Constructs Prompt:<br/>"Based on {Context}, answer {Query}"
+    RAG->>Generator: generate_content(Prompt)
+    activate Generator
+    Generator-->>RAG: Synthesized Final Answer
+    deactivate Generator
+
+    RAG-->>Client: Return Answer & Cited Sources
+    deactivate RAG
+```
