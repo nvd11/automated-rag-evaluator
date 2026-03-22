@@ -49,13 +49,14 @@ Stores the metadata for each distinct hyperparameter sweep (a unique combination
 | Column Name         | Data Type | Description |
 | :--- | :--- | :--- |
 | `run_id`            | UUID (PK) | Unique identifier for the specific experiment run. |
-| `timestamp`         | TIMESTAMP | Execution time of the run. |
+| `start_time`        | TIMESTAMP | The exact timestamp when the batch evaluation run initiated. |
+| `end_time`          | TIMESTAMP | The exact timestamp when the batch evaluation run completed all queries. |
 | `chunking_config`   | VARCHAR   | e.g., 'fixed_512_overlap_64'. |
 | `indexing_config`   | VARCHAR   | e.g., 'hybrid_bm25_dense'. |
 | `reranking_config`  | VARCHAR   | e.g., 'cross_encoder_miniLM'. |
 | `prompting_config`  | VARCHAR   | e.g., 'step_back'. |
 | `generation_config` | VARCHAR   | e.g., 'strict_citation_low_temp'. |
-| `average_latency_ms`| INT       | Average latency (in milliseconds) across all queries in this run. |
+
 | `cost_estimate`     | FLOAT     | Estimated API cost (token usage) for this run. |
 | `created_by`       | VARCHAR   | Audit field: Actor who created the record. |
 | `created_at`       | TIMESTAMP | Audit field: Record creation time. |
@@ -66,7 +67,7 @@ Stores the metadata for each distinct hyperparameter sweep (a unique combination
 **Index Strategy:**
 **Time-Series Lookup Index:** A descending B-tree index on the `timestamp` column to quickly retrieve the latest evaluation runs for the Dashboard UI or CI/CD automated gates.
 ```sql
-CREATE INDEX idx_eval_runs_timestamp ON evaluation_runs (timestamp DESC) WHERE is_deleted = FALSE;
+CREATE INDEX idx_eval_runs_timestamp ON evaluation_runs (start_time DESC) WHERE is_deleted = FALSE;
 ```
 
 ---
@@ -173,7 +174,8 @@ Stores the actual user questions, the retrieved context chunks, and the final ge
 | `question`           | TEXT      | The raw query asked by the user (or the evaluation dataset). |
 | `retrieved_contexts` | JSONB     | An array of objects containing the retrieved `chunk_id`, raw `text`, and `similarity_score`. |
 | `generated_answer`   | TEXT      | The final synthesized answer produced by the LLM (Generator). |
-| `latency_ms`         | INT       | Time taken in milliseconds from receiving the query to returning the final answer. |
+| `query_time`         | TIMESTAMP | The exact timestamp when the user or evaluation script dispatched the query. |
+| `response_time`      | TIMESTAMP | The exact timestamp when the RAG Agent successfully returned the synthesized answer. |
 | `ground_truth`       | TEXT      | (Optional) The expected standard answer, used for direct metrics like Recall. |
 | `created_by`         | VARCHAR   | Audit field: Actor who created the record (e.g., 'user_123' or 'eval_runner'). |
 | `created_at`         | TIMESTAMP | Audit field: Record creation time. |
