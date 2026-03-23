@@ -56,7 +56,7 @@ classDiagram
         +embed_query(text: String) List[float]
     }
     
-    class LangchainGeminiGenerator {
+    class LangchainRAGGenerator {
         +ainvoke(input: Dict, config: Dict) String
         +astream(input: Dict, config: Dict) AsyncIterator[String]
         %% Note: Uses LCEL (LangChain Expression Language)
@@ -93,11 +93,21 @@ classDiagram
     
     BaseEmbedder <|.. GeminiEmbedder : Implements
     IRetrieverDAO <|.. PgVectorRetrieverDAO : Implements
-    ILLMGenerator <|.. LangchainGeminiGenerator : Implements
+    ILLMGenerator <|.. LangchainRAGGenerator : Implements
     BaseRetriever <|.. SemanticRetriever : Implements
     
     SemanticRetriever o-- BaseEmbedder : Dependency Injection
     SemanticRetriever o-- IRetrieverDAO : Dependency Injection
+    
+    class ILLMFactory {
+        <<Interface>>
+        +create_llm(model_name: str) BaseChatModel
+    }
+    class GeminiLLMFactory {
+        +create_llm(model_name: str) BaseChatModel
+    }
+    ILLMFactory <|.. GeminiLLMFactory : Implements
+    LangchainRAGGenerator o-- ILLMFactory : Dependency Injection (BaseChatModel)
 ```
 
 ---
@@ -117,7 +127,7 @@ sequenceDiagram
     participant Embedder as GeminiEmbedder
     participant DAO as PgVectorRetrieverDAO
     participant DB as Cloud SQL (pgvector)
-    participant LLM as LangchainGeminiGenerator (LCEL)
+    participant LLM as LangchainRAGGenerator (LCEL)
 
     Client->>RAG: ask("What is HSBC's profit?", topics=["Financial Performance"])
     activate RAG
@@ -179,6 +189,11 @@ By programming against interfaces rather than concrete classes, we follow the **
 ### 3.3 Concrete Implementations
 Located in `src/retrieval/`.
 *   **`GeminiEmbedder`**: We reuse the implementation from Phase 1, adding a new `embed_query()` method explicitly configured with `task_type="RETRIEVAL_QUERY"` to match the documents embedded with `RETRIEVAL_DOCUMENT`.
+*   **`LangchainRAGGenerator`**: 
+    *   Replaces the previous tight coupling. It no longer instantiates its own `ChatGoogleGenerativeAI`.
+    *   Receives a `BaseChatModel` instance via its constructor, injected from the `ILLMFactory`.
+    *   Constructs the LCEL pipeline (`prompt | llm | parser`) to synthesize the final answer.
+
 *   **`PgVectorRetrieverDAO`**: Implements `IRetrieverDAO` using `psycopg` and `pgvector`. 
     *   **Query Strategy**: Utilizes the `<=>` operator for Cosine Distance. Note: In pgvector, cosine distance is `(1 - cosine_similarity)`. The DAO handles the mathematical inversion to return an intuitive `similarity_score` bounded between [-1, 1], and respects the `similarity_threshold`.
     *   **Architecture Rationale: Imperative Orchestration vs. Pure Declarative LCEL in RAGAgent**:
