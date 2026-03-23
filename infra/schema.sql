@@ -67,7 +67,7 @@ CREATE INDEX IF NOT EXISTS idx_doc_chunks_embedding ON document_chunks USING hns
 CREATE INDEX IF NOT EXISTS idx_doc_chunks_filter ON document_chunks (doc_id, chunking_strategy) WHERE is_deleted = FALSE;
 
 -- 5. Inference Runs (RAG Generation Configs)
-CREATE TABLE IF NOT EXISTS inference_runs (
+CREATE TABLE IF NOT EXISTS inference_run_history (
     run_id UUID PRIMARY KEY,
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
@@ -84,10 +84,10 @@ CREATE TABLE IF NOT EXISTS inference_runs (
     is_deleted BOOLEAN DEFAULT FALSE
 );
 
-CREATE INDEX IF NOT EXISTS idx_inf_runs_timestamp ON inference_runs (start_time DESC) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_inf_runs_timestamp ON inference_run_history (start_time DESC) WHERE is_deleted = FALSE;
 
 -- 5.5 Evaluation Jobs (Evaluator Configs - Many-to-One with Inference Runs)
-CREATE TABLE IF NOT EXISTS evaluation_jobs (
+CREATE TABLE IF NOT EXISTS evaluation_job_history (
     job_id UUID PRIMARY KEY,
     inference_run_id UUID,
     start_time TIMESTAMP NOT NULL,
@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS evaluation_jobs (
     is_deleted BOOLEAN DEFAULT FALSE
 );
 
-CREATE INDEX IF NOT EXISTS idx_eval_jobs_timestamp ON evaluation_jobs (start_time DESC) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_eval_jobs_timestamp ON evaluation_job_history (start_time DESC) WHERE is_deleted = FALSE;
 
 -- 6. Evaluation Metrics (Diagnoser Input)
 CREATE TABLE IF NOT EXISTS evaluation_metrics (
