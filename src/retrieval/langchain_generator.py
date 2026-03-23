@@ -37,7 +37,8 @@ Answer:"""
         self.llm = ChatGoogleGenerativeAI(
             model=settings.LLM_JUDGE_MODEL,
             google_api_key=settings.GEMINI_API_KEY,
-            temperature=0.0  # Zero temperature for deterministic, factual extraction
+            temperature=0.0,  # Zero temperature for deterministic, factual extraction
+            transport="rest"
         )
         
         # 3. Define the Output Parser
@@ -61,6 +62,7 @@ Answer:"""
         - 'context': List[RetrievedContext]
         - 'question': str
         """
+        import asyncio
         logger.debug(f"LLM Generator ainvoke triggered for question: {input.get('question')}")
         
         raw_contexts = input.get("context", [])
@@ -71,8 +73,16 @@ Answer:"""
             "question": input.get("question")
         }
         
-        logger.info(f"Generating answer using {settings.LLM_JUDGE_MODEL} via LCEL chain...")
-        result = await self.chain.ainvoke(chain_input, config=config, **kwargs)
+        if settings.ENABLE_PROXY:
+            logger.info(f"Generating answer using {settings.LLM_JUDGE_MODEL} via LCEL chain (Sync in Thread for Proxy Compatibility)...")
+            # By using asyncio.to_thread with chain.invoke(), we force the REST transport 
+            # to use the synchronous requests library, which correctly respects HTTP proxies
+            # and avoids the proxy-ignoring behavior of aiohttp.
+            result = await asyncio.to_thread(self.chain.invoke, chain_input, config=config, **kwargs)
+        else:
+            logger.info(f"Generating answer using {settings.LLM_JUDGE_MODEL} via LCEL chain (Native Async)...")
+            result = await self.chain.ainvoke(chain_input, config=config, **kwargs)
+            
         return result
         
     async def astream(self, input: Dict[str, Any], config: Optional[RunnableConfig] = None, **kwargs) -> AsyncIterator[str]:
