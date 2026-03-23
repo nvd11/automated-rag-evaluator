@@ -6,7 +6,142 @@ A robust enterprise RAG evaluation framework requires a high-quality benchmark d
 
 By randomly sampling factual text chunks directly from the ingested corpus (e.g., the HSBC Annual Report) and prompting an advanced LLM to "reverse-engineer" professional questions and answers, we guarantee that the evaluation benchmark is perfectly aligned with the actual domain data and completely free from data contamination.
 
-## 2. Core Architecture & Component Responsibilities
+## 2. Architecture Diagram (Mermaid)
+
+```mermaid
+classDiagram
+    %% Domain Layer
+    class Chunk {
+        +String text
+        +int page_number
+        +int chunk_index
+        +int token_count
+        +List[float] embedding
+    }
+    
+    class GoldenRecord {
+        +UUID id
+        +String dataset_name
+        +String question
+        +String ground_truth
+        +List[String] expected_topics
+        +String complexity
+    }
+
+    class QA_Pair {
+        <<Pydantic Schema>>
+        +String question
+        +String answer
+        +String complexity
+    }
+
+    %% Interfaces
+    class IGoldenRecordDAO {
+        <<Interface>>
+        +get_random_seed_chunks(limit: int, topics: List) List[Chunk]
+        +bulk_insert_golden_records(records: List[GoldenRecord])
+    }
+    
+    class IDatasetGenerator {
+        <<Interface>>
+        +agenerate_qa_from_chunk(chunk: Chunk, dataset_name: String) GoldenRecord
+    }
+
+    %% Implementations
+    class PgVectorGoldenRecordDAO {
+        +get_random_seed_chunks(limit: int, topics: List) List[Chunk]
+        +bulk_insert_golden_records(records: List[GoldenRecord])
+    }
+
+    class LangchainDatasetGenerator {
+        -ChatGoogleGenerativeAI llm
+        -ChatPromptTemplate prompt
+        +agenerate_qa_from_chunk(chunk: Chunk, dataset_name: String) GoldenRecord
+    }
+
+    %% Orchestrator
+    class GoldenDatasetRunner {
+        -IGoldenRecordDAO dao
+        -IDatasetGenerator generator
+        +run(dataset_name: String, sample_size: int, topics: List)
+    }
+
+    GoldenDatasetRunner o-- IGoldenRecordDAO : Dependency Injection
+    GoldenDatasetRunner o-- IDatasetGenerator : Dependency Injection
+    
+    IGoldenRecordDAO <|.. PgVectorGoldenRecordDAO : Implements
+    IDatasetGenerator <|.. LangchainDatasetGenerator : Implements
+    
+    IDatasetGenerator ..> QA_Pair : Uses for Structured Output
+    IDatasetGenerator ..> GoldenRecord : Produces
+    IGoldenRecordDAO ..> Chunk : Produces
+    IGoldenRecordDAO ..> GoldenRecord : Consumes
+```
+
+---
+
+## 2.5 Logic Flow Diagram (Sequence)
+
+This sequence diagram illustrates the parallelized execution flow used to rapidly synthesize the Golden Dataset without hitting API timeouts.
+
+```mermaid
+sequenceDiagram
+    actor Developer
+    participant Runner as GoldenDatasetRunner
+    participant DAO as PgVectorGoldenRecordDAO
+    participant DB as Cloud SQL (PostgreSQL)
+    participant Generator as LangchainDatasetGenerator
+    participant LLM as Gemini 2.5 Pro
+
+    Developer->>Runner: Execute Script (dataset_name, sample_size=20)
+    activate Runner
+
+    %% Step 1: Fetch Seeds
+    Note over Runner, DB: Step 1: Fetch Random Seed Contexts
+    Runner->>DAO: get_random_seed_chunks(limit=20)
+    activate DAO
+    DAO->>DB: SELECT text, metadata FROM document_chunks ORDER BY RANDOM() LIMIT 20
+    activate DB
+    DB-->>DAO: Return 20 Rows
+    deactivate DB
+    DAO-->>Runner: List[Chunk] (Length: 20)
+    deactivate DAO
+
+    %% Step 2: Concurrent Generation
+    Note over Runner, LLM: Step 2: High-Concurrency QA Generation
+    Runner->>Generator: asyncio.gather(*[agenerate_qa_from_chunk(c) for c in Chunks])
+    activate Generator
+    
+    loop For Each Chunk (Concurrent)
+        Generator->>LLM: ainvoke(Prompt + Chunk Text) with structured_output(QA_Pair)
+        activate LLM
+        Note over LLM: Evaluates text, formulates question, extracts exact answer
+        LLM-->>Generator: Return QA_Pair (JSON)
+        deactivate LLM
+        Note over Generator: Maps QA_Pair to GoldenRecord DTO
+    end
+    
+    Generator-->>Runner: List[GoldenRecord] (Length: 20)
+    deactivate Generator
+
+    %% Step 3: Persistence
+    Note over Runner, DB: Step 3: Transactional Persistence
+    Runner->>DAO: bulk_insert_golden_records(List[GoldenRecord])
+    activate DAO
+    DAO->>DB: INSERT INTO golden_records (id, question, ground_truth, ...)
+    activate DB
+    DB-->>DAO: Success
+    deactivate DB
+    DAO-->>Runner: Success
+    deactivate DAO
+
+    Runner-->>Developer: Print Summary Log
+    deactivate Runner
+```
+
+---
+
+## 3. Core Components Deep Dive
 The generation pipeline adheres to strict SOLID principles, separating database access, LLM orchestration, and workflow execution.
 
 ### 2.1 Domain Models (`src/domain/models.py`)
