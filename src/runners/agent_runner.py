@@ -80,8 +80,8 @@ async def main():
             
             response = await agent.ask(
                 question=q, 
-                top_k=3, 
-                similarity_threshold=0.45, # Slightly lowered threshold for demo purposes
+                top_k=settings.RETRIEVAL_TOP_K, 
+                similarity_threshold=settings.RETRIEVAL_SIMILARITY_THRESHOLD,
                 topic_filters=topic_filter
             )
             
