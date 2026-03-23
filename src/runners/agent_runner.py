@@ -22,15 +22,15 @@ from src.agents.rag_agent import RAGAgent
 def print_human_readable_answer(response):
     border = "=" * 80
     logger.info(border)
-    logger.info(f"🤔 QUESTION: {response.query}")
+    logger.info(f"QUESTION: {response.query}")
     logger.info("-" * 80)
-    logger.info(f"🤖 AI ANSWER:\n{response.generated_answer}")
+    logger.info(f"AI ANSWER:\n{response.generated_answer}")
     logger.info("-" * 80)
     
     if not response.retrieved_contexts:
         logger.warning("No context chunks were retrieved (below threshold).")
     else:
-        logger.info(f"📚 CITED SOURCES ({len(response.retrieved_contexts)} chunks):")
+        logger.info(f"CITED SOURCES ({len(response.retrieved_contexts)} chunks):")
         for i, ctx in enumerate(response.retrieved_contexts):
             meta_str = ", ".join([f"{k}={v}" for k, v in ctx.metadata.items()])
             logger.info(f"  [{i+1}] Score: {ctx.similarity_score:.4f} | {meta_str}")
