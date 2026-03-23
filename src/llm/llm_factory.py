@@ -1,60 +1,68 @@
+from abc import ABC, abstractmethod
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_google_genai import ChatGoogleGenerativeAI
 from loguru import logger
 
 from src.configs.settings import settings
 
-class LLMFactory:
+class ILLMFactory(ABC):
     """
-    Centralized factory for creating configured LLM instances.
-    Provides Dependency Injection capabilities to decouple domain logic from specific model providers.
+    Abstract Factory Interface for creating LLM instances.
+    Enforces the Dependency Inversion Principle, ensuring that the RAG pipeline
+    is decoupled from any specific model provider's instantiation logic.
     """
     
-    @staticmethod
-    def create_llm(model_name: str, temperature: float = 0.0, **kwargs) -> BaseChatModel:
+    @abstractmethod
+    def create_llm(self, model_name: str, temperature: float = 0.0, **kwargs) -> BaseChatModel:
         """
         Creates and returns a LangChain BaseChatModel instance.
         
         Args:
-            model_name: The identifier of the model (e.g., 'gemini-2.5-pro', 'deepseek-chat').
+            model_name: The identifier of the model (e.g., 'gemini-2.5-pro', 'gpt-4o').
             temperature: Sampling temperature for generation.
-            **kwargs: Additional provider-specific configurations.
+            **kwargs: Additional provider-specific configurations to override defaults.
         """
-        logger.debug(f"Factory assembling LLM instance for model: {model_name} (Temp: {temperature})")
-        
-        # ---------------------------------------------------------------------
-        # Provider: Google Gemini
-        # ---------------------------------------------------------------------
-        if "gemini" in model_name.lower():
-            llm_kwargs = {
-                "model": model_name,
-                "google_api_key": settings.GEMINI_API_KEY,
-                "temperature": temperature,
-            }
-            
-            # Apply dynamic transport logic for proxy compatibility
-            if settings.ENABLE_PROXY:
-                logger.debug(f"Applying REST transport for {model_name} due to proxy configuration.")
-                llm_kwargs["transport"] = "rest"
-                
-            # Merge any additional kwargs
-            llm_kwargs.update(kwargs)
-            
-            return ChatGoogleGenerativeAI(**llm_kwargs)
-            
-        # ---------------------------------------------------------------------
-        # Future-proofing: Example stub for DeepSeek or OpenAI
-        # ---------------------------------------------------------------------
-        # elif "deepseek" in model_name.lower():
-        #     from langchain_openai import ChatOpenAI
-        #     return ChatOpenAI(
-        #         model=model_name,
-        #         api_key=settings.DEEPSEEK_API_KEY,
-        #         base_url="https://api.deepseek.com/v1",
-        #         temperature=temperature,
-        #         **kwargs
-        #     )
-            
-        else:
-            raise ValueError(f"Unsupported model provider for model_name: {model_name}")
+        pass
 
+class GeminiLLMFactory(ILLMFactory):
+    """
+    Concrete Factory implementation specifically for Google's Gemini models.
+    Encapsulates vendor-specific logic such as proxy transport configurations
+    and API key injection.
+    """
+    
+    def create_llm(self, model_name: str, temperature: float = 0.0, **kwargs) -> BaseChatModel:
+        logger.debug(f"[GeminiLLMFactory] Assembling LLM instance for model: {model_name} (Temp: {temperature})")
+        
+        # Base configuration required by the LangChain Google integration
+        llm_kwargs = {
+            "model": model_name,
+            "google_api_key": settings.GEMINI_API_KEY,
+            "temperature": temperature,
+        }
+        
+        # Vendor-specific logic: Handle networking proxies if deployed in restricted regions
+        if settings.ENABLE_PROXY:
+            logger.debug(f"[GeminiLLMFactory] Applying REST transport for {model_name} due to proxy configuration.")
+            llm_kwargs["transport"] = "rest"
+            
+        # Allow caller to override or append specific arguments
+        llm_kwargs.update(kwargs)
+        
+        return ChatGoogleGenerativeAI(**llm_kwargs)
+
+# =====================================================================
+# Future Extension Example: 
+# (Demonstrates OCP - Open/Closed Principle)
+# =====================================================================
+# class OpenAILLMFactory(ILLMFactory):
+#     """Concrete Factory for OpenAI-compatible models (e.g., GPT-4o, DeepSeek)."""
+#     def create_llm(self, model_name: str, temperature: float = 0.0, **kwargs) -> BaseChatModel:
+#         from langchain_openai import ChatOpenAI
+#         llm_kwargs = {
+#             "model": model_name,
+#             "api_key": settings.OPENAI_API_KEY,
+#             "temperature": temperature,
+#         }
+#         llm_kwargs.update(kwargs)
+#         return ChatOpenAI(**llm_kwargs)

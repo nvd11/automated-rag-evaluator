@@ -56,14 +56,16 @@ async def main():
 
     try:
         # 1. Assemble the components (Dependency Injection)
-        from src.llm.llm_factory import LLMFactory
+        from src.llm.llm_factory import ILLMFactory, GeminiLLMFactory
         
         embedder = GeminiEmbedder()
         dao = PgVectorRetrieverDAO()
         retriever = SemanticRetriever(embedder=embedder, dao=dao)
         
-        # Inject the LLM using the Factory
-        inference_llm = LLMFactory.create_llm(model_name=settings.LLM_INFERENCE_MODEL, temperature=0.0)
+        # Inject the LLM using the Abstract Factory Pattern
+        llm_factory: ILLMFactory = GeminiLLMFactory()
+        inference_llm = llm_factory.create_llm(model_name=settings.LLM_INFERENCE_MODEL, temperature=0.0)
+        
         generator = LangchainRAGGenerator(llm=inference_llm)
         
         agent = RAGAgent(retriever=retriever, generator=generator)

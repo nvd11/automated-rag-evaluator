@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch, AsyncMock, MagicMock
 from langchain_core.messages import AIMessage
-from src.retrieval.langchain_generator import LangchainGeminiGenerator
+from src.retrieval.langchain_generator import LangchainRAGGenerator
 from src.domain.models import RetrievedContext
 from src.configs.settings import settings
 
@@ -17,7 +17,11 @@ async def test_generator_ainvoke(mock_settings):
     with patch("langchain_core.runnables.RunnableSequence.ainvoke", new_callable=AsyncMock) as mock_chain_ainvoke:
         mock_chain_ainvoke.return_value = "Generated mock answer"
         
-        generator = LangchainGeminiGenerator()
+        # Inject a fake LLM
+        fake_llm = MagicMock()
+        fake_llm.model_name = "fake-model"
+        
+        generator = LangchainRAGGenerator(llm=fake_llm)
         
         # Setup mock context
         context = RetrievedContext(

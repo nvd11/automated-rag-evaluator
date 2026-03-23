@@ -4,18 +4,18 @@ from loguru import logger
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableConfig
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.language_models.chat_models import BaseChatModel
 
 from src.interfaces.retriever_interfaces import ILLMGenerator
 from src.domain.models import RetrievedContext
 from src.configs.settings import settings
 
-class LangchainGeminiGenerator(ILLMGenerator):
+class LangchainRAGGenerator(ILLMGenerator):
     """
     Implements ILLMGenerator using LangChain's Expression Language (LCEL).
-    Constructs an LLM chain consisting of a PromptTemplate, a Gemini model, and a String parser.
+    Constructs an LLM chain consisting of a PromptTemplate, a provided BaseChatModel, and a String parser.
     """
-    def __init__(self):
+    def __init__(self, llm: BaseChatModel):
         # 1. Define the Prompt Template
         # We explicitly separate Context and Question to guide the LLM's attention.
         template = """You are a highly capable AI assistant specializing in corporate and financial compliance data.
@@ -32,20 +32,8 @@ Question:
 Answer:"""
         self.prompt = ChatPromptTemplate.from_template(template)
         
-        # 2. Instantiate the LLM
-        # Using the specified Gemini model for the generator (LLM-as-a-Judge model can also be used here)
-        # We dynamically configure the transport: 'rest' if proxy is enabled (required for proxy compatibility),
-        # otherwise we omit it (or default to grpc/native async) to avoid asyncio/REST compatibility bugs.
-        llm_kwargs = {
-            "model": settings.LLM_INFERENCE_MODEL,
-            "google_api_key": settings.GEMINI_API_KEY,
-            "temperature": 0.0,
-        }
-        
-        if settings.ENABLE_PROXY:
-            llm_kwargs["transport"] = "rest"
-            
-        self.llm = ChatGoogleGenerativeAI(**llm_kwargs)
+        # 2. Store the injected LLM instance
+        self.llm = llm
         
         # 3. Define the Output Parser
         self.output_parser = StrOutputParser()
@@ -79,14 +67,16 @@ Answer:"""
             "question": input.get("question")
         }
         
+        model_name = getattr(self.llm, "model_name", getattr(self.llm, "model", "Unknown Model"))
+
         if settings.ENABLE_PROXY:
-            logger.info(f"Generating answer using {settings.LLM_INFERENCE_MODEL} via LCEL chain (Sync in Thread for Proxy Compatibility)...")
+            logger.info(f"Generating answer using {model_name} via LCEL chain (Sync in Thread for Proxy Compatibility)...")
             # By using asyncio.to_thread with chain.invoke(), we force the REST transport 
             # to use the synchronous requests library, which correctly respects HTTP proxies
             # and avoids the proxy-ignoring behavior of aiohttp.
             result = await asyncio.to_thread(self.chain.invoke, chain_input, config=config, **kwargs)
         else:
-            logger.info(f"Generating answer using {settings.LLM_INFERENCE_MODEL} via LCEL chain (Native Async)...")
+            logger.info(f"Generating answer using {model_name} via LCEL chain (Native Async)...")
             result = await self.chain.ainvoke(chain_input, config=config, **kwargs)
             
         return result
@@ -100,9 +90,10 @@ Answer:"""
             "question": input.get("question")
         }
         
-        logger.info(f"Streaming answer using {settings.LLM_INFERENCE_MODEL} via LCEL chain...")
+        model_name = getattr(self.llm, "model_name", getattr(self.llm, "model", "Unknown Model"))
+        logger.info(f"Streaming answer using {model_name} via LCEL chain...")
         async for chunk in self.chain.astream(chain_input, config=config, **kwargs):
             yield chunk
 
     def invoke(self, input: Dict[str, Any], config: Optional[RunnableConfig] = None, **kwargs) -> str:
-        raise NotImplementedError("LangchainGeminiGenerator is fully async. Use ainvoke instead.")
+        raise NotImplementedError("LangchainRAGGenerator is fully async. Use ainvoke instead.")

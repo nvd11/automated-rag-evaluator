@@ -18,10 +18,11 @@ async def test_gemini_25_pro_live_connection():
 
     logger.info(f"Testing live connection to {settings.LLM_JUDGE_MODEL}...")
 
-    # 2. Instantiate our actual LLM Generator using the LLMFactory
-    from src.llm.llm_factory import LLMFactory
+    # 2. Instantiate our actual LLM Generator using the Abstract Factory Pattern
+    from src.llm.llm_factory import ILLMFactory, GeminiLLMFactory
     
-    live_llm = LLMFactory.create_llm(model_name=settings.LLM_INFERENCE_MODEL, temperature=0.0)
+    llm_factory: ILLMFactory = GeminiLLMFactory()
+    live_llm = llm_factory.create_llm(model_name=settings.LLM_INFERENCE_MODEL, temperature=0.0)
     generator = LangchainRAGGenerator(llm=live_llm)
 
     # 3. Create a minimal dummy context to feed the prompt template
