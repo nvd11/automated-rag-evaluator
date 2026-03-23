@@ -13,7 +13,8 @@ from src.configs.settings import settings
 from src.configs.db import init_db_pool, close_db_pool
 
 # Dependency Injection Components
-from src.llm.llm_factory import ILLMFactory, GeminiLLMFactory
+from src.llm.llm_factory import ILLMFactory
+from src.llm.gemini_factory import GeminiLLMFactory
 from src.dao.golden_record_dao import PgVectorGoldenRecordDAO
 from src.evaluator.dataset_generator import LangchainDatasetGenerator
 
