@@ -175,7 +175,7 @@ CREATE TABLE IF NOT EXISTS golden_record_query_mapping (
 CREATE INDEX IF NOT EXISTS idx_eval_query_mappings ON golden_record_query_mapping (golden_record_id, query_id) WHERE is_deleted = FALSE;
 
 -- 10. Run Queries (Inference Run to Query Mapping)
-CREATE TABLE IF NOT EXISTS run_queries (
+CREATE TABLE IF NOT EXISTS inference_run_query_mapping (
     run_id UUID,
     query_id UUID,
     created_by VARCHAR(100) NOT NULL,
@@ -186,7 +186,7 @@ CREATE TABLE IF NOT EXISTS run_queries (
     PRIMARY KEY (run_id, query_id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_run_queries_reverse ON run_queries (query_id, run_id) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_inference_run_query_mapping_reverse ON inference_run_query_mapping (query_id, run_id) WHERE is_deleted = FALSE;
 
 -- 11. RAG Triad Analysis Pivot View
 CREATE OR REPLACE VIEW v_evaluation_metrics_pivot AS

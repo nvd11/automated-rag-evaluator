@@ -220,7 +220,7 @@ CREATE INDEX idx_query_hist_requester ON query_history (queried_by) WHERE is_del
 
 ---
 
-## Table 8: `run_queries` (Inference Run to Query Mapping)
+## Table 8: `inference_run_query_mapping` (Inference Run to Query Mapping)
 Resolves the many-to-many relationship between `inference_runs` and `query_history`.
 In an enterprise RAG system, `query_history` logs all traffic (real users + automated tests). This table isolates specific subsets of queries that belong to a managed hyperparameter sweep (a "Run").
 
@@ -237,7 +237,7 @@ In an enterprise RAG system, `query_history` logs all traffic (real users + auto
 **Index Strategy:**
 **Reverse Lookup Index:** An explicit reverse B-tree index on `(query_id, run_id)` to rapidly find which inference runs a specific query was included in, supporting cross-run diagnostics.
 ```sql
-CREATE INDEX idx_run_queries_reverse ON run_queries (query_id, run_id) WHERE is_deleted = FALSE;
+CREATE INDEX idx_inference_run_query_mapping_reverse ON inference_run_query_mapping (query_id, run_id) WHERE is_deleted = FALSE;
 ```
 
 
