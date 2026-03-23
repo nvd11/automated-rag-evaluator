@@ -35,8 +35,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS udx_topics_name ON topics (topic_name) WHERE i
 
 -- 3. Document to Topics Mapping (Metadata Pre-filtering)
 CREATE TABLE IF NOT EXISTS document_topics (
-    doc_id VARCHAR(255) REFERENCES documents(doc_id),
-    topic_id UUID REFERENCES topics(topic_id),
+    doc_id VARCHAR(255),
+    topic_id UUID,
     created_by VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_by VARCHAR(100),
@@ -50,7 +50,7 @@ CREATE INDEX IF NOT EXISTS idx_doc_topics_reverse ON document_topics (topic_id, 
 -- 4. Document Chunks (The RAG Vector Store)
 CREATE TABLE IF NOT EXISTS document_chunks (
     id UUID PRIMARY KEY,
-    doc_id VARCHAR(255) REFERENCES documents(doc_id),
+    doc_id VARCHAR(255),
     chunking_strategy VARCHAR(100) NOT NULL,
     chunk_index INT NOT NULL,
     content TEXT NOT NULL,
@@ -89,7 +89,7 @@ CREATE INDEX IF NOT EXISTS idx_eval_runs_timestamp ON evaluation_runs (start_tim
 -- 6. Evaluation Metrics (Diagnoser Input)
 CREATE TABLE IF NOT EXISTS evaluation_metrics (
     id UUID PRIMARY KEY,
-    run_id UUID REFERENCES evaluation_runs(run_id),
+    run_id UUID,
     dataset_mode VARCHAR(50) NOT NULL,
     query_id VARCHAR(100) NOT NULL,
     metric_category VARCHAR(50) NOT NULL,
@@ -143,8 +143,8 @@ CREATE INDEX IF NOT EXISTS idx_golden_records_dataset ON golden_records (dataset
 
 -- 9. Evaluation Query Mappings (Ground Truth to Query Resolution)
 CREATE TABLE IF NOT EXISTS evaluation_query_mappings (
-    query_id UUID REFERENCES query_history(query_id),
-    golden_record_id UUID REFERENCES golden_records(id),
+    query_id UUID,
+    golden_record_id UUID,
     created_by VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_by VARCHAR(100),
@@ -157,8 +157,8 @@ CREATE INDEX IF NOT EXISTS idx_eval_query_mappings ON evaluation_query_mappings 
 
 -- 10. Run Queries (Evaluation Run to Query Mapping)
 CREATE TABLE IF NOT EXISTS run_queries (
-    run_id UUID REFERENCES evaluation_runs(run_id),
-    query_id UUID REFERENCES query_history(query_id),
+    run_id UUID,
+    query_id UUID,
     created_by VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_by VARCHAR(100),
