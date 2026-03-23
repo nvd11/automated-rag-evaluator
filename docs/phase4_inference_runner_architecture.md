@@ -68,11 +68,11 @@ erDiagram
     }
 
     %% Relationships
-    inference_run_history "1" -- "*" inference_run_query_mapping : Tracks
-    query_history "1" -- "*" inference_run_query_mapping : Belongs To
+    inference_run_history ||--o{ inference_run_query_mapping : "Tracks"
+    query_history ||--o{ inference_run_query_mapping : "Belongs To"
     
-    golden_records "1" -- "0..1" golden_record_query_mapping : Benchmarks (Case 1 Only)
-    query_history "1" -- "0..1" golden_record_query_mapping : Evaluated Against
+    golden_records ||--o| golden_record_query_mapping : "Benchmarks (Case 1 Only)"
+    query_history ||--o| golden_record_query_mapping : "Evaluated Against"
     
     %% Notes
     note for golden_record_query_mapping "If mapping exists -> Case 1 (Direct Eval)\nIf NO mapping -> Case 2 (Blind Eval / RAG Triad)"
