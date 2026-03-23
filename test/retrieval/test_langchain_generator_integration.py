@@ -1,7 +1,7 @@
 import pytest
 import os
 from loguru import logger
-from src.retrieval.langchain_generator import LangchainGeminiGenerator
+from src.retrieval.langchain_generator import LangchainRAGGenerator
 from src.domain.models import RetrievedContext
 from src.configs.settings import settings
 
@@ -18,8 +18,11 @@ async def test_gemini_25_pro_live_connection():
 
     logger.info(f"Testing live connection to {settings.LLM_JUDGE_MODEL}...")
 
-    # 2. Instantiate our actual LLM Generator (which uses LCEL under the hood)
-    generator = LangchainGeminiGenerator()
+    # 2. Instantiate our actual LLM Generator using the LLMFactory
+    from src.llm.llm_factory import LLMFactory
+    
+    live_llm = LLMFactory.create_llm(model_name=settings.LLM_INFERENCE_MODEL, temperature=0.0)
+    generator = LangchainRAGGenerator(llm=live_llm)
 
     # 3. Create a minimal dummy context to feed the prompt template
     dummy_context = RetrievedContext(

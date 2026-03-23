@@ -16,7 +16,7 @@ from src.configs.db import init_db_pool, close_db_pool
 from src.ingestion.embedders.gemini_embedder import GeminiEmbedder
 from src.dao.pgvector_retriever_dao import PgVectorRetrieverDAO
 from src.retrieval.semantic_retriever import SemanticRetriever
-from src.retrieval.langchain_generator import LangchainGeminiGenerator
+from src.retrieval.langchain_generator import LangchainRAGGenerator
 from src.agents.rag_agent import RAGAgent
 
 def print_human_readable_answer(response):
@@ -56,10 +56,15 @@ async def main():
 
     try:
         # 1. Assemble the components (Dependency Injection)
+        from src.llm.llm_factory import LLMFactory
+        
         embedder = GeminiEmbedder()
         dao = PgVectorRetrieverDAO()
         retriever = SemanticRetriever(embedder=embedder, dao=dao)
-        generator = LangchainGeminiGenerator()
+        
+        # Inject the LLM using the Factory
+        inference_llm = LLMFactory.create_llm(model_name=settings.LLM_INFERENCE_MODEL, temperature=0.0)
+        generator = LangchainRAGGenerator(llm=inference_llm)
         
         agent = RAGAgent(retriever=retriever, generator=generator)
 
