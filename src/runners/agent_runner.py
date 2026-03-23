@@ -12,6 +12,10 @@ if project_root not in sys.path:
 from src.configs.settings import settings
 from src.configs.db import init_db_pool, close_db_pool
 
+# LLM Factories
+from src.llm.llm_factory import ILLMFactory
+from src.llm.gemini_factory import GeminiLLMFactory
+
 # Components
 from src.ingestion.embedders.gemini_embedder import GeminiEmbedder
 from src.dao.pgvector_retriever_dao import PgVectorRetrieverDAO
@@ -56,8 +60,6 @@ async def main():
 
     try:
         # 1. Assemble the components (Dependency Injection)
-        from src.llm.llm_factory import ILLMFactory
-        from src.llm.gemini_factory import GeminiLLMFactory
         
         embedder = GeminiEmbedder()
         dao = PgVectorRetrieverDAO()

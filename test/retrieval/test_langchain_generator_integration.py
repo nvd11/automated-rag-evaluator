@@ -4,6 +4,8 @@ from loguru import logger
 from src.retrieval.langchain_generator import LangchainRAGGenerator
 from src.domain.models import RetrievedContext
 from src.configs.settings import settings
+from src.llm.llm_factory import ILLMFactory
+from src.llm.gemini_factory import GeminiLLMFactory
 
 @pytest.mark.asyncio
 @pytest.mark.integration
@@ -19,8 +21,6 @@ async def test_gemini_25_pro_live_connection():
     logger.info(f"Testing live connection to {settings.LLM_JUDGE_MODEL}...")
 
     # 2. Instantiate our actual LLM Generator using the Abstract Factory Pattern
-    from src.llm.llm_factory import ILLMFactory
-    from src.llm.gemini_factory import GeminiLLMFactory
     
     llm_factory: ILLMFactory = GeminiLLMFactory()
     live_llm = llm_factory.create_llm(model_name=settings.LLM_INFERENCE_MODEL, temperature=0.0)

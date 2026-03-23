@@ -1,3 +1,4 @@
+import asyncio
 from typing import Dict, Any, Optional, AsyncIterator
 from loguru import logger
 
@@ -56,7 +57,6 @@ Answer:"""
         - 'context': List[RetrievedContext]
         - 'question': str
         """
-        import asyncio
         logger.debug(f"LLM Generator ainvoke triggered for question: {input.get('question')}")
         
         raw_contexts = input.get("context", [])
