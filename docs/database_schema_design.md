@@ -268,7 +268,7 @@ CREATE INDEX idx_golden_records_dataset ON golden_records (dataset_name) WHERE i
 
 ---
 
-## Table 10: `evaluation_query_mappings` (Ground Truth to Query Resolution)
+## Table 10: `golden_record_query_mapping` (Ground Truth to Query Resolution)
 Enforces **strict separation of concerns** between dynamic operational logs (`query_history`) and static evaluation benchmarks (`golden_records`). By extracting this 1:1 relationship into a dedicated mapping table, we prevent the core `query_history` table from being polluted by nullable, evaluation-specific foreign keys (`golden_record_id`).
 
 | Column Name         | Data Type | Description |
@@ -284,7 +284,7 @@ Enforces **strict separation of concerns** between dynamic operational logs (`qu
 **Index Strategy:**
 **Evaluation Join Index:** An explicit reverse B-tree index on `(golden_record_id, query_id)` to rapidly join generated answers with their corresponding ground truth baselines during the automated grading phase without performing full table scans.
 ```sql
-CREATE INDEX idx_eval_query_mappings ON evaluation_query_mappings (golden_record_id, query_id) WHERE is_deleted = FALSE;
+CREATE INDEX idx_eval_query_mappings ON golden_record_query_mapping (golden_record_id, query_id) WHERE is_deleted = FALSE;
 ```
 
 

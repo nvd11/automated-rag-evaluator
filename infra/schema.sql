@@ -161,7 +161,7 @@ CREATE TABLE IF NOT EXISTS golden_records (
 CREATE INDEX IF NOT EXISTS idx_golden_records_dataset ON golden_records (dataset_name) WHERE is_deleted = FALSE;
 
 -- 9. Evaluation Query Mappings (Ground Truth to Query Resolution)
-CREATE TABLE IF NOT EXISTS evaluation_query_mappings (
+CREATE TABLE IF NOT EXISTS golden_record_query_mapping (
     query_id UUID,
     golden_record_id UUID,
     created_by VARCHAR(100) NOT NULL,
@@ -172,7 +172,7 @@ CREATE TABLE IF NOT EXISTS evaluation_query_mappings (
     PRIMARY KEY (query_id, golden_record_id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_eval_query_mappings ON evaluation_query_mappings (golden_record_id, query_id) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_eval_query_mappings ON golden_record_query_mapping (golden_record_id, query_id) WHERE is_deleted = FALSE;
 
 -- 10. Run Queries (Inference Run to Query Mapping)
 CREATE TABLE IF NOT EXISTS run_queries (
