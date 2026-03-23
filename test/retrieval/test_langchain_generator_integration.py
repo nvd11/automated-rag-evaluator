@@ -19,7 +19,8 @@ async def test_gemini_25_pro_live_connection():
     logger.info(f"Testing live connection to {settings.LLM_JUDGE_MODEL}...")
 
     # 2. Instantiate our actual LLM Generator using the Abstract Factory Pattern
-    from src.llm.llm_factory import ILLMFactory, GeminiLLMFactory
+    from src.llm.llm_factory import ILLMFactory
+    from src.llm.gemini_factory import GeminiLLMFactory
     
     llm_factory: ILLMFactory = GeminiLLMFactory()
     live_llm = llm_factory.create_llm(model_name=settings.LLM_INFERENCE_MODEL, temperature=0.0)

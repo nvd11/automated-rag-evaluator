@@ -56,7 +56,8 @@ async def main():
 
     try:
         # 1. Assemble the components (Dependency Injection)
-        from src.llm.llm_factory import ILLMFactory, GeminiLLMFactory
+        from src.llm.llm_factory import ILLMFactory
+        from src.llm.gemini_factory import GeminiLLMFactory
         
         embedder = GeminiEmbedder()
         dao = PgVectorRetrieverDAO()
