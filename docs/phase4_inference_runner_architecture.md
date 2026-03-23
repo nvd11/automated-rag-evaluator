@@ -33,14 +33,14 @@ This guarantees that our system can ingest live production chat logs and evaluat
 ```mermaid
 erDiagram
     %% Core Tables
-    class inference_run_history {
+    inference_run_history {
         UUID run_id
         String chunking_config
         int top_k
         float similarity_threshold
     }
     
-    class query_history {
+    query_history {
         UUID query_id
         String question
         JSONB retrieved_contexts
@@ -49,7 +49,7 @@ erDiagram
         Timestamp response_time
     }
     
-    class golden_records {
+    golden_records {
         UUID id
         String batch_name
         String question
@@ -57,12 +57,12 @@ erDiagram
     }
 
     %% Mapping Tables
-    class inference_run_query_mapping {
+    inference_run_query_mapping {
         UUID run_id
         UUID query_id
     }
     
-    class golden_record_query_mapping {
+    golden_record_query_mapping {
         UUID query_id
         UUID golden_record_id
     }
