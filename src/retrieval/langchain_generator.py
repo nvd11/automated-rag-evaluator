@@ -35,7 +35,7 @@ Answer:"""
         # 2. Instantiate the LLM
         # Using the specified Gemini model for the generator (LLM-as-a-Judge model can also be used here)
         self.llm = ChatGoogleGenerativeAI(
-            model=settings.LLM_JUDGE_MODEL,
+            model=settings.LLM_INFERENCE_MODEL,
             google_api_key=settings.GEMINI_API_KEY,
             temperature=0.0,  # Zero temperature for deterministic, factual extraction
             transport="rest"
@@ -74,13 +74,13 @@ Answer:"""
         }
         
         if settings.ENABLE_PROXY:
-            logger.info(f"Generating answer using {settings.LLM_JUDGE_MODEL} via LCEL chain (Sync in Thread for Proxy Compatibility)...")
+            logger.info(f"Generating answer using {settings.LLM_INFERENCE_MODEL} via LCEL chain (Sync in Thread for Proxy Compatibility)...")
             # By using asyncio.to_thread with chain.invoke(), we force the REST transport 
             # to use the synchronous requests library, which correctly respects HTTP proxies
             # and avoids the proxy-ignoring behavior of aiohttp.
             result = await asyncio.to_thread(self.chain.invoke, chain_input, config=config, **kwargs)
         else:
-            logger.info(f"Generating answer using {settings.LLM_JUDGE_MODEL} via LCEL chain (Native Async)...")
+            logger.info(f"Generating answer using {settings.LLM_INFERENCE_MODEL} via LCEL chain (Native Async)...")
             result = await self.chain.ainvoke(chain_input, config=config, **kwargs)
             
         return result
@@ -94,7 +94,7 @@ Answer:"""
             "question": input.get("question")
         }
         
-        logger.info(f"Streaming answer using {settings.LLM_JUDGE_MODEL} via LCEL chain...")
+        logger.info(f"Streaming answer using {settings.LLM_INFERENCE_MODEL} via LCEL chain...")
         async for chunk in self.chain.astream(chain_input, config=config, **kwargs):
             yield chunk
 

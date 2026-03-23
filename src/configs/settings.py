@@ -28,8 +28,10 @@ class Settings(BaseSettings):
     # Retrieval Config
     RETRIEVAL_TOP_K: int = 5
     RETRIEVAL_SIMILARITY_THRESHOLD: float = 0.5
+    LLM_INFERENCE_MODEL: str = "gemini-2.5-pro"
     LLM_JUDGE_MODEL: str = "gemini-2.5-pro"
-    
+    LLM_TEACHER_MODEL: str = "gemini-3.1-pro-preview"
+
     # Proxy Config (Global toggle for LLM/Embeddings access from restricted regions)
     ENABLE_PROXY: bool = False
     HTTP_PROXY: str | None = None
