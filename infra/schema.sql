@@ -113,6 +113,7 @@ CREATE TABLE IF NOT EXISTS query_history (
     retrieved_contexts JSONB,
     generated_answer TEXT,
     query_time TIMESTAMP NOT NULL,
+    retrieval_time TIMESTAMP NOT NULL,
     response_time TIMESTAMP NOT NULL,
     created_by VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -175,6 +175,7 @@ Stores the actual user questions, the retrieved context chunks, and the final ge
 | `retrieved_contexts` | JSONB     | An array of objects containing the retrieved `chunk_id`, raw `text`, and `similarity_score`. |
 | `generated_answer`   | TEXT      | The final synthesized answer produced by the LLM (Generator). |
 | `query_time`         | TIMESTAMP | The exact timestamp when the user or evaluation script dispatched the query. |
+| `retrieval_time`     | TIMESTAMP | The exact timestamp when the vector database returned the retrieved context chunks. |
 | `response_time`      | TIMESTAMP | The exact timestamp when the RAG Agent successfully returned the synthesized answer. |
 | `ground_truth`       | TEXT      | (Optional) The expected standard answer, used for direct metrics like Recall. |
 | `created_by`         | VARCHAR   | Audit field: Actor who created the record (e.g., 'user_123' or 'eval_runner'). |
