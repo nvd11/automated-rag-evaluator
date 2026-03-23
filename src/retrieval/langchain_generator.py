@@ -34,12 +34,18 @@ Answer:"""
         
         # 2. Instantiate the LLM
         # Using the specified Gemini model for the generator (LLM-as-a-Judge model can also be used here)
-        self.llm = ChatGoogleGenerativeAI(
-            model=settings.LLM_INFERENCE_MODEL,
-            google_api_key=settings.GEMINI_API_KEY,
-            temperature=0.0,  # Zero temperature for deterministic, factual extraction
-            transport="rest"
-        )
+        # We dynamically configure the transport: 'rest' if proxy is enabled (required for proxy compatibility),
+        # otherwise we omit it (or default to grpc/native async) to avoid asyncio/REST compatibility bugs.
+        llm_kwargs = {
+            "model": settings.LLM_INFERENCE_MODEL,
+            "google_api_key": settings.GEMINI_API_KEY,
+            "temperature": 0.0,
+        }
+        
+        if settings.ENABLE_PROXY:
+            llm_kwargs["transport"] = "rest"
+            
+        self.llm = ChatGoogleGenerativeAI(**llm_kwargs)
         
         # 3. Define the Output Parser
         self.output_parser = StrOutputParser()
