@@ -75,7 +75,6 @@ erDiagram
     query_history ||--o| golden_record_query_mapping : "Evaluated Against"
     
     %% Notes
-    note for golden_record_query_mapping "If mapping exists -> Case 1 (Direct Eval)\nIf NO mapping -> Case 2 (Blind Eval / RAG Triad)"
 ```
 
 ## 4. Execution Flow (Sequence Diagram)
