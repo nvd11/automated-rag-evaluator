@@ -146,7 +146,7 @@ CREATE INDEX IF NOT EXISTS idx_query_hist_requester ON query_history (queried_by
 -- 8. Golden Records (Evaluation Benchmark Dataset)
 CREATE TABLE IF NOT EXISTS golden_records (
     id UUID PRIMARY KEY,
-    dataset_name VARCHAR(100) NOT NULL,
+    batch_name VARCHAR(100) NOT NULL,
     question TEXT NOT NULL,
     ground_truth TEXT NOT NULL,
     expected_topics JSONB,
@@ -158,7 +158,7 @@ CREATE TABLE IF NOT EXISTS golden_records (
     is_deleted BOOLEAN DEFAULT FALSE
 );
 
-CREATE INDEX IF NOT EXISTS idx_golden_records_dataset ON golden_records (dataset_name) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_golden_records_dataset ON golden_records (batch_name) WHERE is_deleted = FALSE;
 
 -- 9. Evaluation Query Mappings (Ground Truth to Query Resolution)
 CREATE TABLE IF NOT EXISTS golden_record_query_mapping (

@@ -249,7 +249,7 @@ The "North Star" asset for RAG evaluation. Authored by human domain experts (SME
 | Column Name       | Data Type | Description |
 | :---              | :---      | :---        |
 | `id`              | UUID (PK) | Unique identifier for this specific golden test case. |
-| `dataset_name`    | VARCHAR   | Logical grouping of the test cases (e.g., 'v1_hsbc_2025_annual_report_q1'). |
+| `batch_name`    | VARCHAR   | Logical grouping of the test cases (e.g., 'v1_hsbc_2025_annual_report_q1'). |
 | `question`        | TEXT      | The exact, canonical query string to be fed into the RAG pipeline. |
 | `ground_truth`    | TEXT      | The human-expert verified "perfect answer" to serve as the benchmark baseline. |
 | `expected_topics` | JSONB     | (Optional) Array of `topic_name` strings the retrieval *should* theoretically hit. |
@@ -261,9 +261,9 @@ The "North Star" asset for RAG evaluation. Authored by human domain experts (SME
 | `is_deleted`      | BOOLEAN   | Soft delete flag (default: FALSE). |
 
 **Index Strategy:**
-**Dataset Lookup Index:** A B-tree index on `dataset_name` to allow the automated evaluation runner to swiftly load hundreds of golden questions for a batch parameter sweep.
+**Dataset Lookup Index:** A B-tree index on `batch_name` to allow the automated evaluation runner to swiftly load hundreds of golden questions for a batch parameter sweep.
 ```sql
-CREATE INDEX idx_golden_records_dataset ON golden_records (dataset_name) WHERE is_deleted = FALSE;
+CREATE INDEX idx_golden_records_dataset ON golden_records (batch_name) WHERE is_deleted = FALSE;
 ```
 
 ---

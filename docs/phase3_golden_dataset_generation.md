@@ -21,7 +21,7 @@ classDiagram
     
     class GoldenRecord {
         +UUID id
-        +String dataset_name
+        +String batch_name
         +String question
         +String ground_truth
         +List[String] expected_topics
@@ -44,7 +44,7 @@ classDiagram
     
     class IDatasetGenerator {
         <<Interface>>
-        +agenerate_qa_from_chunk(chunk: Chunk, dataset_name: String) GoldenRecord
+        +agenerate_qa_from_chunk(chunk: Chunk, batch_name: String) GoldenRecord
     }
 
     %% Implementations
@@ -56,14 +56,14 @@ classDiagram
     class LangchainDatasetGenerator {
         -ChatGoogleGenerativeAI llm
         -ChatPromptTemplate prompt
-        +agenerate_qa_from_chunk(chunk: Chunk, dataset_name: String) GoldenRecord
+        +agenerate_qa_from_chunk(chunk: Chunk, batch_name: String) GoldenRecord
     }
 
     %% Orchestrator
     class GoldenDatasetRunner {
         -IGoldenRecordDAO dao
         -IDatasetGenerator generator
-        +run(dataset_name: String, sample_size: int, topics: List)
+        +run(batch_name: String, sample_size: int, topics: List)
     }
 
     GoldenDatasetRunner o-- IGoldenRecordDAO : Dependency Injection
@@ -93,7 +93,7 @@ sequenceDiagram
     participant Generator as LangchainDatasetGenerator
     participant LLM as Gemini 2.5 Pro
 
-    Developer->>Runner: Execute Script (dataset_name, sample_size=20)
+    Developer->>Runner: Execute Script (batch_name, sample_size=20)
     activate Runner
 
     %% Step 1: Fetch Seeds
@@ -146,7 +146,7 @@ The generation pipeline adheres to strict SOLID principles, separating database 
 
 ### 2.1 Domain Models (`src/domain/models.py`)
 Introduces structured data carriers for the generation pipeline:
-- **`GoldenRecord`**: A Pydantic model mapped directly to the `golden_records` database table. Contains `id`, `dataset_name`, `question`, `ground_truth`, `expected_topics`, and `complexity`.
+- **`GoldenRecord`**: A Pydantic model mapped directly to the `golden_records` database table. Contains `id`, `batch_name`, `question`, `ground_truth`, `expected_topics`, and `complexity`.
 - **`QA_Pair`**: A lightweight Pydantic model specifically designed for LLM **Structured Output**. It guarantees the LLM returns exactly a `question`, `answer`, and `complexity` rating without conversational filler.
 
 ### 2.2 Data Access Object (DAO) (`src/dao/golden_record_dao.py`)
@@ -165,7 +165,7 @@ The "Brain" of the operation, powered by LangChain and Gemini.
 The executable script that wires the components together.
 - **Workflow**:
   1. Initializes the DB Pool, DAO, and Generator.
-  2. Defines the benchmark configuration (e.g., `dataset_name="hsbc_2025_eval_v1"`, `sample_size=20`).
+  2. Defines the benchmark configuration (e.g., `batch_name="hsbc_2025_eval_v1"`, `sample_size=20`).
   3. Fetches 20 random chunks via the DAO.
   4. Dispatches the chunks to the Generator using `asyncio.gather()` for high-throughput concurrent generation.
   5. Bulk inserts the resulting `GoldenRecord` objects via the DAO.
