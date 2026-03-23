@@ -113,7 +113,7 @@ async def main():
         # 2. Configuration for this specific benchmark run
         # In a real environment, these might be parsed via argparse CLI flags.
         BATCH_NAME = "hsbc_2025_eval_v1"
-        SAMPLE_SIZE = 10  # Generating 10 professional questions for our demo
+        SAMPLE_SIZE = 50  # Generating 50 professional questions for our benchmark
         TOPIC_RESTRICTION = None # Or ["Financial Performance", "Risk Management"]
 
         # 3. Execute Pipeline
