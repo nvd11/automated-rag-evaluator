@@ -28,7 +28,7 @@ When the subsequent *Evaluation Runner (Phase 5)* executes, its logic is elegant
 
 This guarantees that our system can ingest live production chat logs and evaluate them using the exact same pipeline designed for offline benchmarking.
 
-## 3. Architecture Diagram (Mermaid)
+## 3. Entity-Relationship (ER) Diagram
 
 ```mermaid
 erDiagram
