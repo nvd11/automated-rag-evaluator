@@ -38,6 +38,7 @@ async def close_db_pool():
     global _pool
     if _pool is not None:
         await _pool.close()
+        _pool = None
         logger.info("AsyncConnectionPool closed.")
 
 @asynccontextmanager
