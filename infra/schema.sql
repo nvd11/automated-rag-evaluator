@@ -66,8 +66,8 @@ CREATE TABLE IF NOT EXISTS document_chunks (
 CREATE INDEX IF NOT EXISTS idx_doc_chunks_embedding ON document_chunks USING hnsw (embedding vector_cosine_ops);
 CREATE INDEX IF NOT EXISTS idx_doc_chunks_filter ON document_chunks (doc_id, chunking_strategy) WHERE is_deleted = FALSE;
 
--- 5. Evaluation Runs (Hyperparameter Sweep Configs)
-CREATE TABLE IF NOT EXISTS evaluation_runs (
+-- 5. Inference Runs (RAG Generation Configs)
+CREATE TABLE IF NOT EXISTS inference_runs (
     run_id UUID PRIMARY KEY,
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
@@ -84,12 +84,31 @@ CREATE TABLE IF NOT EXISTS evaluation_runs (
     is_deleted BOOLEAN DEFAULT FALSE
 );
 
-CREATE INDEX IF NOT EXISTS idx_eval_runs_timestamp ON evaluation_runs (start_time DESC) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_inf_runs_timestamp ON inference_runs (start_time DESC) WHERE is_deleted = FALSE;
+
+-- 5.5 Evaluation Jobs (Evaluator Configs - Many-to-One with Inference Runs)
+CREATE TABLE IF NOT EXISTS evaluation_jobs (
+    job_id UUID PRIMARY KEY,
+    inference_run_id UUID,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
+    evaluator_model VARCHAR(100) NOT NULL,
+    evaluator_prompt_version VARCHAR(100),
+    cost_estimate FLOAT,
+    created_by VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_by VARCHAR(100),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_deleted BOOLEAN DEFAULT FALSE
+);
+
+CREATE INDEX IF NOT EXISTS idx_eval_jobs_timestamp ON evaluation_jobs (start_time DESC) WHERE is_deleted = FALSE;
 
 -- 6. Evaluation Metrics (Diagnoser Input)
 CREATE TABLE IF NOT EXISTS evaluation_metrics (
     id UUID PRIMARY KEY,
-    run_id UUID,
+    job_id UUID,
+    inference_run_id UUID,
     dataset_mode VARCHAR(50) NOT NULL,
     query_id VARCHAR(100) NOT NULL,
     metric_category VARCHAR(50) NOT NULL,
@@ -102,7 +121,7 @@ CREATE TABLE IF NOT EXISTS evaluation_metrics (
     is_deleted BOOLEAN DEFAULT FALSE
 );
 
-CREATE INDEX IF NOT EXISTS idx_eval_metrics_diagnoser ON evaluation_metrics (run_id, metric_category, metric_name) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_eval_metrics_diagnoser ON evaluation_metrics (job_id, metric_category, metric_name) WHERE is_deleted = FALSE;
 
 
 -- 7. Query History (RAG Interaction Logs)
@@ -155,7 +174,7 @@ CREATE TABLE IF NOT EXISTS evaluation_query_mappings (
 
 CREATE INDEX IF NOT EXISTS idx_eval_query_mappings ON evaluation_query_mappings (golden_record_id, query_id) WHERE is_deleted = FALSE;
 
--- 10. Run Queries (Evaluation Run to Query Mapping)
+-- 10. Run Queries (Inference Run to Query Mapping)
 CREATE TABLE IF NOT EXISTS run_queries (
     run_id UUID,
     query_id UUID,
@@ -172,7 +191,7 @@ CREATE INDEX IF NOT EXISTS idx_run_queries_reverse ON run_queries (query_id, run
 -- 11. RAG Triad Analysis Pivot View
 CREATE OR REPLACE VIEW v_evaluation_metrics_pivot AS
 SELECT 
-    run_id,
+    job_id,
     query_id,
     MAX(CASE WHEN metric_name = 'context_relevance' THEN metric_value END) AS context_relevance_score,
     MAX(CASE WHEN metric_name = 'faithfulness' THEN metric_value END) AS faithfulness_score,
@@ -180,7 +199,7 @@ SELECT
     MAX(CASE WHEN metric_name = 'recall_at_k' THEN metric_value END) AS recall_at_k_score
 FROM evaluation_metrics
 WHERE is_deleted = FALSE
-GROUP BY run_id, query_id;
+GROUP BY job_id, query_id;
 
 -- ====================================================================
 -- 12. Role-Based Access Control (RBAC) - Least Privilege Principle
