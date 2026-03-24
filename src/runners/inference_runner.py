@@ -153,7 +153,25 @@ class InferenceRunner:
             created_by=created_by
         )
         
-        logger.info(f"Inference Run [{run_id}] successfully completed and saved.")
+        # 5. Output Summary Report
+        logger.info("=" * 60)
+        logger.info("INFERENCE RUN SUMMARY REPORT")
+        logger.info("=" * 60)
+        logger.info(f"Mode:            {dataset_mode.upper()}")
+        logger.info(f"Run ID:          {run_id}")
+        logger.info("-" * 60)
+        logger.info("Database Records Generated:")
+        logger.info(f"  - inference_run_history         : 1")
+        logger.info(f"  - query_history                 : {len(results)}")
+        logger.info(f"  - inference_run_query_mapping   : {len(results)}")
+        
+        case1_count = sum(1 for q in results if q.golden_record_id is not None)
+        if dataset_mode == "case1":
+            logger.info(f"  - golden_record_query_mapping   : {case1_count}")
+        else:
+            logger.info(f"  - golden_record_query_mapping   : 0 (Orphaned Query Pattern)")
+        logger.info("=" * 60)
+        
         return run_id
 
 if __name__ == "__main__":
