@@ -50,7 +50,25 @@ An enterprise-grade framework designed to evaluate, score, and diagnose Retrieva
 
 ---
 
-## 2. Dataset & Reference Corpus
+## 2. Technology Stack & Model Roles
+
+### LLM Assignments
+The framework dynamically injects specific LLM models based on the stage of the pipeline to optimize for both cost and reasoning capabilities:
+- **Embedding & Indexing**: `text-embedding-004` (Google Gemini Embedder via Vertex/AI Studio) is used for dense vector indexing.
+- **RAG Generation**: `gemini-2.5-pro` (Temperature = 0) is tasked with synthesizing answers from retrieved contexts.
+- **LLM-as-a-Judge (Evaluator)**: `gemini-2.5-pro` (with `Structured Outputs` enforced) acts as the strict, deterministic grader for both the Golden Baseline matches (Case 1) and the RAG Triad heuristics (Case 2).
+- **Golden Dataset Synthesis**: `gemini-2.5-pro` powers the inverse-generation pipeline to extract facts from the financial reports and formulate Question/Answer benchmark pairs.
+
+### Key Libraries
+- **`langchain` & `langchain-google-genai`**: Utilized for pipeline orchestration, prompt templating, and text splitting (e.g., `RecursiveCharacterTextSplitter`).
+- **`psycopg` (v3)**: The modern, fully async PostgreSQL driver used for high-performance `pgvector` transactions and connection pooling.
+- **`pydantic` (v2)**: Enforces strict schema validation for internal Data Transfer Objects (DTOs) and guarantees deterministic JSON outputs from the LLM Evaluators.
+- **`loguru`**: Powers the thread-safe, asynchronous logging throughout the pipeline.
+- **`pytest` & `pytest-asyncio`**: Drives the test suite, enforcing robust integration testing with dynamic database teardowns.
+
+---
+
+## 3. Dataset & Reference Corpus
 
 As per the assignment requirements ("No actual data is provided... please download some annual reports / financial statements"), this framework is built and tested against real-world financial data. 
 
@@ -60,7 +78,7 @@ As per the assignment requirements ("No actual data is provided... please downlo
 
 ---
 
-## 3. Design Documentation
+## 4. Design Documentation
 
 This project enforces strict software engineering principles (SOLID, Dependency Injection, Polymorphism). The architectural rationale is comprehensively documented across multiple design documents, detailing the evolution of each phase:
 
@@ -75,7 +93,7 @@ This project enforces strict software engineering principles (SOLID, Dependency 
 
 ---
 
-## 4. Pipeline Runners (Execution Flow)
+## 5. Pipeline Runners (Execution Flow)
 
 The system strictly decouples the entry points (`Runners`) from the core business logic (`Pipelines`). To execute the full lifecycle, run the following scripts in order:
 
@@ -105,7 +123,7 @@ python src/runners/diagnoser_runner.py
 
 ---
 
-## 5. Output Files & Artifacts
+## 6. Output Files & Artifacts
 
 All final deliverables requested by the assignment are located in the **[`output/`](./output/)** directory:
 
