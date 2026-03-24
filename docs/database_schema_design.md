@@ -274,24 +274,8 @@ CREATE INDEX idx_eval_strategy ON evaluation_results(evaluation_strategy);
 
 ---
 
-## 📊 View 1: `v_evaluation_metrics_pivot` (RAG Triad Analysis View)
-While the underlying `evaluation_metrics` uses a flexible EAV (Entity-Attribute-Value) "long table" design to support infinite new metrics without schema changes, analysts and BI dashboards often require a "wide table" format. 
-
-This PostgreSQL view pivots the core RAG Triad metrics (Context Relevance, Faithfulness, Answer Relevance) into columns grouped by `(job_id, query_id)`. This provides a human-readable, flattened dataset perfect for immediate diagnosis and exporting to CSVs or Pandas DataFrames.
-
-```sql
-CREATE OR REPLACE VIEW v_evaluation_metrics_pivot AS
-SELECT 
-    job_id,
-    query_id,
-    MAX(CASE WHEN metric_name = 'context_relevance' THEN metric_value END) AS context_relevance_score,
-    MAX(CASE WHEN metric_name = 'faithfulness' THEN metric_value END) AS faithfulness_score,
-    MAX(CASE WHEN metric_name = 'answer_relevance' THEN metric_value END) AS answer_relevance_score,
-    MAX(CASE WHEN metric_name = 'recall_at_k' THEN metric_value END) AS recall_at_k_score
-FROM evaluation_metrics
-WHERE is_deleted = FALSE
-GROUP BY job_id, query_id;
-```
+## 📊 View 1: `v_evaluation_metrics_pivot` (Deprecated -> Native Wide Table)
+*(Archived: The concept of a Pivot View is no longer necessary. By replacing the EAV `evaluation_metrics` table with the natively wide `evaluation_results` table, BI dashboards and Python DataFrames can query the base table directly without the performance overhead of dynamic SQL pivoting.)*
 
 ## 💡 Architecture Note: Metadata Pre-filtering (Hybrid Search) & Auditability
 By introducing the `documents` and `document_topics` tables, this architecture natively supports **Metadata Pre-filtering (or Hybrid Vector Search)**. 
