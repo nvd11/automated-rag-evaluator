@@ -91,9 +91,17 @@ Answer:"""
         }
         
         model_name = getattr(self.llm, "model_name", getattr(self.llm, "model", "Unknown Model"))
-        logger.info(f"Streaming answer using {model_name} via LCEL chain...")
-        async for chunk in self.chain.astream(chain_input, config=config, **kwargs):
-            yield chunk
+        
+        if settings.ENABLE_PROXY:
+            logger.warning(f"Streaming answer using {model_name} via LCEL chain (Proxy Fallback to Threaded Sync)...")
+            # If we try to use native astream, it might hang via gRPC. 
+            # Safest proxy workaround is to run the sync invoke in a thread and yield the final result.
+            result = await asyncio.to_thread(self.chain.invoke, chain_input, config=config, **kwargs)
+            yield result
+        else:
+            logger.info(f"Streaming answer using {model_name} via LCEL chain (Native Async)...")
+            async for chunk in self.chain.astream(chain_input, config=config, **kwargs):
+                yield chunk
 
     def invoke(self, input: Dict[str, Any], config: Optional[RunnableConfig] = None, **kwargs) -> str:
         raise NotImplementedError("LangchainRAGGenerator is fully async. Use ainvoke instead.")
