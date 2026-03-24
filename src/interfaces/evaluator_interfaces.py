@@ -71,7 +71,7 @@ class ILLMJudge(ABC):
     """
     Contract for the LLM component acting as an impartial judge/evaluator.
     Uses Structured Output to enforce the ScoreWithReasoning schema.
-    Polymorphic design: Concrete implementations (e.g., BenchmarkJudge, BlindJudge) 
+    Polymorphic design: Concrete implementations (e.g., GoldenBaselineJudge, RagTriadJudge) 
     will implement their specific evaluation strategies.
     """
     
