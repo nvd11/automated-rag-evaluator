@@ -87,41 +87,28 @@ CREATE TABLE IF NOT EXISTS inference_run_history (
 CREATE INDEX IF NOT EXISTS idx_inf_runs_timestamp ON inference_run_history (start_time DESC) WHERE is_deleted = FALSE;
 
 -- 5.5 Evaluation Jobs (Evaluator Configs - Many-to-One with Inference Runs)
-CREATE TABLE IF NOT EXISTS evaluation_job_history (
-    job_id UUID PRIMARY KEY,
-    inference_run_id UUID,
-    start_time TIMESTAMP NOT NULL,
-    end_time TIMESTAMP NOT NULL,
-    evaluator_model VARCHAR(100) NOT NULL,
-    evaluator_prompt_version VARCHAR(100),
-    cost_estimate FLOAT,
-    created_by VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_by VARCHAR(100),
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_deleted BOOLEAN DEFAULT FALSE
-);
+-- *DEPRECATED*: Replaced by the wide-table architecture in evaluation_results.
+-- Kept for historical reference only.
 
-CREATE INDEX IF NOT EXISTS idx_eval_jobs_timestamp ON evaluation_job_history (start_time DESC) WHERE is_deleted = FALSE;
-
--- 6. Evaluation Metrics (Diagnoser Input)
+-- 6. Evaluation Metrics (Upgraded EAV Model)
 CREATE TABLE IF NOT EXISTS evaluation_metrics (
     id UUID PRIMARY KEY,
     job_id UUID,
-    inference_run_id UUID,
-    dataset_mode VARCHAR(50) NOT NULL,
-    query_id VARCHAR(100) NOT NULL,
+    query_id UUID NOT NULL, -- SOFT LINK to query_history.query_id
+    evaluation_strategy VARCHAR(50) NOT NULL,
     metric_category VARCHAR(50) NOT NULL,
-    metric_name VARCHAR(100) NOT NULL,
-    metric_value FLOAT NOT NULL,
+    metric_name VARCHAR(50) NOT NULL,
+    metric_value NUMERIC(5,4) NOT NULL,
+    reasoning TEXT,
     created_by VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_by VARCHAR(100),
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_deleted BOOLEAN DEFAULT FALSE
+    is_deleted BOOLEAN DEFAULT FALSE,
+    CONSTRAINT uq_query_strategy_metric_job UNIQUE (query_id, evaluation_strategy, metric_name, job_id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_eval_metrics_diagnoser ON evaluation_metrics (job_id, metric_category, metric_name) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_eval_metrics_diagnoser ON evaluation_metrics (job_id, evaluation_strategy, metric_name) WHERE is_deleted = FALSE;
 
 
 -- 7. Query History (RAG Interaction Logs)
