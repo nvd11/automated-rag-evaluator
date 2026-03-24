@@ -10,9 +10,8 @@ An enterprise-grade framework designed to evaluate, score, and diagnose Retrieva
 - Python 3.11+
 
 ### Environment Setup
-1. **Clone the repository and navigate to the project root:**
+1. **Unzip the package and navigate to the project root:**
    ```bash
-   git clone <repository_url>
    cd automated-rag-evaluator
    ```
 
