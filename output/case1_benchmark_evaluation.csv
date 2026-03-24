@@ -1,0 +1,218 @@
+Query ID,Question,Generated Answer,Context Relevance (0-5),Faithfulness (0-5),Answer Relevance (0-5),Correctness (0-5)
+1575bf8d-fd34-4963-9c10-48ff179f012a,How does HSBC Holdings differentiate its use of financial instruments when managing risks associated with long-term debt versus structural foreign exchange exposures?,"Based on the provided documents, HSBC Holdings differentiates its use of financial instruments for managing these risks as follows:
+
+*   **Long-term Debt:** To manage interest rate and foreign currency risk from long-term debt, HSBC Holdings uses interest rate swaps and cross-currency interest rate swaps.
+*   **Structural Foreign Exchange Exposures:** To manage structural foreign exchange exposures, the company uses forward foreign exchange contracts.",,,,5.00
+4a482fe6-829d-424b-bd7e-e89cf580d9f0,"According to the text, the adoption of recommendations from which specific report prompted the inclusion of the reconciliations by stage for gross carrying amounts, nominal amounts, and allowances?","Based on the provided documents, the inclusion of the reconciliations by stage for gross carrying amounts, nominal amounts, and allowances was prompted by the adoption of recommendations from **""the third report from The Taskforce on Disclosures about Expected Credit Losses (‘DECL’)""** (Source 1, Source 2).",,,,5.00
+0c19541f-b92f-4fbe-ae7a-76c12cd9a984,Which specific policy provides the framework and controls that HSBC utilizes to uphold its commitment to complying with applicable employment laws and regulations?,"Based on the provided documents, the policy that provides the framework and controls for HSBC to uphold its commitment to complying with applicable employment laws and regulations is **HSBC’s employment practices and relations policy**.
+
+This is stated in both Source 1 and Source 2: ""HSBC’s employment practices and relations policy provides the framework and controls through which we seek to uphold that commitment.""",,,,5.00
+843d4d98-117c-49d4-a386-b88c024a2163,"According to the document's footnotes, how are the previously reported progress numbers for aviation converted from tCO2e/million rpk to tCO2e/million rtk?","According to the provided documents, the previously reported progress numbers for aviation were converted from tCO2e/rpk to tCO2e/rtk using a multiplier of 10.",,,,4.00
+c4f7b4b5-625f-4287-8f26-7d47e9a01ef4,"According to the Directors' remuneration report, what specific objectives is the review of the senior executives' remuneration approach intended to ensure?","Based on the provided documents, the review of the senior executives' remuneration approach is intended to ensure that it:
+
+*   Supports a high-performance culture.
+*   Incentivises the achievement of financial and strategic objectives.
+*   Promotes robust risk management and exemplary conduct standards.",,,,5.00
+61215910-71b8-40ae-9652-4bec9d727204,"Based on the HSBC table for hedged items by hedged risk, what is the carrying amount of liabilities for ""Debt securities in issue"" under the interest rate hedged risk category?","Based on the provided tables for ""HSBC hedged item by hedged risk,"" the carrying amount of liabilities for ""Debt securities in issue"" under the interest rate hedged risk category is:
+
+*   **At 31 Dec 2025:** $55,770 million (Source 2) and $53,482 million (Source 3). The provided context contains two separate tables for 2025 with these different values.
+*   **At 31 Dec 2024:** $78,402 million (Source 1, Source 2).",,,,3.00
+80bff81f-acbb-43dc-8f68-1e4299e8906b,"According to the text, what specific acquisition did the Group progress during the year alongside the announcement of a new Chairman?","Based on the provided documents, there is no information available regarding any specific acquisition that the Group progressed during the year. The context exclusively discusses the succession process for the Group Chairman role.",,,,0.00
+06ddaadc-b74f-411b-bfcc-ab9e4fa1a512,"According to the provided text, what has been the organisation's core strategy for the past 160 years?","Based on the provided text, the organisation's foundational objective for its 161-year history has been ""to establish a bank in Hong Kong and Shanghai that would facilitate local and international trade."" The document states that the bank has not lost sight of this objective.",,,,3.00
+d14e13de-fdec-4b56-badc-25cab1e2c374,"According to the text, what specific event triggers HSBC to identify loans as forborne and classify them as either performing or non-performing?","According to the provided text, HSBC identifies loans as forborne and classifies them as either performing or non-performing when ""HSBC modifies the contractual terms due to financial difficulty of the borrower"" (Source 1).",,,,5.00
+aef1af5b-031a-4a92-9612-c5682655b950,"What position did the company hold in the Global CCLA Corporate Mental Health Benchmark, and for how many consecutive years has it maintained this standing?","Based on the provided documents, the company was ranked 1st globally in the CCLA Corporate Mental Health Benchmark for the fourth consecutive year (Source 2).",,,,5.00
+0269819b-de09-4d6b-aca7-d28e5a9e3ee5,"Based on the provided data table, what was the effect of dilutive potential ordinary shares (in millions) during the year that reported the highest basic earnings per share?","Based on the provided data table, the year with the highest basic earnings per share was 2024, with $1.25 per share.
+
+For that year, the effect of dilutive potential ordinary shares was 128 million.",,,,5.00
+97d8ed96-e9d1-4f3f-bf01-5385e3145428,"According to the provided text from the HSBC Holdings plc Annual Report and Accounts 2025, what specific types of risk are included in RWAs?","According to the provided text, RWAs (Risk-Weighted Assets) include the following specific types of risk:
+
+*   Credit risk
+*   Counterparty credit risk
+*   Market risk
+*   Operational risk",,,,5.00
+2f55f66c-8a2f-4e9f-8049-e8a967b48d5e,What specific tools or methods does Model Risk Management use to regularly report on model risk to senior management and the Group Risk Committee?,"Based on the provided documents, the model risk governance committees, which include senior leaders and the Group-level Model Risk Committee, are supported by ""key model risk metrics"" to help them oversee model-related concerns (Source 3).
+
+The context does not provide further details on other specific tools or methods used for regular reporting to senior management.",,,,3.00
+8adaa122-0f96-43a3-8aee-2f0b77967b77,What specific assessments did the Group Risk Committee (GRC) annually review and challenge before providing its recommendations to the Board for approval?,"Based on the provided documents, the Group Risk Committee (GRC) conducted its annual review and challenge of the Group’s ICAAP (Internal Capital Adequacy Assessment Process) and ILAAP (Internal Liquidity Adequacy Assessment Process), and provided its recommendations to the Board for approval.",,,,5.00
+15edd83f-230c-4a00-a8fb-7fab4ae12f76,"How is ""portfolio diversification"" defined in the context of the Group's non-trading VaR, and how is it measured?","Based on the provided documents, ""portfolio diversification"" in the context of the Group's non-trading Value at Risk (VaR) is defined and measured as follows:
+
+*   **Definition:** It is the market risk dispersion effect of holding a portfolio that contains different risk types, such as interest rate and credit spreads. It represents the reduction in unsystematic market risk that occurs when these different risk types are combined into a single portfolio (Source 3).
+
+*   **Measurement:** It is measured as the difference between the sum of the VaR by individual risk type and the combined total VaR. A negative number indicates the benefit of the portfolio diversification (Source 1, Source 3).",,,,5.00
+1ff5826f-4063-43ba-9a1a-6c1001ffcdc2,"According to the report, what is the purpose of utilizing a top and emerging risks process?","According to the provided documents, the purpose of the top and emerging risks process is to:
+
+*   **Provide forward-looking views:** The process is used to offer ""forward-looking views of issues with the potential to threaten the execution of our strategy or operations over the medium to long term"" (Source 1).
+*   **Enable preventative action:** It identifies these risks so that they can be considered when ""determining whether any incremental action is needed to either prevent them from materialising or to limit their effect"" (Source 3).
+*   **Monitor and manage risks:** The process involves identifying, monitoring, and agreeing on management actions to remediate or reduce these risks to acceptable levels (Source 3, Source 5).",,,,5.00
+b6fc96e5-01e3-4ba1-8400-a467ffe783b9,"Based on the provided data snippet, what are the exact figures reported for ""Non-bank financial institutions""?","Based on the provided data, the following figures are reported for ""Non-bank financial institutions"":
+
+*   **From Sources 1 and 5:**
+    *   96,974
+    *   2,413
+    *   478
+    *   193
+    *   100,058
+    *   (56)
+    *   (19)
+    *   (293)
+    *   (1)
+    *   (369)
+
+*   **From Source 4:**
+    *   100,058
+    *   671
+    *   (369)
+    *   (294)
+    *   (112)
+    *   (182)
+    *   2
+    *   82,464
+    *   679
+    *   (436)
+    *   (361)
+    *   (59)
+    *   (19)
+    *   — (dash indicating zero or not applicable)",,,,2.00
+09d64805-db1f-4d68-922d-e07f1b9e7adc,"Based on the provided text, what is the company's primary use of capital generation, and how does it prefer to allocate capital after this primary use is fulfilled?","Based on the provided text, the company's primary use of capital generation is to pay an ordinary dividend, and its preferred use of capital after that is to support business growth.
+
+Specifically:
+
+*   **Primary Use:** ""Our primary use of capital generation is to pay an ordinary dividend of 50% of profit attributable to ordinary shareholders, excluding material notable items and related impacts"" (Source 1, Source 2).
+*   **Preferred Use After Dividend:** ""Our preferred use of capital after paying the dividend is to support the growth of our four businesses"" (Source 1).",,,,5.00
+c7ab67d4-36ae-4329-ad30-a0c25c60ae55,"What is the name of the new Group-wide leadership framework that is being developed and rolled out, as updated by the Group Chief People & Governance Officer?","Based on the provided documents, the new Group-wide leadership framework is called ‘How We Lead’.
+
+According to the context, this framework was developed and implemented during 2025 and is designed to provide a common leadership language, set of behaviors, and tools across the organization (Source 1, Source 3). A management Advisory Group, led by the Group Chief People & Governance Officer, was established to support and advise on its delivery and implementation (Source 2).",,,,5.00
+5ca4a88e-c567-4067-ab73-43d162a243ae,"What specific modifications were made to the emission uplift rates for scopes 1, 2, and 3, and what were the stated reasons for these adjustments?","Based on the provided documents, the information regarding specific modifications made to the emission uplift rates for scopes 1, 2, and 3, and the reasons for these adjustments, is not available.
+
+While the context mentions that the analysis for the iron and steel sector included scope 1 and 2 emissions (Source 4), it does not detail any changes to uplift rates for these or any other scopes.",,,,0.00
+241d3a95-2575-47ed-a7d9-26b94329bf81,Under what circumstance is HSBC deemed to exercise control over a number of third-party managed funds?,"Based on the provided documents, HSBC is deemed to control a number of third-party managed funds through its involvement as a principal in the funds.",,,,5.00
+99e3c3fc-236c-44f2-84ad-ad55fea7caeb,"According to the provided footnotes, what was the amount of cash margin paid that had been offset against gross derivatives liabilities at 31 December 2025, and what was the corresponding amount in 2024?","Based on the provided documents, here is the information regarding the cash margin paid:
+
+According to footnote 2 in Source 1, the amount of cash margin paid that had been offset against the gross derivatives liabilities was:
+*   **At 31 December 2025:** $11.5bn
+*   **At 31 December 2024:** $5.6bn",,,,5.00
+2f52b261-3b6c-4360-baf2-c64c76be5160,"According to the movement in Level 3 financial instruments table, what was the balance of assets 'Designated and otherwise mandatorily measured at fair value through profit or loss' as of January 1, 2024?","Based on the provided documents, the balance of assets 'Designated and otherwise mandatorily measured at fair value through profit or loss' as of January 1, 2024, was **$19,788 million**.",,,,5.00
+a03c6a55-a112-407f-8e26-1bf1344187c5,What specific policies and emissions targets are included in HSBC's ESG-related ambitions that the bank warns it may fail to achieve?,"Based on the provided documents, the specific policies and emissions targets included in HSBC's ESG-related ambitions, which the bank warns it may fail to achieve, are:
+
+*   The positions set forth in its **thermal coal phase-out policy**.
+*   Its **energy policy**.
+*   Its targets to reduce **on-balance sheet financed emissions**.
+*   Its targets to reduce, where applicable, **facilitated emissions** in its portfolio of selected high-emitting sectors.
+*   Its **net zero ambition**.",,,,4.00
+86734228-c571-4529-8b52-92dc0e6c4c26,"Under fair value hedge accounting, how is the cumulative adjustment to the carrying amount of a hedged item treated when the hedge relationship is discontinued, and how does this treatment differ if the item has been derecognised?","Based on the provided documents, when a fair value hedge relationship is discontinued, the treatment of the cumulative adjustment to the carrying amount of a hedged item is as follows:
+
+*   **If the hedged item is not derecognised:** The cumulative adjustment is amortised to the income statement on a recalculated effective interest rate.
+*   **If the hedged item has been derecognised:** The cumulative adjustment is recognised in the income statement immediately.",,,,4.00
+6199eff5-ed63-4ecc-8b7a-f81a7d8b4e3d,What aided the Committee in its determination that each of the functions provided thorough information regarding people capacity and capability?,"Based on the provided documents, the Committee's determination that each function provided thorough information regarding people capacity and capability was aided by ""specific reports from and engagement meetings with the senior leaders of these functions.""",,,,5.00
+453da2f4-83e7-4b49-9305-d60628722a21,"According to the snippet, what is the minimum timeframe from the date of approval of the financial statements over which the directors must identify any material uncertainties regarding the Group's and parent company's ability to continue adopting the going concern basis of accounting?","According to the provided documents, the minimum timeframe over which the directors must identify any material uncertainties regarding the Group's and parent company's ability to continue adopting the going concern basis of accounting is ""at least twelve months from the date of approval of the financial statements"" (Source 4).
+
+Source 3 also confirms this, stating they have not identified any material uncertainties regarding the ability to continue as a going concern ""for a period of at least twelve months from when the financial statements are authorised for issue.""",,,,5.00
+144b71a6-3145-4063-a50e-9964abe4130d,What action was deemed necessary for economic scenarios or weights after assessing the subsequent tariff developments in relation to Greenland?,"Based on the provided documents, after assessing the subsequent tariff developments in relation to Greenland, **no additional action was deemed necessary** for economic scenarios or weights (Source 1, Source 2).",,,,5.00
+a13d90e8-1811-4b68-9ddc-8210a351c3e9,"Based on the assessment of on-balance sheet financed emissions, how did the Scope 1-2 emissions for the Cement sector change from 2023 to 2024?","Based on the provided documents, the on-balance sheet financed Scope 1-2 emissions for the Cement sector changed as follows:
+
+*   **2023:** 7.2 Mt CO2e
+*   **2024:** 5.1 Mt CO2e
+
+Therefore, the Scope 1-2 emissions for the Cement sector decreased from 7.2 Mt CO2e in 2023 to 5.1 Mt CO2e in 2024.",,,,5.00
+83e65e66-ac36-4d9e-b9be-c4f989984178,"Based on the provided text, what specific minimum requirements are evaluated in the summary of the Group's financial position over the assessment period?","Based on the provided text, the summary of the Group's financial position over the assessment period evaluates the following specific minimum requirements:
+
+*   Minimum levels of regulatory capital
+*   Liquidity funding
+*   The minimum requirements for own funds and eligible liabilities",,,,5.00
+c48b233a-5c9c-4181-bb60-b0f5323c1601,"According to the provided text regarding ""Identified staff - remuneration by band"", how many high-earning identified staff members, as set out in Article 450(i) CRR, fall within the €1,000,000 – 1,500,000 remuneration band?","According to the provided text, there are 274 high-earning identified staff members, as set out in Article 450(i) CRR, who fall within the €1,000,000 – 1,500,000 remuneration band.",,,,5.00
+500c9627-ce78-4b69-8b92-fb679d0974ed,"In 2025, what was the financial impact of favourable changes reflected in profit or loss for financial assets and liabilities designated and otherwise mandatorily measured at fair value through profit or loss, based on the sensitivity to reasonably possible alternative assumptions?","Based on the sensitivity analysis to reasonably possible alternative assumptions, the financial impact of favourable changes reflected in profit or loss for ""Financial assets and liabilities designated and otherwise mandatorily measured at fair value through profit or loss"" in 2025 was **$1,750 million**.",,,,5.00
+c75ecb6f-fbb4-4b4f-a01f-acd297599207,"According to the provided financial data snippet, what is the final reported total for 'Global Payments Solutions' under the supplementary management view of fee and other income on a constant currency basis?","Based on the provided financial data, there are two final reported totals for 'Global Payments Solutions' under the supplementary management view of fee and other income on a constant currency basis:
+
+*   **Source 1** reports a total of **2,294**.
+*   **Source 2** reports a total of **2,261**.",,,,3.00
+f7b83c8f-e823-44e0-b2c0-089b3b2f3e7b,"As of December 31, 2025, what is the total fair value of liabilities after applying the offset?","Based on the provided documents, the total for financial liabilities as of 31 Dec 2025 is 203,910 (Source 2).
+
+The context also states, ""In the offsetting of financial assets and financial liabilities, the net amount is reported in the balance sheet when the offset criteria are met"" (Source 2). This indicates that the reported balance sheet figures are presented net of offsetting.",,,,1.00
+3a03a6d9-509b-4e77-b6a7-7f6de9b7e9a7,"Based on the provided table of funds, what is the percentage of the share class held by the immediate parent company for HSBC Investment Funds (Hong Kong) Limited, and which footnote applies to this entry?","Based on the provided documents, the percentage of the share class held by the immediate parent company for HSBC Investment Funds (Hong Kong) Limited is 100.00%, and the applicable footnote is 79.",,,,5.00
+a723134c-1a49-4b5d-8ad4-59952e30661b,What are the respective reset dates for the two securities issued by HSBC Holdings on 11 September 2024?,"Based on the provided documents, the respective reset dates for the two securities issued by HSBC Holdings on 11 September 2024 are:
+
+*   **11 March 2030**
+*   **11 September 2034**
+
+This information is found in Source 2, which states:
+*   ""This security was issued by HSBC Holdings on 11 September 2024. The first call period commences six calendar months prior to the reset date of 11 March 2030.""
+*   ""This security was issued by HSBC Holdings on 11 September 2024. The first call period commences six calendar months prior to the reset date of 11 September 2034.""",,,,5.00
+245d78ec-d99f-4750-9b73-52598978b5f8,What are the four specific businesses that form the center of HSBC's new organizational structure introduced in January 2025?,"Based on the provided documents, the four specific businesses that form the center of HSBC's new organizational structure introduced in January 2025 are:
+
+*   **Hong Kong**
+*   **UK**
+*   **Corporate and Institutional Banking (CIB)**
+*   **International Wealth and Premier Banking (IWPB)**",,,,5.00
+e04bdd04-d89f-4240-b0f5-34490193b921,"According to the provided financial snippet, what is the final value listed in the sequence for 'Net finance expense from insurance contracts4'?","Based on the provided documents, the final value listed in the sequence for 'Net finance expense from insurance contracts4' is **$0.2bn expense**.
+
+This is found in Source 1, which states: ""‘Net finance expense from insurance contracts’ expense of $9.8bn (2024: $6.2bn expense) comprises expense of $9.8bn (2024: $6.0bn expense) recognised in the income statement and expense of nil (2024: $0.2bn expense) recognised in other comprehensive income.""",,,,0.00
+91660367-0d49-4589-b9e2-143d8877b428,What are the specific reporting and review frequencies required for insurance manufacturing subsidiaries regarding their exposure to liquidity risks?,"Based on the provided documents, insurance manufacturing subsidiaries are required to complete quarterly liquidity risk reports and conduct an annual review of the liquidity risks to which they are exposed.",,,,5.00
+2fd5ee4a-32a2-4d7f-9d04-5245c6876ff6,"According to the corporate report snippet, what four primary considerations does the Board have due regard to when promoting the success of the Company for the benefit of its members?","Based on the provided documents, the four primary considerations the Board has due regard to when promoting the success of the Company are:
+
+1.  **The likely consequences of any decision in the long term**
+2.  **The interests of our employees**
+3.  **The need to foster our business relationships with suppliers, customers and others**
+4.  **Impact of our operations on the community and the environment**",,,,5.00
+9974becc-ef39-48ff-9bfa-6b316f003c49,"What is the name of the new Group-wide leadership framework launched by HSBC to support its refreshed strategy, and what are its defining characteristics?","Based on the provided documents, the new Group-wide leadership framework launched by HSBC is called **How We Lead**.
+
+Its defining characteristics are:
+
+*   **Purpose:** It is designed to support the desired company culture, shape the way HSBC operates, and drive meaningful changes in working methods to deliver better outcomes for customers, colleagues, and other stakeholders (Source 1, 2, 4).
+*   **Components:** The framework is built upon six new ""Leadership Principles"" and provides a common leadership language, behaviors, and tools for leaders across the Group (Source 1, 3).
+*   **Implementation:** The framework was launched in 2025, with senior leaders and the Managing Director cohort attending a two-day event. A broader rollout to other people leaders is planned for 2026 (Source 1, 3, 4).
+*   **Oversight:** The Board oversees its implementation and uses a ""Board Culture Health Check"" to assess how leaders are embracing the principles and embedding the framework's tools (Source 1).",,,,3.00
+1e58bbe2-e85b-4568-a9db-cc5bc3d6d9b2,"According to the report, which specific regulations and exchange rules form the basis for HSBC Holdings plc's codified obligations regarding transactions in Group securities?","According to the provided documents, HSBC Holdings plc's codified obligations for transactions in Group securities are based on the requirements of:
+
+*   The UK Market Abuse Regulation
+*   The rules governing the listing of securities on HKEx (The Stock Exchange of Hong Kong Limited)",,,,5.00
+56933014-fb06-4098-a3d5-e3203b50594c,What is the total allowance for expected credit losses (ECL) for Corporate and commercial wholesale lending for loan and other credit-related commitments and financial guarantees?,"Based on the provided context, the total allowance for expected credit losses (ECL) for Corporate and commercial wholesale lending for loan and other credit-related commitments and financial guarantees is **$337 million**.
+
+This is detailed in Source 1, in the ""Corporate and commercial"" row under the ""Allowance for ECL"" section, with the following breakdown:
+*   **Stage 1:** $(118)m
+*   **Stage 2:** $(121)m
+*   **Stage 3:** $(98)m
+*   **POCI:** —
+*   **Total:** $(337)m",,,,5.00
+7af029aa-0f29-4abc-a0c8-2f85a4b26bfb,"According to the stated key developments in 2025, what specific areas did the Group retain its focus on while continuing to assess its operational resilience capability?","Based on the provided documents, the key developments in 2025 indicate that the Group retained its focus on **risk transformation** and **financial crime** while continuing to assess its operational resilience capability and prioritizing the most significant enterprise risks (Source 1).",,,,5.00
+54c3264b-f270-492f-b022-d7fe06767169,"According to the strategic report, what specific factors are driving the continued rise in debt levels in major markets, and how could the resulting uncertainty about future taxation ultimately impact the Group?","Based on the provided strategic report, the specific factors driving the continued rise in debt levels in major markets are:
+*   Higher social welfare costs
+*   Increased expenditures on defence
+*   Increased expenditures on climate transition (Source 1, Source 3)
+
+The resulting uncertainty about future taxation could undermine confidence, business investment, and consumer spending. This would ultimately be negative for the Group’s retail and corporate operations in various markets (Source 1).",,,,5.00
+826a90e2-9de7-43db-aa63-bc680e7cd981,"According to the 2024 selected countries/territories results, what specific entities are included under the ""UK"" category?","Based on the provided documents, the ""UK"" category for the 2024 selected countries/territories results includes the following entities:
+
+*   HSBC UK Bank plc (ring-fenced bank)
+*   HSBC Bank plc (non-ring-fenced bank)
+*   The ultimate holding company, HSBC Holdings plc
+*   The ServCo Group",,,,5.00
+fb4e9068-de1d-46a5-a66c-3ec1bdf441e8,"How are the insurance manufacturing subsidiaries regulated relative to the banking operations, and how are the risks within these insurance entities managed?","Based on the provided documents, here is the information regarding the regulation and risk management of the insurance manufacturing subsidiaries:
+
+**Regulation:**
+
+*   The insurance manufacturing subsidiaries are regulated separately from the banking operations (Source 1).
+
+**Risk Management:**
+
+*   The risks within the insurance entities are managed using methodologies and processes that are subject to Group oversight, and the subsidiaries follow the Group’s risk management framework (Source 1, Source 2, Source 3).
+*   Many of the risks are the same as in the banking operations and are covered by the Group's risk management processes (Source 3).
+*   In 2025, the Group continued to strengthen insurance-specific policies, frameworks, and controls, particularly for financial and capital reporting, stress testing, asset-liability management, reinsurance, and insurance underwriting risks (Source 2).
+
+The subsidiaries use the following frameworks and processes to manage and mitigate **insurance underwriting risk**:
+*   A formal approval process for new or changed products (Source 4).
+*   A product pricing and profitability framework to ensure premiums are adequate (Source 4).
+*   A framework for customer underwriting (Source 4).
+*   The use of reinsurance to cede risks to third parties (Source 4).
+*   Oversight by actuarial review committees to ensure appropriate reserves are established (Source 4).
+
+**Liquidity risk**, which is considered less material for the insurance business, is managed by:
+*   Cash flow matching and maintaining sufficient cash resources (Source 5).
+*   Investing in high-quality, liquid investments (Source 5).
+*   Monitoring and restricting investment concentrations (Source 5).
+*   Establishing committed contingency borrowing facilities (Source 5).
+*   Completing quarterly liquidity risk reports and an annual review of liquidity risks (Source 5).",,,,5.00
+cf341f4f-cc3a-41e2-9877-a8307c2d9aa8,"According to the financial statements snippet, on what date were the statements approved by the Board of Directors, and who are the listed signatories?","Based on the provided documents, the financial statements were approved by the Board of Directors on **25 February 2026**.
+
+The listed signatories are:
+*   **Brendan Nelson** (Group Chairman)
+*   **Pam Kaur** (Group Chief Financial Officer)",,,,5.00

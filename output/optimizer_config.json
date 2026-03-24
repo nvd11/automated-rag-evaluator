@@ -1,0 +1,44 @@
+{
+  "search_space": {
+    "chunking": [
+      "fixed_256_overlap_32",
+      "fixed_512_overlap_64",
+      "recursive_section_aware",
+      "semantic_sentence_window"
+    ],
+    "indexing": [
+      "bm25",
+      "dense_bge",
+      "hybrid_bm25_dense"
+    ],
+    "reranking": [
+      "none",
+      "cross_encoder_miniLM",
+      "llm_rerank"
+    ],
+    "query_prompting": [
+      "raw_query",
+      "query_rewrite",
+      "step_back",
+      "decompose_then_merge"
+    ],
+    "generation": [
+      "strict_citation_low_temp",
+      "balanced_temp_0.2",
+      "concise_answer_low_temp"
+    ]
+  },
+  "evaluation": {
+    "top_k_values": [
+      3,
+      5
+    ],
+    "primary_rank_metric_case1": "nDCG@5_relevant_context",
+    "primary_rank_metric_case2": "composite_proxy_score",
+    "diagnosis_thresholds": {
+      "low_retrieval_recall": 0.45,
+      "low_faithfulness": 0.75,
+      "high_latency_seconds": 5.0
+    }
+  }
+}
