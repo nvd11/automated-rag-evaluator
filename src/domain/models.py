@@ -56,3 +56,23 @@ class GoldenRecord(BaseModel):
     ground_truth: str = Field(description="The human-expert or LLM-Teacher verified 'perfect answer' to serve as the benchmark baseline.")
     expected_topics: List[str] = Field(default_factory=list, description="Array of topic names the retrieval SHOULD theoretically hit based on the source chunk.")
     complexity: str = Field(description="Categorization (e.g., 'Factoid', 'Reasoning') for granular metric analysis.")
+
+class InferenceRun(BaseModel):
+    """Metadata representing a specific hyperparameter sweep configuration for an inference batch."""
+    run_id: str = Field(description="Unique UUID for this specific inference run.")
+    chunking_config: str = Field(description="Description of the chunking strategy used.")
+    indexing_config: str = Field(description="Description of the indexing strategy used.")
+    reranking_config: str = Field(description="Description of the reranking strategy used.")
+    prompting_config: str = Field(description="Description of the prompt strategy used.")
+    generation_config: str = Field(description="Description of the generation LLM configuration used.")
+
+class QueryHistoryRecord(BaseModel):
+    """Represents a single row of generated Q&A to be persisted in query_history."""
+    query_id: str = Field(description="Unique UUID for this specific query interaction.")
+    question: str = Field(description="The user query or benchmark question.")
+    generated_answer: str = Field(description="The answer synthesized by the LLM.")
+    retrieved_contexts: List[dict] = Field(description="Serialized list of retrieved chunks.")
+    query_time: str = Field(description="ISO timestamp when the query was dispatched.")
+    retrieval_time: str = Field(description="ISO timestamp when vector search completed.")
+    response_time: str = Field(description="ISO timestamp when the LLM finished generation.")
+    golden_record_id: Optional[str] = Field(default=None, description="The ID of the Ground Truth record (if Case 1).")
