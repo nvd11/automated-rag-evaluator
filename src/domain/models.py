@@ -76,3 +76,32 @@ class QueryHistoryRecord(BaseModel):
     retrieval_time: str = Field(description="ISO timestamp when vector search completed.")
     response_time: str = Field(description="ISO timestamp when the LLM finished generation.")
     golden_record_id: Optional[str] = Field(default=None, description="The ID of the Ground Truth record (if Case 1).")
+
+class QueryEvaluationDTO(BaseModel):
+    """Data Transfer Object used by the Evaluation Runner to load queries from the DB for scoring."""
+    query_id: str = Field(description="The UUID of the query from query_history.")
+    question: str = Field(description="The original user or benchmark question.")
+    generated_answer: str = Field(description="The RAG-generated answer to be evaluated.")
+    retrieved_contexts: List[dict] = Field(description="The exact context chunks retrieved during inference.")
+    ground_truth: Optional[str] = Field(default=None, description="The correct answer from golden_records (Populated ONLY for Case 1).")
+    
+    @property
+    def has_ground_truth(self) -> bool:
+        """Helper to determine if this query should follow Case 1 or Case 2 evaluation logic."""
+        return self.ground_truth is not None
+
+class ScoreWithReasoning(BaseModel):
+    """The strict structured output format required from the LLM Judge for a single metric."""
+    metric_name: str = Field(description="The name of the metric being scored (e.g., 'faithfulness', 'correctness').")
+    score: float = Field(description="The numerical score awarded by the judge (e.g., 0.0 to 5.0).")
+    reasoning: str = Field(description="A detailed, explicit explanation of why this specific score was awarded.")
+
+class EvaluationMetricRecord(BaseModel):
+    """Represents a single row to be persisted into the upgraded EAV evaluation_metrics table."""
+    query_id: str = Field(description="SOFT LINK to the evaluated query_history record.")
+    evaluation_strategy: str = Field(description="The framework used (e.g., 'CASE1_GROUND_TRUTH' or 'CASE2_RAG_TRIAD').")
+    metric_category: str = Field(description="Categorization (e.g., 'generation', 'retrieval').")
+    metric_name: str = Field(description="Specific metric (e.g., 'faithfulness').")
+    metric_value: float = Field(description="The numerical score.")
+    reasoning: str = Field(description="The textual justification for the score.")
+    judge_model: str = Field(description="The name of the LLM used as the judge (e.g., 'gemini-3.1-pro-preview').")

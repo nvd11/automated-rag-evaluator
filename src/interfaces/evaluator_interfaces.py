@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from src.domain.models import Chunk, GoldenRecord
+from src.domain.models import Chunk, GoldenRecord, QueryEvaluationDTO, EvaluationMetricRecord, ScoreWithReasoning
 
 class IGoldenRecordDAO(ABC):
     """
@@ -42,5 +42,49 @@ class IDatasetGenerator(ABC):
         structured GoldenRecord entity.
         
         This method is designed to be highly concurrent (e.g., via asyncio.gather).
+        """
+        pass
+
+class IEvaluationDAO(ABC):
+    """
+    Contract for data persistence related to the LLM-as-a-Judge Evaluation Pipeline.
+    Manages loading historical queries and saving the granular EAV metric scores.
+    """
+    
+    @abstractmethod
+    async def fetch_queries_for_evaluation(self, run_id: str) -> List[QueryEvaluationDTO]:
+        """
+        Extracts all queries executed during a specific inference run.
+        Must seamlessly combine Case 1 (with ground truth) and Case 2 (without) queries.
+        """
+        pass
+        
+    @abstractmethod
+    async def bulk_insert_evaluation_metrics(self, metrics: List[EvaluationMetricRecord], created_by: str) -> None:
+        """
+        Persists the LLM Judge's scoring results into the EAV database table transactionally.
+        Must handle UNIQUE constraint violations gracefully to avoid duplicate scoring.
+        """
+        pass
+
+class ILLMJudge(ABC):
+    """
+    Contract for the LLM component acting as an impartial judge/evaluator.
+    Uses Structured Output to enforce the ScoreWithReasoning schema.
+    """
+    
+    @abstractmethod
+    async def evaluate_case1(self, question: str, answer: str, ground_truth: str) -> List[ScoreWithReasoning]:
+        """
+        Case 1 Benchmark Eval: Compare the generated answer against a known Human/Teacher Ground Truth.
+        Expected Metrics: 'correctness'.
+        """
+        pass
+        
+    @abstractmethod
+    async def evaluate_case2(self, question: str, answer: str, contexts: List[str]) -> List[ScoreWithReasoning]:
+        """
+        Case 2 Blind Eval: Analyze the response using the RAG Triad when no Ground Truth exists.
+        Expected Metrics: 'faithfulness', 'answer_relevance', 'context_relevance'.
         """
         pass
