@@ -287,6 +287,33 @@ Enforces **strict separation of concerns** between dynamic operational logs (`qu
 CREATE INDEX idx_eval_query_mappings ON golden_record_query_mapping (golden_record_id, query_id) WHERE is_deleted = FALSE;
 ```
 
+---
+
+## Table 11: `evaluation_results` (Unified RAG Evaluation Scores)
+Stores the final LLM-as-a-Judge scores and mathematical metrics for both Case 1 (Benchmark) and Case 2 (Blind/RAG Triad) scenarios. Designed as a wide, decoupled analytics table (Soft Links only, no hard FKs or Cascades) to support easy BI dashboarding and prevent historical data loss.
+
+| Column Name                 | Data Type    | Description |
+| :---                        | :---         | :---        |
+| `id`                        | UUID (PK)    | Unique row identifier. |
+| `query_id`                  | UUID         | SOFT LINK to `query_history.query_id`. No DB-enforced FK to prevent cascade deletion of historical scores. |
+| `evaluation_strategy`       | VARCHAR(50)  | The strategy used (e.g., 'CASE1_GROUND_TRUTH', 'CASE2_RAG_TRIAD'). Allows the same query to be graded multiple ways. |
+| `judge_model`               | VARCHAR(100) | The LLM used for evaluation (e.g., 'gemini-3.1-pro-preview'). |
+| `correctness_score`         | NUMERIC(3,2) | Case 1 Metric: Accuracy against the Ground Truth (0-5). |
+| `semantic_similarity_score` | NUMERIC(3,2) | Case 1 Metric: Vector cosine similarity to Ground Truth. |
+| `faithfulness_score`        | NUMERIC(3,2) | Case 2 Metric: Hallucination check against retrieved contexts (0-5). |
+| `answer_relevance_score`    | NUMERIC(3,2) | Case 2 Metric: How well the answer addresses the question (0-5). |
+| `context_relevance_score`   | NUMERIC(3,2) | Case 2 Metric: Quality of the retrieved chunks (0-5). |
+| `reasoning`                 | TEXT         | The LLM Judge's explanation/justification for the scores. |
+| `created_by`                | VARCHAR(50)  | Audit field: Actor who created the record. |
+| `created_at`                | TIMESTAMP    | Audit field: Record creation time. |
+
+**Index & Constraint Strategy:**
+1. **Logical Unique Constraint:** `UNIQUE (query_id, evaluation_strategy, judge_model)` prevents duplicate grading runs for the exact same exam configuration.
+2. **Analytics Indices:** B-tree indices on `query_id` and `evaluation_strategy` for fast dashboard aggregations.
+```sql
+CREATE INDEX idx_eval_query_id ON evaluation_results(query_id);
+CREATE INDEX idx_eval_strategy ON evaluation_results(evaluation_strategy);
+```
 
 ---
 
