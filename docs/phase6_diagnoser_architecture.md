@@ -20,7 +20,7 @@ The Diagnoser is designed as a stateless, rule-based inference engine. It does n
    - *Example Rule A:* IF `context_relevance` is low AND `correctness` is low $\rightarrow$ "Retriever Failure". Action: "Increase chunk size or top_k".
    - *Example Rule B:* IF `context_relevance` is high AND `faithfulness` is low $\rightarrow$ "Generator Hallucination". Action: "Decrease temperature or switch to stricter prompt".
 
-### Why This Design Excels
+### Architectural Rationale
 By treating the rules as distinct, composable Python objects implementing a common `IDiagnosticRule` interface, the system avoids "spaghetti IF-ELSE" code. New diagnostics (e.g., latency checks, cost analysis) can be added purely by registering a new rule class.
 
 ## 3. Entity-Relationship (ER) Context

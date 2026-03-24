@@ -20,7 +20,7 @@ All generated answers, regardless of their origin, are persisted identically int
 2. **Case 1 (Ground Truth Present):** If the query originated from a Golden Record, the system writes a row to `golden_record_query_mapping`. This explicit join links the generated answer (`query_history.generated_answer`) to its benchmark (`golden_records.ground_truth`).
 3. **Case 2 (Blind Test / Production Logs):** The system intentionally **does not write** to `golden_record_query_mapping`. The query becomes an "Orphaned Query" relative to the benchmark dataset.
 
-### Why This Design Excels (Interview Highlight)
+### Architectural Rationale
 When the subsequent *Evaluation Runner (Phase 5)* executes, its logic is elegantly simple:
 - It performs a `LEFT JOIN` between `query_history` and `golden_record_query_mapping`.
 - **If the join succeeds**, it triggers the **Case 1 Evaluator** (calculating deterministic metrics like Answer Correctness, Semantic Similarity, and Recall@K against the Ground Truth).
