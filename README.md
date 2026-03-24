@@ -45,6 +45,9 @@ An enterprise-grade framework designed to evaluate, score, and diagnose Retrieva
    | `HTTP_PROXY` / `HTTPS_PROXY` | Proxy URL if your network requires one. |
    | `ENABLE_PROXY` | **Critical for Mainland China users**: Set this to `true` to force a REST fallback and bypass `gRPC` deadlocks caused by proxy environments. |
 
+   💡 **Pre-configured Cloud SQL Instance**: 
+   To save you the hassle of spinning up your own infrastructure, the provided `.env.example` file already contains connection details to a **live Google Cloud SQL (PostgreSQL + pgvector)** instance (`db.jpgcp.cloud`) hosted explicitly for this assignment. You do not need to install a local database; simply provide your `GEMINI_API_KEY` and the system will run out-of-the-box.
+
    ⚠️ **Important Note for Mainland China / Proxy Environments**: 
    LangChain's async structured outputs default to the `gRPC` protocol, which often deadlocks over HTTP/1.1 proxies. If you are operating behind a proxy, you **must** set `ENABLE_PROXY=true` in your `.env`. This tells our LLM Factory to dynamically wrap synchronous REST requests in `asyncio.to_thread()`, bypassing the blocked `gRPC` channel.
 
