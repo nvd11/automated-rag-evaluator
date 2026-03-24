@@ -71,20 +71,19 @@ class ILLMJudge(ABC):
     """
     Contract for the LLM component acting as an impartial judge/evaluator.
     Uses Structured Output to enforce the ScoreWithReasoning schema.
+    Polymorphic design: Concrete implementations (e.g., BenchmarkJudge, BlindJudge) 
+    will implement their specific evaluation strategies.
     """
     
     @abstractmethod
-    async def evaluate_case1(self, question: str, answer: str, ground_truth: str) -> List[ScoreWithReasoning]:
+    async def evaluate_query(self, dto: QueryEvaluationDTO) -> List[ScoreWithReasoning]:
         """
-        Case 1 Benchmark Eval: Compare the generated answer against a known Human/Teacher Ground Truth.
-        Expected Metrics: 'correctness'.
-        """
-        pass
+        Evaluates a single query based on the concrete judge's specific strategy.
         
-    @abstractmethod
-    async def evaluate_case2(self, question: str, answer: str, contexts: List[str]) -> List[ScoreWithReasoning]:
-        """
-        Case 2 Blind Eval: Analyze the response using the RAG Triad when no Ground Truth exists.
-        Expected Metrics: 'faithfulness', 'answer_relevance', 'context_relevance'.
+        Args:
+            dto: The QueryEvaluationDTO containing all context (question, answer, retrieved chunks, and optionally ground truth).
+            
+        Returns:
+            A list of scored metrics with reasoning, formatted as ScoreWithReasoning.
         """
         pass
