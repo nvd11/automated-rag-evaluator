@@ -23,8 +23,10 @@ The Diagnoser is designed as a stateless, rule-based inference engine. It does n
 ### Architectural Rationale
 By treating the rules as distinct, composable Python objects implementing a common `IDiagnosticRule` interface, the system avoids "spaghetti IF-ELSE" code. New diagnostics (e.g., latency checks, cost analysis) can be added purely by registering a new rule class.
 
-## 3. Entity-Relationship (ER) Context
-The Diagnoser does not write new tables to the database. Instead, it exclusively performs heavy analytical reads (`SELECT AVG(...)`) from the structures established in Phase 5:
+## 3. Data Flow Context (Read-Only)
+The Diagnoser **does not** introduce any new tables to the database. Instead, it acts purely as an analytical consumer, performing heavy aggregations (`SELECT AVG(...)`) across the structures established in prior phases.
+
+The diagram below highlights the existing entities that the Diagnoser reads from to reconstruct the full context of a RAG pipeline execution:
 
 ```mermaid
 erDiagram
