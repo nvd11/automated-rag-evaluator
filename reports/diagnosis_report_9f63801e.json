@@ -1,0 +1,24 @@
+{
+  "setting_id": "32f23ad6-8d00-4a7f-a1ae-29b7b50dfc91",
+  "dataset_name": "hsbc_2025_eval_v1",
+  "overall_summary": {
+    "quality_score": 4.27,
+    "latency_seconds": 1.25,
+    "cost_estimate": 0.05
+  },
+  "stage_metrics": {
+    "retrieval": {
+      "context_relevance": 0.0
+    },
+    "reranking": {},
+    "generation": {
+      "faithfulness": 0.0,
+      "answer_relevance": 0.0
+    },
+    "end_to_end": {
+      "correctness": 4.270833333333333,
+      "semantic_similarity": 0.0
+    }
+  },
+  "diagnosis": []
+}

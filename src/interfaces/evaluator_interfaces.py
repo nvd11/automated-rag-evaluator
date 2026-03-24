@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from src.domain.models import Chunk, GoldenRecord, QueryEvaluationDTO, EvaluationMetricRecord, ScoreWithReasoning
+from src.domain.models import Chunk, GoldenRecord, QueryEvaluationDTO, EvaluationMetricRecord, ScoreWithReasoning, EvaluationJobHistory
 
 class IGoldenRecordDAO(ABC):
     """
@@ -56,6 +56,13 @@ class IEvaluationDAO(ABC):
         """
         Extracts all queries executed during a specific inference run.
         Must seamlessly combine Case 1 (with ground truth) and Case 2 (without) queries.
+        """
+        pass
+        
+    @abstractmethod
+    async def create_evaluation_job(self, job: EvaluationJobHistory, created_by: str) -> None:
+        """
+        Creates a new evaluation job history record.
         """
         pass
         

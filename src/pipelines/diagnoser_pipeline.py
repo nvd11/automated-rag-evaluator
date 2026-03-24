@@ -76,7 +76,7 @@ class DiagnoserPipeline:
         # 3. Format Report
         logger.info("Step 3: Assembling Final Diagnosis Report...")
         
-        quality_score = self.calculate_overall_quality(averages)
+        quality_score = self._calculate_overall_quality(averages)
         stage_metrics = self._build_stage_metrics(averages)
         
         report = DiagnosisReport(
