@@ -41,7 +41,17 @@ An enterprise-grade framework designed to evaluate, score, and diagnose Retrieva
 
 ---
 
-## 2. Design Documentation
+## 2. Dataset & Reference Corpus
+
+As per the assignment requirements ("No actual data is provided... please download some annual reports / financial statements"), this framework is built and tested against real-world financial data. 
+
+- **Reference Corpus**: The system ingests the official **HSBC Annual Report 2025** (Mock/Early Release).
+- **Location**: The raw PDF is located at **[`data/HSBC_Annual_Report_2025.pdf`](./data/HSBC_Annual_Report_2025.pdf)**.
+- **Evaluation Set**: The benchmark Ground Truth QA pairs and the blind test queries were auto-generated based on this specific document and can be found under the `data/` directory.
+
+---
+
+## 3. Design Documentation
 
 This project enforces strict software engineering principles (SOLID, Dependency Injection, Polymorphism). The architectural rationale is comprehensively documented across multiple design documents, detailing the evolution of each phase:
 
