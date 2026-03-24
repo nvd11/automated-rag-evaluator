@@ -1,4 +1,5 @@
 import uuid
+import asyncio
 from loguru import logger
 
 from langchain_core.prompts import ChatPromptTemplate
@@ -7,6 +8,7 @@ from pydantic import ValidationError
 
 from src.interfaces.evaluator_interfaces import IDatasetGenerator
 from src.domain.models import Chunk, QA_Pair, GoldenRecord
+from src.configs.settings import settings
 
 class LangchainDatasetGenerator(IDatasetGenerator):
     """
@@ -49,7 +51,14 @@ Source Text Snippet:
         try:
             # 1. Execute the LCEL Chain
             # The result here is guaranteed by LangChain to be a validated QA_Pair object
-            qa_result: QA_Pair = await self.chain.ainvoke({"text": chunk.text})
+            if settings.ENABLE_PROXY:
+                logger.debug(f"Executing LCEL Chain for Page {chunk.page_number} (Sync in Thread for Proxy Compatibility)...")
+                # Using asyncio.to_thread forces the REST transport to use the synchronous requests library,
+                # which correctly respects HTTP proxies and avoids gRPC timeouts behind GFW.
+                qa_result: QA_Pair = await asyncio.to_thread(self.chain.invoke, {"text": chunk.text})
+            else:
+                logger.debug(f"Executing LCEL Chain for Page {chunk.page_number} (Native Async)...")
+                qa_result: QA_Pair = await self.chain.ainvoke({"text": chunk.text})
             
             # 2. Handle LLM rejection of poor-quality chunks
             if "INVALID_CHUNK" in qa_result.question or qa_result.answer == "REJECTED":
