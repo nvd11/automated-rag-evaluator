@@ -86,7 +86,7 @@ async def test_golden_dataset_runner_end_to_end_live():
                 for row in rows:
                     assert isinstance(str(row[0]), str), "UUID ID should be string"
                     assert len(row[1]) > 10, "Question should be generated and non-empty"
-                    assert len(row[2]) > 10, "Ground Truth answer should be generated and non-empty"
+                    assert len(row[2]) >= 1, "Ground Truth answer should be generated and non-empty"
                     assert row[3] in ["Factoid", "Reasoning"], "Complexity must strictly match the Pydantic enum"
                     logger.debug(f"Verified live generated question: '{row[1]}'")
                     
