@@ -70,12 +70,14 @@ setup_logging(settings.APP_ENV)
 
 # Apply Global Proxy if ENABLE_PROXY is true
 if settings.ENABLE_PROXY:
-    logger.info("Global proxy enabled. Setting HTTP_PROXY and HTTPS_PROXY environment variables.")
+    logger.info("Global proxy enabled. Setting HTTP_PROXY, HTTPS_PROXY and GRPC_PROXY environment variables.")
     logger.info(f"HTTP_PROXY: {settings.HTTP_PROXY}")
     logger.info(f"HTTPS_PROXY: {settings.HTTPS_PROXY}")
     if settings.HTTP_PROXY:
         os.environ["http_proxy"] = settings.HTTP_PROXY
         os.environ["HTTP_PROXY"] = settings.HTTP_PROXY
+        os.environ["grpc_proxy"] = settings.HTTP_PROXY
+        os.environ["GRPC_PROXY"] = settings.HTTP_PROXY
     if settings.HTTPS_PROXY:
         os.environ["https_proxy"] = settings.HTTPS_PROXY
         os.environ["HTTPS_PROXY"] = settings.HTTPS_PROXY
