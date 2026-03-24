@@ -15,10 +15,31 @@ The Diagnoser is designed as a stateless, rule-based inference engine. It does n
 
 ### The Mechanism
 1. **Aggregation:** The Diagnoser leverages PostgreSQL's aggregation capabilities via the `v_evaluation_metrics_pivot` view to calculate `AVG()` scores for a specific `job_id`.
-2. **Thresholding:** It compares these averages against strict boundaries defined in the `optimizer_config.json` (e.g., `low_faithfulness: 3.5 / 5.0`).
-3. **Rule Evaluation:** A chain of distinct `DiagnosticRule` objects analyzes the threshold breaches to deduce specific pipeline failures:
-   - *Example Rule A:* IF `context_relevance` is low AND `correctness` is low $\rightarrow$ "Retriever Failure". Action: "Increase chunk size or top_k".
-   - *Example Rule B:* IF `context_relevance` is high AND `faithfulness` is low $\rightarrow$ "Generator Hallucination". Action: "Decrease temperature or switch to stricter prompt".
+2. **Thresholding:** It compares these averages against strict boundaries (e.g., `low_faithfulness: 4.0 / 5.0`).
+3. **Rule Evaluation:** A chain of distinct `DiagnosticRule` objects analyzes the threshold breaches to deduce specific pipeline failures.
+
+### The Diagnostic Rules Catalog (Implementations of `IDiagnosticRule`)
+To satisfy the multi-dimensional tuning space provided in the `optimizer_config_template.json`, the Diagnoser implements the following 4 core rule subclasses:
+
+1. **`RetrievalQualityRule`**
+   - **Trigger:** `avg_context_relevance` < 3.5
+   - **Root Cause:** Chunk size too small causing semantic dilution, or pure dense vectors failing on exact-match terminology.
+   - **Actionable Advice:** Increase `top_k`, switch chunking strategy (e.g., `recursive_section_aware`), or upgrade indexing to `hybrid_bm25_dense`.
+
+2. **`HallucinationRule`**
+   - **Trigger:** `avg_faithfulness` < 4.0
+   - **Root Cause:** The Generation LLM is ignoring the retrieved context and hallucinating facts based on its parametric memory, likely due to high temperature or weak system prompts.
+   - **Actionable Advice:** Switch generation config to `strict_citation_low_temp`.
+
+3. **`AnswerRelevanceRule`**
+   - **Trigger:** `avg_context_relevance` >= 3.5 AND `avg_answer_relevance` < 3.5
+   - **Root Cause:** The retrieval engine successfully found the correct documents, but the semantic noise in the top-K chunks confused the LLM, or the initial user query was poorly phrased.
+   - **Actionable Advice:** Enable query transformations (`query_rewrite` / `step_back`) and inject a powerful reranker (e.g., `cross_encoder_miniLM` or `llm_rerank`) to aggressively filter out middle-ranked noise.
+
+4. **`BenchmarkCorrectnessRule` (Case 1 Exclusive)**
+   - **Trigger:** `avg_correctness` < 4.0
+   - **Root Cause:** The system's end-to-end output fundamentally diverges from the Human/Teacher Ground Truth.
+   - **Actionable Advice:** If retrieval is healthy but correctness is low, the question likely requires multi-hop reasoning. Upgrade prompting to `decompose_then_merge` to break down complex queries before generation.
 
 ### Architectural Rationale
 By treating the rules as distinct, composable Python objects implementing a common `IDiagnosticRule` interface, the system avoids "spaghetti IF-ELSE" code. New diagnostics (e.g., latency checks, cost analysis) can be added purely by registering a new rule class.
