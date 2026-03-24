@@ -95,10 +95,10 @@ async def main():
         # 1. Provide the Run ID from your Phase 4 Case 1 execution (Benchmark)
         # Please replace this string with the actual Run ID printed during your Inference execution!
         TARGET_RUN_ID_CASE1 = "32f23ad6-8d00-4a7f-a1ae-29b7b50dfc91" # The 48-record Golden run from earlier
-        await runner.run_evaluation(inference_run_id=TARGET_RUN_ID_CASE1)
+        # await runner.run_evaluation(inference_run_id=TARGET_RUN_ID_CASE1)
         
         # 2. Provide the Run ID from your Phase 4 Case 2 execution (Blind Test)
-        TARGET_RUN_ID_CASE2 = "67ebb90a-7374-439d-9cc8-13254ef63012" # The 3-record Blind run from earlier
+        TARGET_RUN_ID_CASE2 = "57c7466a-46f2-49b4-af9f-14d4352a25ef" # The actual 30-record Blind run from earlier
         await runner.run_evaluation(inference_run_id=TARGET_RUN_ID_CASE2)
 
     finally:

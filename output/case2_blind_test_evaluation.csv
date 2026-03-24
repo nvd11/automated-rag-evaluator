@@ -1,17 +1,241 @@
 Query ID,Question,Generated Answer,Context Relevance (0-5),Faithfulness (0-5),Answer Relevance (0-5),Correctness (0-5)
-7d0d0b24-5e91-45fb-8501-05f4f7e9cfad,What are the specific climate change and sustainability goals mentioned for the future?,"Based on the provided documents, the specific future climate change and sustainability goals mentioned are:
+04bdb786-be27-4b98-a91e-aa71ee43ab8d,What is the bank's policy on anti-money laundering?,"Based on the provided documents, the bank's policy on anti-money laundering is part of its broader financial crime risk framework. While a specific document titled ""anti-money laundering policy"" is not detailed, the context provides the following information:
+
+*   **Definition:** Financial crime risk is defined as the risk that the bank's products and services will be exploited for criminal activity, which explicitly includes ""money laundering"" (Source 4).
+*   **Framework:** The bank has a financial crime risk framework that is overseen by the Board and supported by a financial crime policy. This framework is designed to ensure adherence to all applicable laws and regulations in the markets where the bank operates (Source 2).
+*   **Global Standard:** The bank is committed to complying with the laws and regulations of all markets in which it operates and applies a ""consistently high financial crime standard globally"" (Source 1).
+*   **Oversight and Key Controls:** A ""Group Money Laundering Reporting Officer"" is in place. Key areas of focus for improvement within the financial crime framework include ""customer due diligence,"" ""financial crime investigations,"" and the ""customer selection and exit management process"" (Source 5).",4.50,5.00,5.00,
+0b2876af-5a07-4144-a078-7cfcd44b131e,What is the total allowance for expected credit losses?,"Based on the provided documents, there are several figures for the total allowance for expected credit losses (ECL):
+
+*   **$2,320 million**: A table in Source 3 shows a ""Total allowance for ECL"" of ($2,320) million.
+*   **$1,158 million**: A table in Source 1, which breaks down the allowance by credit quality and stage distribution, shows a total of ($1,158) million.
+*   **$11,495 million**: As of January 1, 2024, the total allowance for ECL was ($11,495) million (Source 2).
+*   **$7,559 million**: For ""customers including loan commitments and financial guarantees,"" the total allowance for ECL as of January 1, 2025, was ($7,559) million (Source 4).",5.00,5.00,5.00,
+19d15457-f182-47e7-8427-eb6e9feb4667,What are the specific climate change and sustainability goals mentioned for the future?,"Based on the provided documents, the specific future climate change and sustainability goals mentioned are:
 
 *   **Net-Zero Ambition:** To become a net-zero bank by 2050 (Source 1).
-*   **Sustainable Finance and Investment:** To provide and facilitate between $750 billion and $1 trillion of sustainable finance and investment by 2030 (Sources 1, 3, 4).
-*   **Interim Targets:** The company has set updated interim financed emissions targets, metrics, and associated policies as part of its Net Zero Transition Plan, though the specifics of these targets are not detailed in the provided text (Sources 1, 3).
-*   **Asset Management Target:** A goal was set for the scope 1 and 2 financed emission intensity to be achieved by 31 December 2024 for the HSBC asset management business (Source 2).",5.00,5.00,5.00,
-893bc0e0-bfba-4cac-b3a1-17a1a3c2aa35,What is the total comprehensive income for the year ended 31 December 2025?,"Based on the provided documents, the total comprehensive income for the year ended 31 December 2025 is **$33,672 million**.
+*   **Sustainable Finance and Investment:** To provide and facilitate between $750 billion and $1 trillion of sustainable finance and investment by 2030 (Source 1, Source 3, Source 4).
+*   **Interim Targets:** The company has set updated interim financed emissions targets, metrics, and associated policies as part of its Net Zero Transition Plan, though the specific details of these targets are not provided in the context (Source 1, Source 3).
+*   **Disclosure Enhancement:** To continue to review and enhance the approach to disclosures in 2026 (Source 5).",5.00,5.00,5.00,
+1ae8acd6-7ad1-40eb-8857-b39338a4345c,What stress testing scenarios were applied to the credit portfolio?,"Based on the documents provided, the following stress testing scenarios were applied to the credit portfolio:
 
-This is calculated by adding the ""Profit for the year"" and the ""Other comprehensive income (net of tax)"":
+*   **Upside and Downside scenarios:** The allowance for Expected Credit Loss (ECL) was recalculated for selected portfolios by applying a 100% weighting to each of these scenarios in turn (Source 4).
+*   **Downside 2 scenarios:** This scenario was mentioned in the context of comparative period results for wholesale and retail sensitivity analysis (Source 5).
+*   **Central scenario:** This is mentioned alongside other scenarios, with further details referenced elsewhere in the full document (Source 1).
+*   **Climate ECL sensitivity analysis:** A specific climate-related analysis was performed for both wholesale and retail portfolios. For the wholesale portfolio, this covered both physical and transition risk. For retail, it covered physical risk for the largest mortgage portfolios in the UK and Hong Kong (Source 3).
 
-*   **Profit for the year:** $23,131 million (Source 1, Source 3)
-*   **Other comprehensive income (net of tax):** $10,541 million (Source 3)
+These scenarios were designed to capture future potential economic risks, such as those caused by tariff and trade policy developments and the geopolitical environment (Source 2).",5.00,5.00,5.00,
+25302cf1-7ecc-41dc-94d7-af89b4d0a175,What is the total comprehensive income for the year ended 31 December 2025?,"Based on the provided documents, the total comprehensive income for the year ended 31 December 2025 can be determined by combining the profit for the year and the other comprehensive income.
 
-**Calculation:**
-$23,131 million (Profit) + $10,541 million (Other comprehensive income) = $33,672 million (Total comprehensive income).",5.00,5.00,5.00,
-c9b98855-fe48-4657-b98c-fe7b273b80d3,How is the matrix management structure used to identify Material Risk Takers?,"Based on the provided documents, when identifying a Material Risk Taker (MRT), HSBC considers the employee's role within its matrix management structure. In this process, the business and infrastructure area that an individual works in takes precedence, followed by the geographical location where they work.",5.00,5.00,5.00,
+*   **Profit for the year 2025:** $23,131 million (Source 1, Source 3)
+*   **Other comprehensive income (net of tax) for 2025:** $10,541 million (Source 3)
+
+The total comprehensive income is the sum of these two amounts: $23,131 million + $10,541 million = **$33,672 million**.",5.00,5.00,5.00,
+35226a07-2cd4-47a2-be2f-1878eedf2a5d,How much was invested in digital transformation and technology?,"Based on the provided documents, the total amount invested in digital transformation and technology is not specified.
+
+However, the context does state that operating expenses increased by $0.4 billion, and this increase ""primarily reflected planned higher investment spend in technology, including on operational resilience"" (Source 2).",4.00,5.00,5.00,
+41d58ac4-f6ea-4f10-8067-fbe2e24cba76,How is the bank supporting the transition to a low-carbon economy?,"Based on the provided documents, the bank is supporting the transition to a low-carbon economy in the following ways:
+
+*   **Financing and Investment:** The bank aims to provide and facilitate between $750 billion and $1 trillion of sustainable finance and investment by 2030 to support its customers' transition (Source 2).
+*   **Customer-Centric Strategy:** Supporting customers' transition to net zero is a core part of the bank's strategy (Sources 1, 3). This support is specifically directed at its Corporate and Institutional Banking (CIB) customers globally and its Commercial Banking customers in the UK and Hong Kong (Sources 2, 3).
+*   **Net Zero Transition Plan:** The bank has an updated Net Zero Transition Plan structured around three pillars: supporting customers, embedding net zero into its operations, and partnering to create an enabling environment (Source 4). This plan aims to align the bank's financing with the Paris Agreement goals (Source 4).
+*   **Focus on Transition Ecosystems:** The bank intends to become a leading bank for ""fast-growing transition ecosystems,"" such as clean power, electrification of transport, and data centres (Source 3).
+*   **Internal Integration:** The bank is working to incorporate net-zero considerations into its broader decision-making, climate risk management framework, metrics, operations, and supply chains (Source 1).",5.00,5.00,5.00,
+44f2bf2e-dec2-4c18-961c-b3ccdf4080d2,How is the matrix management structure used to identify Material Risk Takers?,"Based on the provided documents, when identifying a Material Risk Taker (MRT), HSBC considers the employee's role within its matrix management structure. The process gives precedence first to the business and infrastructure area the individual works in, and second to the geographical location where they work.",4.00,5.00,5.00,
+4837e78f-f274-4da1-8d22-e8d2cd3b567b,How are non-performing loans classified?,"Based on the provided documents, non-performing forborne loans are classified as Stage 3 (Source 1, Source 2). They remain classified as non-performing until they meet specific curing criteria (Source 1, Source 2).",5.00,5.00,5.00,
+4a6800ce-4df0-4745-ac02-5200b4a5f620,How does the bank manage its exposure to liquidity risks?,"Based on the provided documents, the bank manages its exposure to liquidity risks through a multi-faceted approach:
+
+*   **Maintaining Buffers:** The bank retains a ""substantial holdings capital buffer"" of cash and other high-quality liquid assets, with a target operating range of $19 billion to $24 billion. It also maintains an adequate and well-diversified liquidity buffer to meet regulatory requirements (Source 1).
+
+*   **Diversified Funding:** The primary sources of funding are customer current accounts and savings deposits. These are supplemented with secured and unsecured wholesale securities to ensure a diversified funding profile. This diversification is achieved through a balanced mix of funding sources, tenors, currencies, and geographies to mitigate concentration risks and avoid over-reliance on central banks or intra-group funding (Source 2, 3, 5).
+
+*   **Governance and Framework:** Liquidity and funding risks are managed at the operating entity level, which must adhere to globally consistent policies, procedures, and reporting standards. This is overseen by governance arrangements aligned with the bank's risk management framework (Source 1, 5).
+
+*   **Monitoring and Modeling:** The framework requires entities to have policies and controls for monitoring and managing funding by tenors and sources. They also model cash flows from maturing short-term debts to ensure sufficient liquidity is maintained to meet these obligations (Source 2).
+
+*   **Insurance Business Specifics:** For the insurance business, where liquidity risk is considered less material, it is managed by cash flow matching, maintaining sufficient cash resources, investing in high-quality liquid assets, monitoring investment concentrations, and establishing contingency borrowing facilities. Insurance subsidiaries also complete quarterly liquidity risk reports and annual reviews (Source 4).",5.00,5.00,5.00,
+4ada1b2e-972c-4d17-8206-c868bc900936,Can you summarize the net interest income trends for 2025?,"Based on the provided documents, here is a summary of the net interest income (NII) trends for 2025:
+
+**Annual Trend (2025 vs. 2024):**
+
+*   Net interest income for the year ended December 31, 2025, was **$34,794 million**, an increase from $32,733 million in 2024 (Source 1, 5).
+*   Excluding an unfavorable foreign currency translation impact of $0.2 billion, NII increased by $2.3 billion or 7% (Source 3).
+*   The increase was driven by several factors:
+    *   A $1.7 billion benefit from lower funding costs associated with the trading book (Source 3).
+    *   The non-recurrence of a $0.2 billion loss from 2024 on the early redemption of legacy securities (Source 3).
+*   These positive factors were partially offset by:
+    *   A $1.6 billion adverse impact from business disposals in Argentina and Canada (Source 3).
+    *   Margin compression on deposits from lower interest rates (Source 3).
+
+**Quarterly Trend (4Q25):**
+
+*   NII for the fourth quarter of 2025 (4Q25) was **$9.2 billion** ($9,196 million) (Source 1, 3).
+*   This represents a 5% increase compared to the third quarter of 2025 (3Q25) and a 12% increase compared to the fourth quarter of 2024 (4Q24) (Source 3).
+*   The increase compared to 3Q25 was predominantly driven by higher short-term interest rates in Hong Kong and growth in deposit balances (Source 3).",5.00,5.00,5.00,
+4c02f443-801d-4660-a41d-79f67e9c73bc,What was the reported profit before tax for the UK region?,"Based on the provided documents, the reported profit before tax for the UK region was:
+
+*   **2024:** $6,790 million (Source 2)
+*   **2023:** $5,960 million (Source 1)",5.00,5.00,5.00,
+62ca5814-5d7a-404a-b2f1-14823a52454a,How did the wealth and personal banking division perform?,"Based on the provided documents, here is a summary of the performance of the International Wealth and Premier Banking (IWPB) division:
+
+**Financial Performance (on a constant currency basis):**
+
+*   **Profit Before Tax:** $4.4 billion ($4,367 million) in 2025, an increase of $398 million or 10% compared to 2024.
+*   **Revenue:** $14.5 billion ($14,520 million) in 2025, which was $0.7 billion or 5% higher than in 2024. This included an adverse impact of $0.6 billion from strategic transactions.
+*   **Banking Net Interest Income (NII):** Decreased by $0.6 billion (8%) to $7.0 billion, primarily due to strategic transactions and the effects of lower interest rates on deposits.
+*   **Wealth Fees and Other Income:** Grew by 35% compared with 2024.
+*   **Insurance:** The insurance manufacturing new business Contractual Service Margin (CSM) grew by 22% compared with 2024.
+
+**Bank-wide Wealth Highlights:**
+
+*   **Wealth Balances:** Bank-wide wealth balances were $2.1 trillion as of December 31, 2025, an increase of 16% compared to 2024. Over $1 trillion of this was booked in Asia.
+*   **Net New Invested Assets:** The bank attracted $80 billion in net new invested assets in 2025.
+*   **Wealth Fee and Other Income:** Bank-wide wealth fee and other income was $9.4 billion, an increase of 24%.",5.00,3.00,5.00,
+675d3bdf-00b8-4524-827b-eb4048937289,How are cybersecurity risks mitigated?,"Based on the documents provided, cybersecurity risks are mitigated through a multi-faceted approach that includes:
+
+*   **Controls and Frameworks:**
+    *   Investing in business and technical controls to prevent, detect, and mitigate cyber threats using a 'defence in depth' approach with multiple security layers (Source 3).
+    *   Operating a ""three lines of defence model"" for oversight and management of cybersecurity capabilities (Source 1, 4).
+    *   Maintaining a suite of cybersecurity policies, procedures, and controls for effective oversight (Source 1).
+
+*   **Threat Intelligence and Operations:**
+    *   Employing a cyber intelligence and threat analysis team to proactively collect and analyze information to evaluate threat levels and adjust controls (Source 2, 3).
+    *   Running round-the-clock security operations to detect and respond to attacks, aiming to reduce their impact (Source 3).
+
+*   **Incident Response and Recovery:**
+    *   Utilizing standard procedures for cyber incident identification, investigation, mitigation, and reporting (Source 1, 4).
+    *   Routinely testing data backup and disaster recovery processes to limit the impact on customers and restore services after an attack (Source 2, 3).
+
+*   **Third-Party Risk Management:**
+    *   Working with third parties, suppliers, and financial infrastructure bodies to reduce the threat of cyber-attacks (Source 1, 2).
+    *   Implementing a third-party security risk management process to continually assess, identify, and manage risks with suppliers, including assessments against internal cybersecurity standards (Source 1).
+
+*   **Governance and Leadership:**
+    *   The assessment and management of cybersecurity risk is led and coordinated by the Global Chief Information Security Officer (CISO) (Source 4).
+    *   Cyber risk and control effectiveness are regularly reported and reviewed at both executive and non-executive Board levels (Source 5).
+
+*   **Collaboration and Preparedness:**
+    *   Collaborating with the broader cyber intelligence community, the financial services industry, and global government agencies (Source 2).
+    *   Participating in global industry bodies and working groups to protect against, detect, respond to, and recover from cyber-attacks (Source 5).
+    *   Focusing on preparedness for emerging technology risks, such as AI and quantum computing (Source 1, 2).",5.00,5.00,5.00,
+7bf94441-445d-4869-a4b7-94d8bf30a672,What is the bank's common equity tier 1 (CET1) ratio?,"Based on the provided documents, the bank's Common Equity Tier 1 (CET1) ratio was 14.9% as of 31 December 2025 (Source 1, Source 2, Source 3). This was unchanged from the ratio at 31 December 2024 (Source 1, Source 2).",5.00,5.00,5.00,
+83e7f26c-aafe-4fa0-987d-fc1c250e8be0,What were the major regulatory fines or settlements in 2025?,"Based on the provided documents, there is no information about any *major* regulatory fines or settlements that occurred in 2025.
+
+The context mentions the following related points:
+*   A settlement was reached with plaintiffs in one matter, but its impact was ""not significant"" and it was still subject to final court approval (Source 1).
+*   In a Brazilian tax case, HSBC received a favorable judgment in May 2025, which has been appealed by the tax authority (Source 3).
+*   A major settlement of €302m with the French National Financial Prosecutor (PNF) is noted, but this occurred in **January 2026**, not 2025 (Source 5).
+*   Other matters, such as the Mexican government bond litigation, were ongoing in 2025 (Source 4).",5.00,5.00,5.00,
+88c6a32e-9492-4290-b8d8-c2278f59beeb,How much did operating expenses increase compared to the previous year?,"Based on the provided documents, the increase in operating expenses varies depending on the specific reporting segment:
+
+*   **Overall Reported Operating Expenses:** Reported operating expenses were $36.4 billion, which was **$3.4 billion or 10% higher** than in 2024 (Source 3).
+
+*   **Specific Business Segments:**
+    *   In one segment, operating expenses of $9.3 billion were **$0.4 billion or 4% higher** than in 2024 on a constant currency basis (Source 5).
+    *   In another segment, operating expenses of $5.5 billion increased by **$0.4 billion or 8%** on a constant currency basis (Source 1).
+    *   For a segment with operating expenses of $4.8 billion, they were reported as **stable** on a constant currency basis compared to the previous year (Source 4).",5.00,5.00,5.00,
+891d426c-440a-4dbf-af55-62ed10c63aca,How much dividends were paid out to ordinary shareholders in 2025?,"Based on the provided documents, the total dividends paid out to ordinary shareholders in 2025 was **$11,581 million**, which equates to **$0.66 per share** (Source 5).
+
+This total is composed of the following payments made during 2025:
+*   **Fourth interim dividend for the previous year (2024):** $6,397 million
+*   **First interim dividend for 2025:** $1,750 million
+*   **Second interim dividend for 2025:** $1,717 million
+*   **Third interim dividend for 2025:** $1,717 million",5.00,5.00,5.00,
+92f2acaf-3d66-4202-a9d9-04b309ff3b17,What are the total assets reported at the end of 2025?,"Based on the provided context, the total assets reported at 31 December 2025 were **$3,233,034 million** (Source 1, Source 3).",5.00,5.00,5.00,
+94ea638d-2259-435e-8f19-0f98b40bb659,What is the role of the Group Risk Committee?,"Based on the provided documents, the Group Risk Committee (GRC) has the overall non-executive responsibility for overseeing risk-related matters and the risks that impact the Group.
+
+Its key responsibilities include:
+*   Overseeing and advising the Board on all risk-related matters, including both financial and non-financial risks.
+*   Advising the Board on matters related to risk appetite and key regulatory submissions.
+*   Reviewing the effectiveness of the Group’s risk management framework and how management maintains an effective risk management control system.
+*   Reviewing and challenging the Group’s stress testing exercises.
+*   Overseeing the Group’s approach to conduct, fairness, and the prevention of financial crime.
+*   Tracking top and emerging risks, risk appetite, and other metrics to understand potential impacts on operations, customers, and stakeholders.",4.50,5.00,5.00,
+a2e398b3-27ba-4189-9895-424f5e8988fe,What are the key priorities outlined by the new Chairman?,"Based on the provided documents, the key priorities outlined by the new Group Chairman are:
+
+*   **Focusing on customers:** The Chairman emphasizes staying true to the company's purpose and values by focusing on what matters most, which is the customers.
+*   **Accelerating strategy execution:** The Chairman and the Board will partner with the CEO and management team to accelerate the execution of the company's strategy with discipline and confidence.
+*   **Making HSBC simpler and more agile:** This is described as a key catalyst for achieving the acceleration of the strategy.",4.50,5.00,5.00,
+ab91486d-d52c-4f16-82cf-359acc14c181,How does the bank measure customer satisfaction?,"Based on the provided documents, the bank measures customer satisfaction in the following ways:
+
+*   **Net Promoter Score (NPS):** The bank uses the Net Promoter Score (‘NPS’) system to gather and share feedback. Performance is assessed against NPS data from several external providers, including:
+    *   InMoment sNPS survey for RBW and IWPB.
+    *   Coalition Greenwich LC and Mid-market study for CMB.
+    *   Savanta MarketVue Business Banking survey for CMB.
+    *   Coalition Greenwich Global Corporates Study for CIB.
+
+*   **Direct Feedback:** In 2025, the bank gathered feedback from over one million customers across its four business segments to understand its strengths and areas for improvement.
+
+*   **Complaint Analysis:** The bank tracks, records, and manages complaints. It undertakes regular root cause analysis of complaints to identify systemic issues and uses forums, such as the bi-monthly CMB complaint review forum, to identify trends and implement improvements.",5.00,5.00,5.00,
+bab7a24e-7837-4a52-8e71-422cd8a8ae07,What is the company's policy on executive remuneration?,"Based on the provided documents, the company's policy on executive remuneration includes the following key components:
+
+**Overall Structure:**
+*   The remuneration policy for directors was approved at the AGM on May 2, 2025. The full policy can be found in the 2024 Annual Report and on the company's website (Source 4).
+*   The pay structure consists of a mix of fixed and variable pay. Senior management, including executive directors, have a higher proportion of their total remuneration structured as variable pay, which is linked to the Group's performance (Source 2).
+
+**Fixed Pay:**
+*   **Base Salary:** Paid monthly in cash. As of March 1, 2026, the base salaries are £1,500,000 for Georges Elhedery and £875,000 for Pam Kaur (Source 4, Source 5).
+*   **Benefits:** Includes taxable benefits (medical insurance, accommodation, car, club membership, legal advice, tax assistance) and non-taxable benefits (health assessment, life assurance) (Source 4).
+*   **Pension:** A cash allowance equivalent to 10% of base pay (Source 5).
+
+**Variable Pay:**
+*   A significant portion of variable pay for executive directors is delivered in shares (Source 2).
+*   **Annual Incentive:** The 2026 annual incentive is based on a scorecard of strategic objectives. Financial measures, including PBT, Group RoTE, costs, and fee income growth, make up 60% of the scorecard (Source 5).
+*   **Long-Term Incentives (LTI):** LTI awards for executive directors have a seven-year deferral period (Source 1).
+*   **Retention Period:** Any shares awarded as part of variable pay are subject to a one-year post-vesting retention period (Source 1, Source 3). During this deferral and retention period, the value of the awards is linked to the company's share price (Source 3).",5.00,5.00,5.00,
+bb5465b9-7647-4ecd-bebf-f16c9d0178a3,How does the new Group-wide leadership framework support the refreshed strategy?,"Based on the provided documents, the new Group-wide leadership framework, ""How We Lead,"" supports the refreshed strategy in the following ways:
+
+*   **Alignment with Ambition:** The framework was developed alongside the Group's refreshed ambition ""To be the most trusted bank globally, putting customers at the heart of everything we do"" (Source 3).
+*   **Shaping Operations:** The ""How We Lead"" framework is designed to ""shape the way we operate"" and is expected to ""drive meaningful changes in our ways of working across the organisation"" (Source 2).
+*   **Cultural Change:** The framework, which includes six new Leadership Principles, is intended to create a ""positive cultural change"" within the organization. A survey of senior leaders who attended a ""How We Lead"" event showed that 86% believe it is creating such a change (Source 1).",5.00,5.00,5.00,
+d78428ad-6c5b-4bd4-8b1b-dfeaf628ad93,What is the bank's target for financed emissions by 2030?,"Based on the provided documents, the bank has set the following interim targets for financed emissions by 2030 for specific sectors:
+
+*   **Oil and Gas:** An absolute emissions reduction of 14-30% by 2030, compared to a 2019 baseline (Source 2, 3).
+*   **Power and Utilities:** An emissions intensity of 195-270 tonnes of carbon dioxide equivalent per gigawatt hour (tCO2e/GWh) by 2030 (Source 1).
+
+The documents also note the following:
+*   The targets for Oil and Gas are absolute, while the targets for Power and Utilities are intensity-based (Source 1, 2, 3).
+*   The bank does not plan to rely on purchasing credits to achieve its interim 2030 financed emissions targets (Source 4).",5.00,5.00,5.00,
+dca7d034-351f-4295-96b7-cc9c3c22609a,What was the impact of foreign exchange fluctuations on the balance sheet?,"Based on the provided documents, the impact of foreign exchange fluctuations on the balance sheet is reflected in the following ways:
+
+*   **General Impact:** The consolidated balance sheet is impacted by foreign exchange differences between the US dollar and the non-US dollar functional currencies of its foreign operations (Source 1).
+*   **Other Exchange Differences:** For 2025, there were ""$6,563m"" in ""other exchange differences"" recognized. These are items that will be reclassified subsequently to profit or loss (Source 4).
+*   **Reclassification to Income Statement:** ""$208m"" in foreign exchange losses were reclassified to the income statement following the disposal or dilution of a foreign operation (Source 4).
+*   **Hedging Impact:** In 2025, a total of ($191) million was recognized in Other Comprehensive Income (OCI) related to hedges of net investment in foreign operations (Source 5).
+
+The company employs hedging strategies, such as net investment and economic hedges, to protect its consolidated capital ratios from these exchange rate fluctuations (Source 1). Exchange differences on structural exposures are usually recognized in ‘other comprehensive income’ (Source 2).",5.00,5.00,5.00,
+ecbecced-824b-40ae-a7ae-28fd044d873b,What are the primary operational risks identified by the board?,"Based on the provided documents, the Directors (the board) assessed and classified the ""top and emerging risks"" as the ""principal risks."" These are categorized as follows:
+
+**Externally driven risks:**
+*   **Geopolitical and macroeconomic risks:** Risks from political instability, military conflict, and changes to income growth and asset quality.
+*   **Technology and cybersecurity risk:** The risk of service disruption or data loss from technology failures or malicious activities.
+*   **Evolving regulatory environment risk:** Risks associated with regulatory focus on operational resilience, prudential requirements, data, ESG, and financial crime risk management.
+
+**Internally driven risks:**
+*   **Data risk:** The risk that if data is not accurate and timely, the ability to serve customers, operate with resilience, or meet regulatory requirements could be affected.
+
+Other operational risks identified in the documents include:
+*   **Risks from third parties:** Deficiencies in managing third-party providers and their supply chains could affect operational resilience.
+*   **Model risk:** Arises from reliance on models in both financial and non-financial contexts.
+*   **Strategic execution risk:** The risk associated with the successful execution of the company's strategy.",5.00,5.00,5.00,
+eeb0c03e-fef5-4e0f-8f7a-060318d81a63,What are the diversity and inclusion targets for senior management?,"Based on the provided documents, the diversity and inclusion ambitions for senior management concluded at the end of 2025. These ambitions were:
+
+*   **Women in senior leadership:** An ambition of 35% representation. By the end of 2025, the company had achieved 34.7% (Source 2).
+*   **Black heritage colleagues in senior leadership (UK/US combined):** An ambition of 3.4% representation. By the end of 2025, the company had achieved 3.0% (Source 2).
+*   **Inclusion Index score:** An ambition of 75%. The company achieved a score of 78% (Source 2).
+*   **Global Black heritage colleagues in senior leadership:** A previous ambition set in 2020 was to double the number of Black heritage colleagues in senior leadership roles globally by the end of 2025. The company increased this number by 48% (Source 5).
+
+The documents state, ""While our publicly stated aspirational ambitions concluded at the end of 2025, we remain committed to building an inclusive culture for all colleagues"" (Source 5). The provided context does not specify any new numerical targets for the period after 2025.",5.00,5.00,5.00,
+f3d68312-e913-48fe-aa44-1bcf0877253d,How does the bank hedge against interest rate risk?,"Based on the provided documents, the bank hedges against interest rate risk using the following methods and instruments:
+
+*   **Hedging Instruments:** The bank's cash flow hedging instruments consist mainly of interest rate swaps and cross-currency swaps. These are used to manage the variability in future interest cash flows of non-trading financial assets and liabilities (Source 4). To reduce accounting mismatches, the bank also uses amortised cost financial instruments, hedge-accounted derivatives, and bonds measured at fair value through other comprehensive income (Source 2).
+
+*   **Hedging Strategies:**
+    *   **NII Stabilisation Hedging:** The bank engages in Net Interest Income (NII) stabilisation hedging to dampen the volatility of its banking NII over time (Source 1, Source 3).
+    *   **Macro Cash Flow Hedging:** HSBC applies macro cash flow hedging for interest rate risk on portfolios of non-trading assets and liabilities that bear interest at variable rates (Source 4).
+    *   **Dynamic and Non-Dynamic Management:** For some debt securities, the bank uses a dynamic risk management strategy. For its own fixed-rate debt securities, it uses a non-dynamic risk management strategy (Source 4).
+
+*   **Monitoring and Measurement:** The bank uses a combination of economic value and earnings-based measures to manage interest rate risk in the banking book (IRRBB). These measures include Banking Net Interest Income (NII) sensitivity and Economic Value of Equity (EVE) sensitivity (Source 2). Additionally, it uses a variety of tools like risk sensitivities and VaR measures to manage portfolio risk (Source 3).",5.00,5.00,5.00,
+fb1f7622-e82d-44d4-af51-817995b9c6f4,Who are the new members appointed to the Board of Directors in 2025?,"Based on the provided documents, the new member appointed to the Board of Directors in 2025 was:
+
+*   **Wei Sun Christianson**, who was appointed following the 2025 AGM (Source 2).",5.00,5.00,5.00,
