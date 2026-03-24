@@ -93,7 +93,15 @@ class DiagnoserPipeline:
         )
         
         # 4. Export to Disk
-        file_name = f"diagnosis_report_{evaluation_job_id[:8]}.json"
+        # Rename based on the dataset source for cleaner user output
+        dataset_name = metadata.get("dataset_name", "")
+        if "hsbc" in dataset_name or "benchmark" in dataset_name:
+            file_name = "case1_diagnosis_report.json"
+        elif "blind" in dataset_name or "case2" in dataset_name:
+            file_name = "case2_diagnosis_report.json"
+        else:
+            file_name = f"diagnosis_report_{evaluation_job_id[:8]}.json"
+
         file_path = os.path.join(output_dir, file_name)
         
         logger.info(f"Writing report to: {file_path}")
