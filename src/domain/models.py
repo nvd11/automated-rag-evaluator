@@ -96,12 +96,23 @@ class ScoreWithReasoning(BaseModel):
     score: float = Field(description="The numerical score awarded by the judge (e.g., 0.0 to 5.0).")
     reasoning: str = Field(description="A detailed, explicit explanation of why this specific score was awarded.")
 
+class EvaluationResultList(BaseModel):
+    """Wrapper class required for structured output of multiple scores."""
+    scores: List[ScoreWithReasoning] = Field(description="A list of scores and reasoning objects.")
+
+class EvaluationJobHistory(BaseModel):
+    """Metadata representing a specific evaluation job execution."""
+    job_id: str = Field(description="Unique UUID for the evaluation job.")
+    inference_run_id: str = Field(description="The UUID of the inference run being evaluated.")
+    evaluator_model: str = Field(description="The model used as the judge.")
+    evaluator_prompt_version: str = Field(default="v1", description="Tracking version of the prompt.")
+
 class EvaluationMetricRecord(BaseModel):
     """Represents a single row to be persisted into the upgraded EAV evaluation_metrics table."""
     query_id: str = Field(description="SOFT LINK to the evaluated query_history record.")
+    job_id: str = Field(description="Link to the evaluation_job_history record.")
     evaluation_strategy: str = Field(description="The framework used (e.g., 'CASE1_GROUND_TRUTH' or 'CASE2_RAG_TRIAD').")
     metric_category: str = Field(description="Categorization (e.g., 'generation', 'retrieval').")
     metric_name: str = Field(description="Specific metric (e.g., 'faithfulness').")
     metric_value: float = Field(description="The numerical score.")
     reasoning: str = Field(description="The textual justification for the score.")
-    judge_model: str = Field(description="The name of the LLM used as the judge (e.g., 'gemini-3.1-pro-preview').")
