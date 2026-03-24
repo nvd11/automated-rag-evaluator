@@ -62,7 +62,7 @@ erDiagram
 
 ## 4. Execution Flow (Sequence Diagram)
 
-The `EvaluationRunner` acts simply as the CLI/cron entrypoint. It configures the dependencies and delegates all heavy lifting to the `EvaluationPipeline`. The Pipeline orchestrates the extraction of historical inference data, automatically categorizing queries into Case 1 or Case 2, and dispatches them to the `LLMJudge`.
+The `EvaluationRunner` acts simply as the CLI/cron entrypoint. It configures the dependencies and delegates all heavy lifting to the `EvaluationPipeline`. The Pipeline orchestrates the extraction of historical inference data, automatically categorizing queries via the `QueryEvaluationDTO.has_ground_truth` property, and dispatches them to the appropriate polymorphic `ILLMJudge` implementation.
 
 ```mermaid
 sequenceDiagram
@@ -70,7 +70,8 @@ sequenceDiagram
     participant Runner as EvaluationRunner
     participant Pipeline as EvaluationPipeline
     participant DAO as EvaluationDAO
-    participant Judge as LLMJudge (Gemini)
+    participant JudgeG as GoldenBaselineJudge (LLM)
+    participant JudgeT as RagTriadJudge (LLM)
     participant DB as Cloud SQL (PostgreSQL)
 
     DataScientist->>Runner: main()
@@ -85,21 +86,21 @@ sequenceDiagram
     %% The DAO automatically LEFT JOINs with golden_record_query_mapping
     DAO-->>Pipeline: Return List[QueryEvaluationDTO]
     
-    Note over Pipeline, Judge: Step 2: High-Concurrency Scoring
+    Note over Pipeline, JudgeT: Step 2: Polymorphic Concurrency
     loop For each Query (asyncio.gather / Semaphore)
         alt has_ground_truth == True (Case 1)
-            Pipeline->>Judge: evaluate_case1(Question, Answer, GroundTruth)
-            activate Judge
-            Note over Judge: Prompt: Compare Answer to GT
-            Judge-->>Pipeline: Return List[ScoreWithReasoning] (Correctness)
-            deactivate Judge
+            Pipeline->>JudgeG: evaluate_query(dto)
+            activate JudgeG
+            Note over JudgeG: Prompt: Compare Answer to GT
+            JudgeG-->>Pipeline: Return List[ScoreWithReasoning] (Correctness)
+            deactivate JudgeG
             
         else has_ground_truth == False (Case 2)
-            Pipeline->>Judge: evaluate_case2(Question, Answer, Contexts)
-            activate Judge
-            Note over Judge: Prompt: Assess RAG Triad (Faithfulness, etc.)
-            Judge-->>Pipeline: Return List[ScoreWithReasoning] (Triad)
-            deactivate Judge
+            Pipeline->>JudgeT: evaluate_query(dto)
+            activate JudgeT
+            Note over JudgeT: Prompt: Assess RAG Triad (Faithfulness, etc.)
+            JudgeT-->>Pipeline: Return List[ScoreWithReasoning] (Triad)
+            deactivate JudgeT
         end
     end
     
@@ -113,7 +114,22 @@ sequenceDiagram
     deactivate Runner
 ```
 
-## 5. Structured LLM Output Design (LangChain Function Calling)
+## 5. Architectural Intent: Polymorphic Evaluators (Open-Closed Principle)
+
+To ensure the framework is highly extensible, the evaluation logic is decoupled using pure object-oriented polymorphism. The base interface `ILLMJudge` defines a single contract:
+```python
+@abstractmethod
+async def evaluate_query(self, dto: QueryEvaluationDTO) -> List[ScoreWithReasoning]:
+    pass
+```
+
+Instead of hardcoding case-specific methods (e.g., `evaluate_case1`, `evaluate_case2`), we inject distinct concrete implementations into the pipeline:
+- **`GoldenBaselineJudge`**: Implements `evaluate_query` by strictly comparing the generated answer against `dto.ground_truth`.
+- **`RagTriadJudge`**: Implements `evaluate_query` by scoring the RAG Triad (Faithfulness, Answer Relevance, Context Relevance) against `dto.retrieved_contexts`.
+
+This rigorously adheres to the Open-Closed Principle (OCP)—if a new evaluation strategy (e.g., "Case 3: Heuristic Keyword Matcher") is required tomorrow, developers simply create a new judge class extending `ILLMJudge` without modifying the core pipeline or interface.
+
+## 6. Structured LLM Output Design (LangChain Function Calling)
 
 To guarantee the `LLMJudge` returns stable, parseable data capable of populating our EAV table, we utilize LangChain's `.with_structured_output()`. The LLM is forced to return a JSON array matching the following Pydantic schema:
 
