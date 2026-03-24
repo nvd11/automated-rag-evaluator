@@ -68,6 +68,7 @@ async def export_pivot_view_to_csv():
                         SELECT 
                             query_id,
                             question,
+                            retrieved_contexts,
                             generated_answer,
                             context_relevance_score,
                             faithfulness_score,
@@ -86,6 +87,7 @@ async def export_pivot_view_to_csv():
                         writer.writerow([
                             "Query ID", 
                             "Question", 
+                            "Retrieved Contexts",
                             "Generated Answer", 
                             "Context Relevance (0-5)", 
                             "Faithfulness (0-5)", 
@@ -95,14 +97,17 @@ async def export_pivot_view_to_csv():
                         
                         # Write Data
                         for r in rows:
+                            # `retrieved_contexts` is likely a list or JSON string. Convert it nicely.
+                            contexts_str = str(r[2]) if r[2] is not None else ""
                             writer.writerow([
                                 str(r[0]),      # query_id
                                 str(r[1]),      # question
-                                str(r[2]),      # generated_answer
-                                f"{r[3]:.2f}" if r[3] is not None else "", # context_relevance
-                                f"{r[4]:.2f}" if r[4] is not None else "", # faithfulness
-                                f"{r[5]:.2f}" if r[5] is not None else "", # answer_relevance
-                                f"{r[6]:.2f}" if r[6] is not None else ""  # correctness
+                                contexts_str,   # retrieved_contexts
+                                str(r[3]),      # generated_answer
+                                f"{r[4]:.2f}" if r[4] is not None else "", # context_relevance
+                                f"{r[5]:.2f}" if r[5] is not None else "", # faithfulness
+                                f"{r[6]:.2f}" if r[6] is not None else "", # answer_relevance
+                                f"{r[7]:.2f}" if r[7] is not None else ""  # correctness
                             ])
                             
                     logger.info(f"Successfully exported {len(rows)} records to {filepath}")
