@@ -28,16 +28,25 @@ An enterprise-grade framework designed to evaluate, score, and diagnose Retrieva
    *(Core dependencies include: `langchain`, `google-genai`, `psycopg[binary]`, `pydantic`, `loguru`, `pytest`)*
 
 4. **Configure Environment Variables:**
-   Create a `.env` file in the root directory and configure the following required variables:
-   ```env
-   GEMINI_API_KEY="your_api_key_here"
-   DB_HOST="your_db_host"
-   DB_PORT=5432
-   DB_NAME="rag_evaluator"
-   DB_USER="postgres"
-   DB_PASSWORD="your_password"
-   ENABLE_PROXY=false  # Set to true in restricted network environments to bypass gRPC deadlocks
+   Copy the example environment file and customize it:
+   ```bash
+   cp .env.example .env
    ```
+   Open the `.env` file and configure the required settings:
+   
+   | Variable | Description |
+   |----------|-------------|
+   | `GEMINI_API_KEY` | Your Google Gemini API Key for generation and evaluation. |
+   | `DB_HOST` | Hostname of the PostgreSQL database. |
+   | `DB_PORT` | Port of the PostgreSQL database (default `5432`). |
+   | `DB_NAME` | Database name (e.g., `rag_evaluator`). |
+   | `DB_USER` | Database username. |
+   | `DB_PASSWORD` | Database password. |
+   | `HTTP_PROXY` / `HTTPS_PROXY` | Proxy URL if your network requires one. |
+   | `ENABLE_PROXY` | **Critical for Mainland China users**: Set this to `true` to force a REST fallback and bypass `gRPC` deadlocks caused by proxy environments. |
+
+   ⚠️ **Important Note for Mainland China / Proxy Environments**: 
+   LangChain's async structured outputs default to the `gRPC` protocol, which often deadlocks over HTTP/1.1 proxies. If you are operating behind a proxy, you **must** set `ENABLE_PROXY=true` in your `.env`. This tells our LLM Factory to dynamically wrap synchronous REST requests in `asyncio.to_thread()`, bypassing the blocked `gRPC` channel.
 
 ---
 
@@ -66,7 +75,7 @@ This project enforces strict software engineering principles (SOLID, Dependency 
 
 ---
 
-## 3. Pipeline Runners (Execution Flow)
+## 4. Pipeline Runners (Execution Flow)
 
 The system strictly decouples the entry points (`Runners`) from the core business logic (`Pipelines`). To execute the full lifecycle, run the following scripts in order:
 
@@ -96,7 +105,7 @@ python src/runners/diagnoser_runner.py
 
 ---
 
-## 4. Output Files & Artifacts
+## 5. Output Files & Artifacts
 
 All final deliverables requested by the assignment are located in the **[`output/`](./output/)** directory:
 
