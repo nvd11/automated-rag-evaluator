@@ -49,4 +49,4 @@ The system must generate the following artifacts:
 - **Polymorphism & OCP**: Use unified interfaces (e.g., `evaluate_query`) instead of hardcoded IF-ELSE case logic.
 - **Stateless Diagnosis**: The Diagnoser should act as a pure read-only analysis layer via an extensible Rule Engine.
 - **Network Resilience**: Must gracefully handle proxy environments (e.g., bypassing blocked gRPC protocols using REST fallback).
-- **Professionalism**: Architecture documents must use objective, professional terminology (e.g., "Architectural Rationale").
+- **Professionalism**: Architecture documents must use objective, professional terminology (e.g., "Architecture Document").
