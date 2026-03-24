@@ -16,7 +16,7 @@ Our architecture utilizes an **Upgraded EAV Model 2.0** for the `evaluation_metr
 2. **Explicit Reasoning:** Alongside the numerical `metric_value` (e.g., 4.5), we store the LLM's `reasoning` (TEXT) explaining exactly *why* it awarded that score.
 3. **Evaluation Strategy Isolation:** The `evaluation_strategy` field (e.g., 'CASE1_GROUND_TRUTH', 'CASE2_RAG_TRIAD') combined with the `judge_model` name ensures that a single query can be evaluated multiple times using different methodologies without metric collision.
 
-This design guarantees infinite extensibility for future metrics while preserving perfect lineage and explainability for BI dashboard audits.
+This design guarantees infinite extensibility for future metrics while preserving exact lineage and explainability for BI dashboard audits.
 
 ## 3. Entity-Relationship (ER) Diagram
 
@@ -24,40 +24,40 @@ The following UML focuses specifically on how the Evaluation components interact
 
 ```mermaid
 erDiagram
-    %% Source Operational Logs
-    query_history {
-        UUID query_id PK
-        TEXT question
-        TEXT generated_answer
-        JSONB retrieved_contexts
-    }
-    
-    golden_records {
-        UUID id PK
-        TEXT ground_truth
-    }
-    
-    golden_record_query_mapping {
-        UUID query_id
-        UUID golden_record_id
-    }
+  %% Source Operational Logs
+  query_history {
+    UUID query_id PK
+    TEXT question
+    TEXT generated_answer
+    JSONB retrieved_contexts
+  }
+  
+  golden_records {
+    UUID id PK
+    TEXT ground_truth
+  }
+  
+  golden_record_query_mapping {
+    UUID query_id
+    UUID golden_record_id
+  }
 
-    %% Evaluation Storage (Upgraded EAV)
-    evaluation_metrics {
-        UUID id PK
-        UUID query_id "SOFT FK"
-        VARCHAR evaluation_strategy
-        VARCHAR metric_category
-        VARCHAR metric_name
-        NUMERIC metric_value
-        TEXT reasoning
-        VARCHAR judge_model
-    }
+  %% Evaluation Storage (Upgraded EAV)
+  evaluation_metrics {
+    UUID id PK
+    UUID query_id "SOFT FK"
+    VARCHAR evaluation_strategy
+    VARCHAR metric_category
+    VARCHAR metric_name
+    NUMERIC metric_value
+    TEXT reasoning
+    VARCHAR judge_model
+  }
 
-    %% Relationships
-    query_history ||--o| golden_record_query_mapping : "Joined via"
-    golden_records ||--o| golden_record_query_mapping : "Resolves GT"
-    query_history ||--o{ evaluation_metrics : "Evaluated by (Soft Link)"
+  %% Relationships
+  query_history ||--o| golden_record_query_mapping : "Joined via"
+  golden_records ||--o| golden_record_query_mapping : "Resolves GT"
+  query_history ||--o{ evaluation_metrics : "Evaluated by (Soft Link)"
 ```
 
 ## 4. Execution Flow (Sequence Diagram)
@@ -66,61 +66,61 @@ The `EvaluationRunner` acts simply as the CLI/cron entrypoint. It configures the
 
 ```mermaid
 sequenceDiagram
-    actor DataScientist
-    participant Runner as EvaluationRunner
-    participant Pipeline as EvaluationPipeline
-    participant DAO as EvaluationDAO
-    participant JudgeG as GoldenBaselineJudge (LLM)
-    participant JudgeT as RagTriadJudge (LLM)
-    participant DB as Cloud SQL (PostgreSQL)
+  actor DataScientist
+  participant Runner as EvaluationRunner
+  participant Pipeline as EvaluationPipeline
+  participant DAO as EvaluationDAO
+  participant JudgeG as GoldenBaselineJudge (LLM)
+  participant JudgeT as RagTriadJudge (LLM)
+  participant DB as Cloud SQL (PostgreSQL)
 
-    DataScientist->>Runner: main()
-    activate Runner
-    
-    Runner->>Pipeline: run(inference_run_id="123-abc")
-    activate Pipeline
-    
-    Note over Pipeline, DB: Step 1: Load Data & Detect Strategy
-    Pipeline->>DAO: fetch_queries_for_evaluation(run_id)
-    
-    %% The DAO automatically LEFT JOINs with golden_record_query_mapping
-    DAO-->>Pipeline: Return List[QueryEvaluationDTO]
-    
-    Note over Pipeline, JudgeT: Step 2: Polymorphic Concurrency
-    loop For each Query (asyncio.gather / Semaphore)
-        alt has_ground_truth == True (Case 1)
-            Pipeline->>JudgeG: evaluate_query(dto)
-            activate JudgeG
-            Note over JudgeG: Prompt: Compare Answer to GT
-            JudgeG-->>Pipeline: Return List[ScoreWithReasoning] (Correctness)
-            deactivate JudgeG
-            
-        else has_ground_truth == False (Case 2)
-            Pipeline->>JudgeT: evaluate_query(dto)
-            activate JudgeT
-            Note over JudgeT: Prompt: Assess RAG Triad (Faithfulness, etc.)
-            JudgeT-->>Pipeline: Return List[ScoreWithReasoning] (Triad)
-            deactivate JudgeT
-        end
+  DataScientist->>Runner: main()
+  activate Runner
+  
+  Runner->>Pipeline: run(inference_run_id="123-abc")
+  activate Pipeline
+  
+  Note over Pipeline, DB: Step 1: Load Data & Detect Strategy
+  Pipeline->>DAO: fetch_queries_for_evaluation(run_id)
+  
+  %% The DAO automatically LEFT JOINs with golden_record_query_mapping
+  DAO-->>Pipeline: Return List[QueryEvaluationDTO]
+  
+  Note over Pipeline, JudgeT: Step 2: Polymorphic Concurrency
+  loop For each Query (asyncio.gather / Semaphore)
+    alt has_ground_truth == True (Case 1)
+      Pipeline->>JudgeG: evaluate_query(dto)
+      activate JudgeG
+      Note over JudgeG: Prompt: Compare Answer to GT
+      JudgeG-->>Pipeline: Return List[ScoreWithReasoning] (Correctness)
+      deactivate JudgeG
+      
+    else has_ground_truth == False (Case 2)
+      Pipeline->>JudgeT: evaluate_query(dto)
+      activate JudgeT
+      Note over JudgeT: Prompt: Assess RAG Triad (Faithfulness, etc.)
+      JudgeT-->>Pipeline: Return List[ScoreWithReasoning] (Triad)
+      deactivate JudgeT
     end
-    
-    Note over Pipeline, DB: Step 3: Transactional Bulk Persistence
-    Pipeline->>DAO: bulk_insert_evaluation_metrics(metrics)
-    DAO->>DB: INSERT INTO evaluation_metrics
-    
-    Pipeline-->>Runner: Evaluation Summary / Status
-    deactivate Pipeline
-    Runner-->>DataScientist: Run Complete
-    deactivate Runner
+  end
+  
+  Note over Pipeline, DB: Step 3: Transactional Bulk Persistence
+  Pipeline->>DAO: bulk_insert_evaluation_metrics(metrics)
+  DAO->>DB: INSERT INTO evaluation_metrics
+  
+  Pipeline-->>Runner: Evaluation Summary / Status
+  deactivate Pipeline
+  Runner-->>DataScientist: Run Complete
+  deactivate Runner
 ```
 
 ## 5. Architectural Intent: Polymorphic Evaluators (Open-Closed Principle)
 
-To ensure the framework is highly extensible, the evaluation logic is decoupled using pure object-oriented polymorphism. The base interface `ILLMJudge` defines a single contract:
+To ensure the framework is very extensible, the evaluation logic is decoupled using pure object-oriented polymorphism. The base interface `ILLMJudge` defines a single contract:
 ```python
 @abstractmethod
 async def evaluate_query(self, dto: QueryEvaluationDTO) -> List[ScoreWithReasoning]:
-    pass
+  pass
 ```
 
 Instead of hardcoding case-specific methods (e.g., `evaluate_case1`, `evaluate_case2`), we inject distinct concrete implementations into the pipeline:
@@ -143,9 +143,9 @@ To guarantee the `LLMJudge` returns stable, parseable data capable of populating
 
 ```python
 class ScoreWithReasoning(BaseModel):
-    metric_name: str = Field(description="Name of the metric (e.g., 'Faithfulness')")
-    score: float = Field(description="Numerical score from 0.0 to 5.0")
-    reasoning: str = Field(description="Detailed explanation justifying the score")
+  metric_name: str = Field(description="Name of the metric (e.g., 'Faithfulness')")
+  score: float = Field(description="Numerical score from 0.0 to 5.0")
+  reasoning: str = Field(description="Detailed explanation justifying the score")
 ```
 
 This guarantees that the Runner never encounters string parsing errors (like `RegexParserError`) and can instantly map the output directly to the database columns.

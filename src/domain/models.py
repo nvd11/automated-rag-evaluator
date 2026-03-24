@@ -2,139 +2,139 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 
 class Chunk(BaseModel):
-    """Represents a chunk of text extracted from a document."""
-    text: str = Field(description="The actual text content of the chunk")
-    page_number: int = Field(description="The page number where this chunk originated")
-    chunk_index: int = Field(description="The sequential index of this chunk within the document")
-    token_count: Optional[int] = Field(default=None, description="The estimated token count of the chunk")
-    embedding: Optional[List[float]] = Field(default=None, description="The vector representation of the text")
+  """Represents a chunk of text extracted from a document."""
+  text: str = Field(description="The actual text content of the chunk")
+  page_number: int = Field(description="The page number where this chunk originated")
+  chunk_index: int = Field(description="The sequential index of this chunk within the document")
+  token_count: Optional[int] = Field(default=None, description="The estimated token count of the chunk")
+  embedding: Optional[List[float]] = Field(default=None, description="The vector representation of the text")
 
 class Document(BaseModel):
-    """Represents a parsed document ready for chunking and embedding."""
-    document_name: str = Field(description="The name of the file (e.g., HSBC_Annual_Report_2025.pdf)")
-    file_path: str = Field(description="The absolute or relative path to the file")
-    md5_hash: str = Field(description="MD5 hash of the file for idempotency checks")
-    total_pages: int = Field(description="Total number of pages in the document")
-    raw_pages_text: List[str] = Field(description="List of text extracted per page, where index = page_number - 1")
-    topics: List[str] = Field(default_factory=list, description="List of topics associated with this document for metadata pre-filtering")
-    chunks: List[Chunk] = Field(default_factory=list, description="The processed chunks of this document")
+  """Represents a parsed document ready for chunking and embedding."""
+  document_name: str = Field(description="The name of the file (e.g., HSBC_Annual_Report_2025.pdf)")
+  file_path: str = Field(description="The absolute or relative path to the file")
+  md5_hash: str = Field(description="MD5 hash of the file for idempotency checks")
+  total_pages: int = Field(description="Total number of pages in the document")
+  raw_pages_text: List[str] = Field(description="List of text extracted per page, where index = page_number - 1")
+  topics: List[str] = Field(default_factory=list, description="List of topics associated with this document for metadata pre-filtering")
+  chunks: List[Chunk] = Field(default_factory=list, description="The processed chunks of this document")
 
 class SearchQuery(BaseModel):
-    """Encapsulates a semantic search request for the retriever."""
-    query_text: str = Field(description="The raw text of the user's query")
-    embedding: List[float] = Field(description="The vector representation of the query")
-    top_k: int = Field(default=5, description="Maximum number of chunks to retrieve")
-    similarity_threshold: float = Field(default=0.5, description="Minimum cosine similarity score [-1, 1]")
-    topic_filters: Optional[List[str]] = Field(default=None, description="Optional metadata topics for pre-filtering")
+  """Encapsulates a semantic search request for the retriever."""
+  query_text: str = Field(description="The raw text of the user's query")
+  embedding: List[float] = Field(description="The vector representation of the query")
+  top_k: int = Field(default=5, description="Maximum number of chunks to retrieve")
+  similarity_threshold: float = Field(default=0.5, description="Minimum cosine similarity score [-1, 1]")
+  topic_filters: Optional[List[str]] = Field(default=None, description="Optional metadata topics for pre-filtering")
 
 class RetrievedContext(BaseModel):
-    """Represents a single chunk of context retrieved from the vector database."""
-    doc_id: str = Field(description="The ID of the parent document")
-    chunk_id: str = Field(description="The unique ID of this specific chunk")
-    text: str = Field(description="The actual text content of the retrieved chunk")
-    similarity_score: float = Field(description="The calculated cosine similarity score [-1, 1]")
-    metadata: dict = Field(default_factory=dict, description="Additional chunk metadata (e.g., page_number, token_count)")
+  """Represents a single chunk of context retrieved from the vector database."""
+  doc_id: str = Field(description="The ID of the parent document")
+  chunk_id: str = Field(description="The unique ID of this specific chunk")
+  text: str = Field(description="The actual text content of the retrieved chunk")
+  similarity_score: float = Field(description="The calculated cosine similarity score [-1, 1]")
+  metadata: dict = Field(default_factory=dict, description="Additional chunk metadata (e.g., page_number, token_count)")
 
 class RAGResponse(BaseModel):
-    """The ultimate structured payload returned by the RAG Agent."""
-    query: str = Field(description="The original user query")
-    generated_answer: str = Field(description="The final answer synthesized by the LLM")
-    retrieved_contexts: List[RetrievedContext] = Field(description="The exact context chunks used to generate the answer, preserved for downstream evaluation")
+  """The ultimate structured payload returned by the RAG Agent."""
+  query: str = Field(description="The original user query")
+  generated_answer: str = Field(description="The final answer synthesized by the LLM")
+  retrieved_contexts: List[RetrievedContext] = Field(description="The exact context chunks used to generate the answer, preserved for downstream evaluation")
 
 
 class QA_Pair(BaseModel):
-    """The desired structured format generated by the LLM during Synthetic Data Generation."""
-    question: str = Field(description="A highly professional and coherent question derived entirely from the provided text chunk.")
-    answer: str = Field(description="The precise, factual, and complete answer to the question, based ONLY on the provided text chunk.")
-    complexity: str = Field(description="The difficulty categorization of the question. Must be either 'Factoid' (simple extraction) or 'Reasoning' (requires synthesizing multiple points).")
+  """The desired structured format generated by the LLM during Synthetic Data Generation."""
+  question: str = Field(description="A very professional and coherent question derived entirely from the provided text chunk.")
+  answer: str = Field(description="The precise, factual, and complete answer to the question, based ONLY on the provided text chunk.")
+  complexity: str = Field(description="The difficulty categorization of the question. Must be either 'Factoid' (simple extraction) or 'Reasoning' (requires synthesizing multiple points).")
 
 class GoldenRecord(BaseModel):
-    """Represents a single Ground Truth record stored in the database for RAG Evaluation."""
-    id: str = Field(description="The unique UUID string for this specific golden test case.")
-    batch_name: str = Field(description="Logical grouping/version of the test cases (e.g., 'hsbc_2025_eval_v1').")
-    question: str = Field(description="The exact, canonical query string to be fed into the RAG pipeline.")
-    ground_truth: str = Field(description="The human-expert or LLM-Teacher verified 'perfect answer' to serve as the benchmark baseline.")
-    expected_topics: List[str] = Field(default_factory=list, description="Array of topic names the retrieval SHOULD theoretically hit based on the source chunk.")
-    complexity: str = Field(description="Categorization (e.g., 'Factoid', 'Reasoning') for granular metric analysis.")
+  """Represents a single Ground Truth record stored in the database for RAG Evaluation."""
+  id: str = Field(description="The unique UUID string for this specific golden test case.")
+  batch_name: str = Field(description="Logical grouping/version of the test cases (e.g., 'hsbc_2025_eval_v1').")
+  question: str = Field(description="The exact, canonical query string to be fed into the RAG pipeline.")
+  ground_truth: str = Field(description="The human-expert or LLM-Teacher verified 'exact answer' to serve as the benchmark baseline.")
+  expected_topics: List[str] = Field(default_factory=list, description="Array of topic names the retrieval SHOULD theoretically hit based on the source chunk.")
+  complexity: str = Field(description="Categorization (e.g., 'Factoid', 'Reasoning') for granular metric analysis.")
 
 class InferenceRun(BaseModel):
-    """Metadata representing a specific hyperparameter sweep configuration for an inference batch."""
-    run_id: str = Field(description="Unique UUID for this specific inference run.")
-    chunking_config: str = Field(description="Description of the chunking strategy used.")
-    indexing_config: str = Field(description="Description of the indexing strategy used.")
-    reranking_config: str = Field(description="Description of the reranking strategy used.")
-    prompting_config: str = Field(description="Description of the prompt strategy used.")
-    generation_config: str = Field(description="Description of the generation LLM configuration used.")
+  """Metadata representing a specific hyperparameter sweep configuration for an inference batch."""
+  run_id: str = Field(description="Unique UUID for this specific inference run.")
+  chunking_config: str = Field(description="Description of the chunking strategy used.")
+  indexing_config: str = Field(description="Description of the indexing strategy used.")
+  reranking_config: str = Field(description="Description of the reranking strategy used.")
+  prompting_config: str = Field(description="Description of the prompt strategy used.")
+  generation_config: str = Field(description="Description of the generation LLM configuration used.")
 
 class QueryHistoryRecord(BaseModel):
-    """Represents a single row of generated Q&A to be persisted in query_history."""
-    query_id: str = Field(description="Unique UUID for this specific query interaction.")
-    question: str = Field(description="The user query or benchmark question.")
-    generated_answer: str = Field(description="The answer synthesized by the LLM.")
-    retrieved_contexts: List[dict] = Field(description="Serialized list of retrieved chunks.")
-    query_time: str = Field(description="ISO timestamp when the query was dispatched.")
-    retrieval_time: str = Field(description="ISO timestamp when vector search completed.")
-    response_time: str = Field(description="ISO timestamp when the LLM finished generation.")
-    golden_record_id: Optional[str] = Field(default=None, description="The ID of the Ground Truth record (if Case 1).")
+  """Represents a single row of generated Q&A to be persisted in query_history."""
+  query_id: str = Field(description="Unique UUID for this specific query interaction.")
+  question: str = Field(description="The user query or benchmark question.")
+  generated_answer: str = Field(description="The answer synthesized by the LLM.")
+  retrieved_contexts: List[dict] = Field(description="Serialized list of retrieved chunks.")
+  query_time: str = Field(description="ISO timestamp when the query was dispatched.")
+  retrieval_time: str = Field(description="ISO timestamp when vector search completed.")
+  response_time: str = Field(description="ISO timestamp when the LLM finished generation.")
+  golden_record_id: Optional[str] = Field(default=None, description="The ID of the Ground Truth record (if Case 1).")
 
 class QueryEvaluationDTO(BaseModel):
-    """Data Transfer Object used by the Evaluation Runner to load queries from the DB for scoring."""
-    query_id: str = Field(description="The UUID of the query from query_history.")
-    question: str = Field(description="The original user or benchmark question.")
-    generated_answer: str = Field(description="The RAG-generated answer to be evaluated.")
-    retrieved_contexts: List[dict] = Field(description="The exact context chunks retrieved during inference.")
-    ground_truth: Optional[str] = Field(default=None, description="The correct answer from golden_records (Populated ONLY for Case 1).")
-    
-    @property
-    def has_ground_truth(self) -> bool:
-        """Helper to determine if this query should follow Case 1 or Case 2 evaluation logic."""
-        return self.ground_truth is not None
+  """Data Transfer Object used by the Evaluation Runner to load queries from the DB for scoring."""
+  query_id: str = Field(description="The UUID of the query from query_history.")
+  question: str = Field(description="The original user or benchmark question.")
+  generated_answer: str = Field(description="The RAG-generated answer to be evaluated.")
+  retrieved_contexts: List[dict] = Field(description="The exact context chunks retrieved during inference.")
+  ground_truth: Optional[str] = Field(default=None, description="The correct answer from golden_records (Populated ONLY for Case 1).")
+  
+  @property
+  def has_ground_truth(self) -> bool:
+    """Helper to determine if this query should follow Case 1 or Case 2 evaluation logic."""
+    return self.ground_truth is not None
 
 class ScoreWithReasoning(BaseModel):
-    """The strict structured output format required from the LLM Judge for a single metric."""
-    metric_name: str = Field(description="The name of the metric being scored (e.g., 'faithfulness', 'correctness').")
-    score: float = Field(description="The numerical score awarded by the judge (e.g., 0.0 to 5.0).")
-    reasoning: str = Field(description="A detailed, explicit explanation of why this specific score was awarded.")
+  """The strict structured output format required from the LLM Judge for a single metric."""
+  metric_name: str = Field(description="The name of the metric being scored (e.g., 'faithfulness', 'correctness').")
+  score: float = Field(description="The numerical score awarded by the judge (e.g., 0.0 to 5.0).")
+  reasoning: str = Field(description="A detailed, explicit explanation of why this specific score was awarded.")
 
 class EvaluationResultList(BaseModel):
-    """Wrapper class required for structured output of multiple scores."""
-    scores: List[ScoreWithReasoning] = Field(description="A list of scores and reasoning objects.")
+  """Wrapper class required for structured output of multiple scores."""
+  scores: List[ScoreWithReasoning] = Field(description="A list of scores and reasoning objects.")
 
 class EvaluationJobHistory(BaseModel):
-    """Metadata representing a specific evaluation job execution."""
-    job_id: str = Field(description="Unique UUID for the evaluation job.")
-    inference_run_id: str = Field(description="The UUID of the inference run being evaluated.")
-    evaluator_model: str = Field(description="The model used as the judge.")
-    evaluator_prompt_version: str = Field(default="v1", description="Tracking version of the prompt.")
+  """Metadata representing a specific evaluation job execution."""
+  job_id: str = Field(description="Unique UUID for the evaluation job.")
+  inference_run_id: str = Field(description="The UUID of the inference run being evaluated.")
+  evaluator_model: str = Field(description="The model used as the judge.")
+  evaluator_prompt_version: str = Field(default="v1", description="Tracking version of the prompt.")
 
 class EvaluationMetricRecord(BaseModel):
-    """Represents a single row to be persisted into the upgraded EAV evaluation_metrics table."""
-    query_id: str = Field(description="SOFT LINK to the evaluated query_history record.")
-    job_id: str = Field(description="Link to the evaluation_job_history record.")
-    evaluation_strategy: str = Field(description="The framework used (e.g., 'CASE1_GROUND_TRUTH' or 'CASE2_RAG_TRIAD').")
-    metric_category: str = Field(description="Categorization (e.g., 'generation', 'retrieval').")
-    metric_name: str = Field(description="Specific metric (e.g., 'faithfulness').")
-    metric_value: float = Field(description="The numerical score.")
-    reasoning: str = Field(description="The textual justification for the score.")
+  """Represents a single row to be persisted into the upgraded EAV evaluation_metrics table."""
+  query_id: str = Field(description="SOFT LINK to the evaluated query_history record.")
+  job_id: str = Field(description="Link to the evaluation_job_history record.")
+  evaluation_strategy: str = Field(description="The framework used (e.g., 'CASE1_GROUND_TRUTH' or 'CASE2_RAG_TRIAD').")
+  metric_category: str = Field(description="Categorization (e.g., 'generation', 'retrieval').")
+  metric_name: str = Field(description="Specific metric (e.g., 'faithfulness').")
+  metric_value: float = Field(description="The numerical score.")
+  reasoning: str = Field(description="The textual justification for the score.")
 
 # ==============================================================================
 # Phase 6 Domain Models (Diagnoser output matching the required JSON format)
 # ==============================================================================
 
 class DiagnosisObject(BaseModel):
-    """Represents a single actionable finding produced by a Diagnostic Rule."""
-    issue: str = Field(description="A short, descriptive title of the bottleneck (e.g., 'Low Retrieval Quality').")
-    evidence: List[str] = Field(description="Data points justifying the diagnosis (e.g., 'context_relevance (3.4) is below 4.0').")
-    likely_root_causes: List[str] = Field(description="Potential architectural or configuration reasons for the issue.")
-    recommended_actions: List[str] = Field(description="Concrete suggestions aligning with the optimizer_config_template parameters.")
+  """Represents a single actionable finding produced by a Diagnostic Rule."""
+  issue: str = Field(description="A short, descriptive title of the bottleneck (e.g., 'Low Retrieval Quality').")
+  evidence: List[str] = Field(description="Data points justifying the diagnosis (e.g., 'context_relevance (3.4) is below 4.0').")
+  likely_root_causes: List[str] = Field(description="Potential architectural or configuration reasons for the issue.")
+  recommended_actions: List[str] = Field(description="Concrete suggestions aligning with the optimizer_config_template parameters.")
 
 class DiagnosisReport(BaseModel):
-    """
-    The ultimate Output Document of Phase 6.
-    Must perfectly match the JSON schema requested in diagnosis_report_template.json.
-    """
-    setting_id: str = Field(description="The inference_run_id that generated these metrics.")
-    dataset_name: str = Field(description="The batch_name (for Case 1) or 'blind_test_dataset' (for Case 2).")
-    overall_summary: dict = Field(description="Contains quality_score (avg across all), latency_seconds, and cost_estimate.")
-    stage_metrics: dict = Field(description="Nested dictionary categorizing metrics into 'retrieval', 'generation', etc.")
-    diagnosis: List[DiagnosisObject] = Field(default_factory=list, description="The array of findings generated by the Rule Engine.")
+  """
+  The ultimate Output Document of Phase 6.
+  Must accurately match the JSON schema requested in diagnosis_report_template.json.
+  """
+  setting_id: str = Field(description="The inference_run_id that generated these metrics.")
+  dataset_name: str = Field(description="The batch_name (for Case 1) or 'blind_test_dataset' (for Case 2).")
+  overall_summary: dict = Field(description="Contains quality_score (avg across all), latency_seconds, and cost_estimate.")
+  stage_metrics: dict = Field(description="Nested dictionary categorizing metrics into 'retrieval', 'generation', etc.")
+  diagnosis: List[DiagnosisObject] = Field(default_factory=list, description="The array of findings generated by the Rule Engine.")

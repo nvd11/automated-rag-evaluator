@@ -8,25 +8,25 @@ A framework designed to evaluate, score, and diagnose Retrieval-Augmented Genera
 
 ```text
 automated-rag-evaluator/
-├── data/           # Reference corpus (HSBC 2025 Annual Report PDF) and auto-generated benchmark datasets.
-├── docs/           # Architecture and schema design documentation.
-├── infra/          # Infrastructure schema files (SQL DDL) for the pgvector database.
-├── output/         # Assignment deliverables (JSON Diagnosis Reports, CSV Evaluation scores, Optimizer Config).
-├── src/            # Core Python source code.
-│   ├── agents/     # RAG Agent executing inference logic.
-│   ├── configs/    # Environment configurations, Database pooling, and Logging settings.
-│   ├── dao/        # Data Access Objects (DAOs) interfacing with PostgreSQL.
-│   ├── diagnosis/  # Stateless Heuristic Rule Engine for diagnostics.
-│   ├── domain/     # Core entities and Data Transfer Objects (DTOs).
-│   ├── evaluator/  # LLM-as-a-Judge logic.
-│   ├── ingestion/  # Loaders, Chunkers, and Embedders for populating the vector database.
-│   ├── interfaces/ # Abstract Base Classes (ABCs).
-│   ├── llm/        # Factory pattern implementing Google Gemini generation.
-│   ├── pipelines/  # Orchestrators chaining domain logic together.
-│   ├── retrieval/  # Base semantic retriever logic executing vector similarity searches.
-│   └── runners/    # CLI entry points to execute specific Pipelines.
-├── test/           # Pytest suite covering DAO integration and Pipeline mocks.
-├── .env.example    # Environment variable template with pre-configured Cloud SQL settings.
+├── data/      # Reference corpus (HSBC 2025 Annual Report PDF) and auto-generated benchmark datasets.
+├── docs/      # Architecture and schema design documentation.
+├── infra/     # Infrastructure schema files (SQL DDL) for the pgvector database.
+├── output/     # Assignment deliverables (JSON Diagnosis Reports, CSV Evaluation scores, Optimizer Config).
+├── src/      # Core Python source code.
+│  ├── agents/   # RAG Agent executing inference logic.
+│  ├── configs/  # Environment configurations, Database pooling, and Logging settings.
+│  ├── dao/    # Data Access Objects (DAOs) interfacing with PostgreSQL.
+│  ├── diagnosis/ # Stateless Heuristic Rule Engine for diagnostics.
+│  ├── domain/   # Core entities and Data Transfer Objects (DTOs).
+│  ├── evaluator/ # LLM-as-a-Judge logic.
+│  ├── ingestion/ # Loaders, Chunkers, and Embedders for populating the vector database.
+│  ├── interfaces/ # Abstract Base Classes (ABCs).
+│  ├── llm/    # Factory pattern implementing Google Gemini generation.
+│  ├── pipelines/ # Orchestrators chaining domain logic together.
+│  ├── retrieval/ # Base semantic retriever logic executing vector similarity searches.
+│  └── runners/  # CLI entry points to execute specific Pipelines.
+├── test/      # Pytest suite covering DAO integration and Pipeline mocks.
+├── .env.example  # Environment variable template with pre-configured Cloud SQL settings.
 ├── requirements.txt# Project dependencies.
 └── REQUIREMENTS.md # Breakdown of the assignment objectives and expected system scope.
 ```
@@ -40,45 +40,45 @@ automated-rag-evaluator/
 
 ### Environment Setup
 1. **Unzip the package and navigate to the project root:**
-   ```bash
-   cd automated-rag-evaluator
-   ```
+  ```bash
+  cd automated-rag-evaluator
+  ```
 
 2. **Create and activate a virtual environment:**
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-   ```
+  ```bash
+  python3 -m venv .venv
+  source .venv/bin/activate # On Windows: .venv\Scripts\activate
+  ```
 
 3. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-   *(Dependencies include: `langchain`, `google-genai`, `psycopg[binary]`, `pydantic`, `loguru`, `pytest`)*
+  ```bash
+  pip install -r requirements.txt
+  ```
+  *(Dependencies include: `langchain`, `google-genai`, `psycopg[binary]`, `pydantic`, `loguru`, `pytest`)*
 
 4. **Configure Environment Variables:**
-   Copy the example environment file and customize it:
-   ```bash
-   cp .env.example .env
-   ```
-   Open the `.env` file and configure the required settings:
-   
-   | Variable | Description |
-   |----------|-------------|
-   | `GEMINI_API_KEY` | Your Google Gemini API Key for generation and evaluation. |
-   | `DB_HOST` | Hostname of the PostgreSQL database. |
-   | `DB_PORT` | Port of the PostgreSQL database (default `5432`). |
-   | `DB_NAME` | Database name (e.g., `rag_evaluator`). |
-   | `DB_USER` | Database username. |
-   | `DB_PASSWORD` | Database password. |
-   | `HTTP_PROXY` / `HTTPS_PROXY` | Proxy URL if your network requires one. |
-   | `ENABLE_PROXY` | Set this to `true` to force a REST fallback and bypass `gRPC` issues caused by proxy environments. |
+  Copy the example environment file and customize it:
+  ```bash
+  cp .env.example .env
+  ```
+  Open the `.env` file and configure the required settings:
+  
+  | Variable | Description |
+  |----------|-------------|
+  | `GEMINI_API_KEY` | Your Google Gemini API Key for generation and evaluation. |
+  | `DB_HOST` | Hostname of the PostgreSQL database. |
+  | `DB_PORT` | Port of the PostgreSQL database (default `5432`). |
+  | `DB_NAME` | Database name (e.g., `rag_evaluator`). |
+  | `DB_USER` | Database username. |
+  | `DB_PASSWORD` | Database password. |
+  | `HTTP_PROXY` / `HTTPS_PROXY` | Proxy URL if your network requires one. |
+  | `ENABLE_PROXY` | Set this to `true` to force a REST fallback and bypass `gRPC` issues caused by proxy environments. |
 
-   **Pre-configured Cloud SQL Instance**: 
-   The provided `.env.example` file contains connection details to a Google Cloud SQL (PostgreSQL + pgvector) instance (`db.jpgcp.cloud`) hosted for this assignment. You do not need to install a local database; provide your `GEMINI_API_KEY` to run the system.
+  **Pre-configured Cloud SQL Instance**: 
+  The provided `.env.example` file contains connection details to a Google Cloud SQL (PostgreSQL + pgvector) instance (`db.jpgcp.cloud`) hosted for this assignment. You do not need to install a local database; provide your `GEMINI_API_KEY` to run the system.
 
-   **Note on Proxy Environments**: 
-   LangChain's async structured outputs default to the `gRPC` protocol, which can cause connection timeouts over HTTP/1.1 proxies. If you are operating behind a proxy, set `ENABLE_PROXY=true` in your `.env`. This configures the LLM Factory to dynamically wrap synchronous REST requests in `asyncio.to_thread()`, bypassing the `gRPC` channel.
+  **Note on Proxy Environments**: 
+  LangChain's async structured outputs default to the `gRPC` protocol, which can cause connection timeouts over HTTP/1.1 proxies. If you are operating behind a proxy, set `ENABLE_PROXY=true` in your `.env`. This configures the LLM Factory to dynamically wrap synchronous REST requests in `asyncio.to_thread()`, bypassing the `gRPC` channel.
 
 ---
 

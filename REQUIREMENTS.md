@@ -34,14 +34,14 @@ The assignment requires the delivery of a working prototype with the following a
 ### 5.3 Output Artifacts (JSON & CSV)
 The system must generate the following artifacts:
 1. **Evaluation Result Exports (CSVs)**:
-   - `case1_benchmark_evaluation.csv`: Detailed evaluation records for Case 1 (including Query, Retrieved Contexts, Generated Answer, Golden Answer, and Correctness Score).
-   - `case2_blind_test_evaluation.csv`: Detailed evaluation records for Case 2 (including Query, Retrieved Contexts, Generated Answer, Context Relevance, Faithfulness, and Answer Relevance).
+  - `case1_benchmark_evaluation.csv`: Detailed evaluation records for Case 1 (including Query, Retrieved Contexts, Generated Answer, Golden Answer, and Correctness Score).
+  - `case2_blind_test_evaluation.csv`: Detailed evaluation records for Case 2 (including Query, Retrieved Contexts, Generated Answer, Context Relevance, Faithfulness, and Answer Relevance).
 2. **Diagnosis Reports (JSON)**:
-   - Structured JSON files adhering to the provided `diagnosis_report_template.json` format.
-   - Examples: `case1_diagnosis_report.json` and `case2_diagnosis_report.json`.
-   - Must include `overall_summary`, `stage_metrics`, and a rule-triggered `diagnosis` array identifying issues and `recommended_actions`.
+  - Structured JSON files adhering to the provided `diagnosis_report_template.json` format.
+  - Examples: `case1_diagnosis_report.json` and `case2_diagnosis_report.json`.
+  - Must include `overall_summary`, `stage_metrics`, and a rule-triggered `diagnosis` array identifying issues and `recommended_actions`.
 3. **Optimizer Configuration (JSON)**:
-   - `optimizer_config.json`: An experimental configuration file defining the search space and evaluation thresholds.
+  - `optimizer_config.json`: An experimental configuration file defining the search space and evaluation thresholds.
 
 ## 6. Key Evaluation Criteria & Technical Constraints
 - **Design Patterns**: Clear separation of concerns (e.g., Runners vs. Pipelines, DAOs vs. Domain Logic).
