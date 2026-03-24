@@ -70,6 +70,7 @@ async def export_pivot_view_to_csv():
                             question,
                             retrieved_contexts,
                             generated_answer,
+                            ground_truth,
                             context_relevance_score,
                             faithfulness_score,
                             answer_relevance_score,
@@ -89,6 +90,7 @@ async def export_pivot_view_to_csv():
                             "Question", 
                             "Retrieved Contexts",
                             "Generated Answer", 
+                            "Golden Answer (Ground Truth)",
                             "Context Relevance (0-5)", 
                             "Faithfulness (0-5)", 
                             "Answer Relevance (0-5)", 
@@ -104,10 +106,11 @@ async def export_pivot_view_to_csv():
                                 str(r[1]),      # question
                                 contexts_str,   # retrieved_contexts
                                 str(r[3]),      # generated_answer
-                                f"{r[4]:.2f}" if r[4] is not None else "", # context_relevance
-                                f"{r[5]:.2f}" if r[5] is not None else "", # faithfulness
-                                f"{r[6]:.2f}" if r[6] is not None else "", # answer_relevance
-                                f"{r[7]:.2f}" if r[7] is not None else ""  # correctness
+                                str(r[4]) if r[4] is not None else "", # ground_truth
+                                f"{r[5]:.2f}" if r[5] is not None else "", # context_relevance
+                                f"{r[6]:.2f}" if r[6] is not None else "", # faithfulness
+                                f"{r[7]:.2f}" if r[7] is not None else "", # answer_relevance
+                                f"{r[8]:.2f}" if r[8] is not None else ""  # correctness
                             ])
                             
                     logger.info(f"Successfully exported {len(rows)} records to {filepath}")
