@@ -89,7 +89,7 @@ The framework dynamically injects specific LLM models based on the stage of the 
 - **Embedding & Indexing**: `text-embedding-004` (Google Gemini Embedder via Vertex/AI Studio) is used for dense vector indexing.
 - **RAG Generation**: `gemini-2.5-pro` (Temperature = 0) is tasked with synthesizing answers from retrieved contexts.
 - **LLM-as-a-Judge (Evaluator)**: `gemini-2.5-pro` (with `Structured Outputs` enforced) acts as the strict, deterministic grader for both the Golden Baseline matches (Case 1) and the RAG Triad heuristics (Case 2).
-- **Golden Dataset Synthesis**: `gemini-2.5-pro` powers the inverse-generation pipeline to extract facts from the financial reports and formulate Question/Answer benchmark pairs.
+- **Golden Dataset Synthesis**: `gemini-3.1-pro-preview` powers the inverse-generation pipeline to extract facts from the financial reports and formulate Question/Answer benchmark pairs, leveraging Google's most advanced preview reasoning model.
 
 ### Key Libraries
 - **`langchain` & `langchain-google-genai`**: Utilized for pipeline orchestration, prompt templating, and text splitting (e.g., `RecursiveCharacterTextSplitter`).
