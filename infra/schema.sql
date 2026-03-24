@@ -87,8 +87,21 @@ CREATE TABLE IF NOT EXISTS inference_run_history (
 CREATE INDEX IF NOT EXISTS idx_inf_runs_timestamp ON inference_run_history (start_time DESC) WHERE is_deleted = FALSE;
 
 -- 5.5 Evaluation Jobs (Evaluator Configs - Many-to-One with Inference Runs)
--- *DEPRECATED*: Replaced by the wide-table architecture in evaluation_results.
--- Kept for historical reference only.
+CREATE TABLE IF NOT EXISTS evaluation_job_history (
+    job_id UUID PRIMARY KEY,
+    inference_run_id UUID,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
+    evaluator_model VARCHAR(100) NOT NULL,
+    evaluator_prompt_version VARCHAR(100),
+    created_by VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_by VARCHAR(100),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_deleted BOOLEAN DEFAULT FALSE
+);
+
+CREATE INDEX IF NOT EXISTS idx_eval_jobs_timestamp ON evaluation_job_history (start_time DESC) WHERE is_deleted = FALSE;
 
 -- 6. Evaluation Metrics (Upgraded EAV Model)
 CREATE TABLE IF NOT EXISTS evaluation_metrics (
@@ -178,15 +191,20 @@ CREATE INDEX IF NOT EXISTS idx_inference_run_query_mapping_reverse ON inference_
 -- 11. RAG Triad Analysis Pivot View
 CREATE OR REPLACE VIEW v_evaluation_metrics_pivot AS
 SELECT 
-    job_id,
-    query_id,
-    MAX(CASE WHEN metric_name = 'context_relevance' THEN metric_value END) AS context_relevance_score,
-    MAX(CASE WHEN metric_name = 'faithfulness' THEN metric_value END) AS faithfulness_score,
-    MAX(CASE WHEN metric_name = 'answer_relevance' THEN metric_value END) AS answer_relevance_score,
-    MAX(CASE WHEN metric_name = 'recall_at_k' THEN metric_value END) AS recall_at_k_score
-FROM evaluation_metrics
-WHERE is_deleted = FALSE
-GROUP BY job_id, query_id;
+    e.job_id,
+    e.query_id,
+    qh.question,
+    qh.generated_answer,
+    qh.retrieved_contexts,
+    MAX(CASE WHEN e.metric_name = 'context_relevance' THEN e.metric_value END) AS context_relevance_score,
+    MAX(CASE WHEN e.metric_name = 'faithfulness' THEN e.metric_value END) AS faithfulness_score,
+    MAX(CASE WHEN e.metric_name = 'answer_relevance' THEN e.metric_value END) AS answer_relevance_score,
+    MAX(CASE WHEN e.metric_name = 'correctness' THEN e.metric_value END) AS correctness_score,
+    MAX(CASE WHEN e.metric_name = 'semantic_similarity' THEN e.metric_value END) AS semantic_similarity_score
+FROM evaluation_metrics e
+JOIN query_history qh ON e.query_id = qh.query_id
+WHERE e.is_deleted = FALSE AND qh.is_deleted = FALSE
+GROUP BY e.job_id, e.query_id, qh.question, qh.generated_answer, qh.retrieved_contexts;
 
 -- ====================================================================
 -- 12. Role-Based Access Control (RBAC) - Least Privilege Principle

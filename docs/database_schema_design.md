@@ -364,20 +364,25 @@ CREATE INDEX idx_eval_query_mappings ON golden_record_query_mapping (golden_reco
 ## 📊 View 1: `v_evaluation_metrics_pivot` (RAG Triad Analysis View)
 While the underlying `evaluation_metrics` uses a flexible EAV (Entity-Attribute-Value) "long table" design to support infinite new metrics without schema changes, analysts and BI dashboards often require a "wide table" format. 
 
-This PostgreSQL view pivots the core RAG Triad metrics (Context Relevance, Faithfulness, Answer Relevance) into columns grouped by `(job_id, query_id)`. This provides a human-readable, flattened dataset perfect for immediate diagnosis and exporting to CSVs or Pandas DataFrames.
+This PostgreSQL view joins with `query_history` and pivots the core metrics (Correctness, Context Relevance, Faithfulness, Answer Relevance) into columns. This provides a human-readable, flattened dataset complete with the original query and answer text, making it perfect for immediate diagnosis and exporting to CSVs or Pandas DataFrames.
 
 ```sql
 CREATE OR REPLACE VIEW v_evaluation_metrics_pivot AS
 SELECT 
-    job_id,
-    query_id,
-    MAX(CASE WHEN metric_name = 'context_relevance' THEN metric_value END) AS context_relevance_score,
-    MAX(CASE WHEN metric_name = 'faithfulness' THEN metric_value END) AS faithfulness_score,
-    MAX(CASE WHEN metric_name = 'answer_relevance' THEN metric_value END) AS answer_relevance_score,
-    MAX(CASE WHEN metric_name = 'recall_at_k' THEN metric_value END) AS recall_at_k_score
-FROM evaluation_metrics
-WHERE is_deleted = FALSE
-GROUP BY job_id, query_id;
+    e.job_id,
+    e.query_id,
+    qh.question,
+    qh.generated_answer,
+    qh.retrieved_contexts,
+    MAX(CASE WHEN e.metric_name = 'context_relevance' THEN e.metric_value END) AS context_relevance_score,
+    MAX(CASE WHEN e.metric_name = 'faithfulness' THEN e.metric_value END) AS faithfulness_score,
+    MAX(CASE WHEN e.metric_name = 'answer_relevance' THEN e.metric_value END) AS answer_relevance_score,
+    MAX(CASE WHEN e.metric_name = 'correctness' THEN e.metric_value END) AS correctness_score,
+    MAX(CASE WHEN e.metric_name = 'semantic_similarity' THEN e.metric_value END) AS semantic_similarity_score
+FROM evaluation_metrics e
+JOIN query_history qh ON e.query_id = qh.query_id
+WHERE e.is_deleted = FALSE AND qh.is_deleted = FALSE
+GROUP BY e.job_id, e.query_id, qh.question, qh.generated_answer, qh.retrieved_contexts;
 ```
 
 ## 💡 Architecture Note: Metadata Pre-filtering (Hybrid Search) & Auditability
