@@ -129,6 +129,14 @@ Instead of hardcoding case-specific methods (e.g., `evaluate_case1`, `evaluate_c
 
 This rigorously adheres to the Open-Closed Principle (OCP)—if a new evaluation strategy (e.g., "Case 3: Heuristic Keyword Matcher") is required tomorrow, developers simply create a new judge class extending `ILLMJudge` without modifying the core pipeline or interface.
 
+### Dependency Injection and Factory Reuse
+Crucially, these concrete judge implementations **do not** instantiate their own LLM clients. Instead, they rely on Dependency Injection (DI) through their constructors, accepting a generic `BaseChatModel`. 
+
+This design explicitly reuses our existing `GeminiLLMFactory` (which already encapsulates complex logic like proxy fallback configurations, timeout handling, and Google SDK initialization). 
+- **Single Responsibility Principle (SRP):** The judges only focus on "How to prompt for scores," while the factory manages "How to connect to the model."
+- **Testability:** Mocking the LLM for unit tests becomes trivial by passing a `FakeListChatModel` into the constructor.
+- **Provider Agnosticism:** Switching the judge from Gemini to OpenAI's GPT-4 requires exactly zero code changes inside the judge classes; the runner simply injects a different factory output.
+
 ## 6. Structured LLM Output Design (LangChain Function Calling)
 
 To guarantee the `LLMJudge` returns stable, parseable data capable of populating our EAV table, we utilize LangChain's `.with_structured_output()`. The LLM is forced to return a JSON array matching the following Pydantic schema:
