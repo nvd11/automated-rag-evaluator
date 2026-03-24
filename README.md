@@ -8,7 +8,6 @@ An enterprise-grade framework designed to evaluate, score, and diagnose Retrieva
 
 ### Prerequisites
 - Python 3.11+
-- PostgreSQL database with `pgvector` extension enabled.
 
 ### Environment Setup
 1. **Clone the repository and navigate to the project root:**
