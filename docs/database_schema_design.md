@@ -15,6 +15,76 @@ Every table in this schema adheres to strict banking Data Governance and Auditin
 
 ---
 
+## 🗺️ Entity-Relationship (ER) Diagram
+
+```mermaid
+erDiagram
+    %% Core Ingestion & Corpus
+    documents ||--o{ document_chunks : "contains"
+    documents ||--o{ document_topics : "categorized by"
+    topics ||--o{ document_topics : "categorizes"
+    
+    %% Golden Records (Benchmark)
+    golden_records ||--o| golden_record_query_mapping : "benchmarks (Case 1)"
+    
+    %% RAG Inference & Operations
+    inference_run_history ||--o{ inference_run_query_mapping : "executes"
+    query_history ||--o{ inference_run_query_mapping : "belongs to"
+    query_history ||--o| golden_record_query_mapping : "evaluated against"
+    
+    %% Evaluation & Metrics (Phase 5)
+    evaluation_job_history ||--o{ evaluation_metrics : "produces"
+    query_history ||--o{ evaluation_metrics : "scored by (Soft Link)"
+    
+    %% Table Definitions (Simplified for Diagram)
+    documents {
+        VARCHAR doc_id PK
+        VARCHAR doc_name
+    }
+    document_chunks {
+        UUID id PK
+        VARCHAR doc_id FK
+        TEXT content
+        VECTOR embedding
+    }
+    topics {
+        UUID topic_id PK
+        VARCHAR topic_name
+    }
+    golden_records {
+        UUID id PK
+        VARCHAR batch_name
+        TEXT question
+        TEXT ground_truth
+    }
+    inference_run_history {
+        UUID run_id PK
+        VARCHAR chunking_config
+        VARCHAR generation_config
+    }
+    query_history {
+        UUID query_id PK
+        TEXT question
+        TEXT generated_answer
+        JSONB retrieved_contexts
+    }
+    evaluation_job_history {
+        UUID job_id PK
+        UUID inference_run_id FK
+        VARCHAR evaluator_model
+    }
+    evaluation_metrics {
+        UUID id PK
+        UUID job_id FK
+        UUID query_id "SOFT FK"
+        VARCHAR metric_name
+        NUMERIC metric_value
+        TEXT reasoning
+    }
+```
+
+---
+
 ## Table 1: `document_chunks`
 Stores the parsed and chunked corpus (e.g., the HSBC Annual Report) alongside their vector embeddings. The table is designed to hold multiple chunking strategies simultaneously.
 
