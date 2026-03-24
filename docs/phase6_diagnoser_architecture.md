@@ -23,36 +23,64 @@ The Diagnoser is designed as a stateless, rule-based inference engine. It does n
 ### Architectural Rationale
 By treating the rules as distinct, composable Python objects implementing a common `IDiagnosticRule` interface, the system avoids "spaghetti IF-ELSE" code. New diagnostics (e.g., latency checks, cost analysis) can be added purely by registering a new rule class.
 
-## 3. Data Flow Context (Read-Only)
+## 3. Data Flow Context & Class UML
 The Diagnoser **does not** introduce any new tables to the database. Instead, it acts purely as an analytical consumer, performing heavy aggregations (`SELECT AVG(...)`) across the structures established in prior phases.
 
-The diagram below highlights the existing entities that the Diagnoser reads from to reconstruct the full context of a RAG pipeline execution:
+The system relies on pure Object-Oriented polymorphism. `IDiagnosticRule` implementations decouple the logic of evaluating specific failures (e.g., hallucination vs. poor context retrieval) from the core engine.
 
 ```mermaid
-erDiagram
-    %% Read-Only Analytical Sources
-    evaluation_job_history {
-        UUID job_id PK
-        UUID inference_run_id FK
-        VARCHAR evaluator_model
+classDiagram
+    %% Core Orchestration
+    class DiagnoserPipeline {
+        +IDiagnoserDAO dao
+        +RuleEngine engine
+        +generate_report(job_id: str) DiagnosisReport
     }
     
-    evaluation_metrics {
-        UUID id PK
-        UUID job_id FK
-        VARCHAR metric_name
-        NUMERIC metric_value
+    %% Engine & Interfaces
+    class RuleEngine {
+        -List~IDiagnosticRule~ rules
+        +register_rule(rule: IDiagnosticRule)
+        +diagnose(averages: dict, config: dict) List~DiagnosisObject~
     }
     
-    inference_run_history {
-        UUID run_id PK
-        VARCHAR chunking_config
-        VARCHAR generation_config
+    class IDiagnosticRule {
+        <<interface>>
+        +analyze(averages: dict, config: dict) DiagnosisObject*
+    }
+
+    %% Concrete Implementations
+    class RetrievalQualityRule {
+        +analyze(averages: dict, config: dict) DiagnosisObject
+    }
+    
+    class HallucinationRule {
+        +analyze(averages: dict, config: dict) DiagnosisObject
+    }
+
+    %% Models
+    class DiagnosisReport {
+        +str setting_id
+        +str dataset_name
+        +dict overall_summary
+        +dict stage_metrics
+        +List~DiagnosisObject~ diagnosis
+    }
+
+    class DiagnosisObject {
+        +str issue
+        +List~str~ evidence
+        +List~str~ likely_root_causes
+        +List~str~ recommended_actions
     }
 
     %% Relationships
-    evaluation_job_history ||--o{ evaluation_metrics : "aggregates"
-    inference_run_history ||--o{ evaluation_job_history : "diagnoses"
+    DiagnoserPipeline --> RuleEngine : uses
+    RuleEngine o-- IDiagnosticRule : aggregates
+    IDiagnosticRule <|-- RetrievalQualityRule : implements
+    IDiagnosticRule <|-- HallucinationRule : implements
+    DiagnoserPipeline --> DiagnosisReport : creates
+    DiagnosisReport *-- DiagnosisObject : contains
 ```
 
 ## 4. Execution Flow (Sequence Diagram)
