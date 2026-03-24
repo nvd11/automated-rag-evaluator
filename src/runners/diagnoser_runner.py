@@ -91,8 +91,8 @@ async def main():
         TARGET_JOB_ID_CASE1 = "9f63801e-edba-49b3-9d14-f925071956f1" # Replace with actual job_id
         await runner.run_diagnosis(evaluation_job_id=TARGET_JOB_ID_CASE1, output_dir=reports_dir)
         
-        # 2. Provide the Job ID from your Phase 5 Case 2 execution (Blind Test)
-        TARGET_JOB_ID_CASE2 = "c56ca0c7-3949-4fe6-b1a3-6f0779c8f99b" # Replace with actual job_id
+        # 2. Provide the Job ID from your Phase 5 Case 2 execution (Blind Test - 30 queries)
+        TARGET_JOB_ID_CASE2 = "9ee6047d-4e63-44cc-9386-298f1154d162" # The job id matching 30 queries
         await runner.run_diagnosis(evaluation_job_id=TARGET_JOB_ID_CASE2, output_dir=reports_dir)
 
     finally:

@@ -1,0 +1,24 @@
+{
+  "setting_id": "57c7466a-46f2-49b4-af9f-14d4352a25ef",
+  "dataset_name": "case2_blind_test_dataset",
+  "overall_summary": {
+    "quality_score": 4.94,
+    "latency_seconds": 1.25,
+    "cost_estimate": 0.05
+  },
+  "stage_metrics": {
+    "retrieval": {
+      "context_relevance": 4.883333333333333
+    },
+    "reranking": {},
+    "generation": {
+      "faithfulness": 4.933333333333334,
+      "answer_relevance": 5.0
+    },
+    "end_to_end": {
+      "correctness": 0.0,
+      "semantic_similarity": 0.0
+    }
+  },
+  "diagnosis": []
+}
