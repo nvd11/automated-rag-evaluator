@@ -43,10 +43,16 @@ An enterprise-grade framework designed to evaluate, score, and diagnose Retrieva
 
 ## 2. Design Documentation
 
-This project enforces strict software engineering principles (SOLID, Dependency Injection, Polymorphism). The architectural rationale is documented in the following files:
+This project enforces strict software engineering principles (SOLID, Dependency Injection, Polymorphism). The architectural rationale is comprehensively documented across multiple design documents, detailing the evolution of each phase:
 
-- 📄 **[`REQUIREMENTS.md`](./REQUIREMENTS.md)**: A structured breakdown of the assignment objectives, evaluation modes (Case 1 vs Case 2), search spaces, and strict constraints (e.g., avoiding hard FKs).
-- 📄 **[`docs/phase6_diagnoser_architecture.md`](./docs/phase6_diagnoser_architecture.md)**: Contains the UML class diagram and detailed explanations of the stateless Diagnoser Rule Engine, the multi-stage Pipeline architecture, and the highly extensible Upgraded EAV (Entity-Attribute-Value) database design used for metrics storage.
+- 📄 **[`REQUIREMENTS.md`](./REQUIREMENTS.md)**: A structured breakdown of the assignment objectives, evaluation modes (Case 1 vs Case 2), search spaces, and strict constraints.
+- 📄 **[`docs/database_schema_design.md`](./docs/database_schema_design.md)**: Details the highly extensible Upgraded EAV (Entity-Attribute-Value) schema that avoids hard FKs and `ON DELETE CASCADE` anti-patterns.
+- 📄 **[`docs/phase1_ingestion_architecture.md`](./docs/phase1_ingestion_architecture.md)** & **[`docs/data_ingestion_pipeline_design.md`](./docs/data_ingestion_pipeline_design.md)**: Explains the extraction, chunking, and idempotent transactional persistence logic into `pgvector`.
+- 📄 **[`docs/phase2_retriever_architecture.md`](./docs/phase2_retriever_architecture.md)**: Details the design of the RAG semantic search components.
+- 📄 **[`docs/phase3_golden_dataset_generation.md`](./docs/phase3_golden_dataset_generation.md)**: Outlines the automated LLM pipeline used to synthesize the benchmark QA dataset based on financial reports.
+- 📄 **[`docs/phase4_inference_runner_architecture.md`](./docs/phase4_inference_runner_architecture.md)**: Explains the decoupled inference layer executing queries across configurations without immediate evaluation.
+- 📄 **[`docs/phase5_evaluation_runner_architecture.md`](./docs/phase5_evaluation_runner_architecture.md)**: Details the polymorphic LLM-as-a-Judge evaluators (`GoldenBaselineJudge` vs `RagTriadJudge`) routing dynamically by dataset type.
+- 📄 **[`docs/phase6_diagnoser_architecture.md`](./docs/phase6_diagnoser_architecture.md)**: Contains the UML class diagram and explains the pure, stateless Diagnoser Rule Engine for generating actionable reports.
 
 ---
 
