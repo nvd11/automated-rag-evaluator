@@ -62,48 +62,54 @@ erDiagram
 
 ## 4. Execution Flow (Sequence Diagram)
 
-The `EvaluationRunner` orchestrates the extraction of historical inference data, automatically categorizing queries into Case 1 or Case 2, and dispatches them to the `LLMJudge`.
+The `EvaluationRunner` acts simply as the CLI/cron entrypoint. It configures the dependencies and delegates all heavy lifting to the `EvaluationPipeline`. The Pipeline orchestrates the extraction of historical inference data, automatically categorizing queries into Case 1 or Case 2, and dispatches them to the `LLMJudge`.
 
 ```mermaid
 sequenceDiagram
     actor DataScientist
     participant Runner as EvaluationRunner
+    participant Pipeline as EvaluationPipeline
     participant DAO as EvaluationDAO
     participant Judge as LLMJudge (Gemini)
     participant DB as Cloud SQL (PostgreSQL)
 
-    DataScientist->>Runner: evaluate_run(run_id="123-abc")
+    DataScientist->>Runner: main()
     activate Runner
     
-    Note over Runner, DB: Step 1: Load Data & Detect Strategy
-    Runner->>DAO: fetch_queries_for_evaluation(run_id)
+    Runner->>Pipeline: run(inference_run_id="123-abc")
+    activate Pipeline
+    
+    Note over Pipeline, DB: Step 1: Load Data & Detect Strategy
+    Pipeline->>DAO: fetch_queries_for_evaluation(run_id)
     
     %% The DAO automatically LEFT JOINs with golden_record_query_mapping
-    DAO-->>Runner: Return List[QueryEvaluationDTO]
+    DAO-->>Pipeline: Return List[QueryEvaluationDTO]
     
-    Note over Runner, Judge: Step 2: High-Concurrency Scoring
+    Note over Pipeline, Judge: Step 2: High-Concurrency Scoring
     loop For each Query (asyncio.gather / Semaphore)
         alt has_ground_truth == True (Case 1)
-            Runner->>Judge: evaluate_case1(Question, Answer, GroundTruth)
+            Pipeline->>Judge: evaluate_case1(Question, Answer, GroundTruth)
             activate Judge
             Note over Judge: Prompt: Compare Answer to GT
-            Judge-->>Runner: Return List[ScoreWithReasoning] (Correctness)
+            Judge-->>Pipeline: Return List[ScoreWithReasoning] (Correctness)
             deactivate Judge
             
         else has_ground_truth == False (Case 2)
-            Runner->>Judge: evaluate_case2(Question, Answer, Contexts)
+            Pipeline->>Judge: evaluate_case2(Question, Answer, Contexts)
             activate Judge
             Note over Judge: Prompt: Assess RAG Triad (Faithfulness, etc.)
-            Judge-->>Runner: Return List[ScoreWithReasoning] (Triad)
+            Judge-->>Pipeline: Return List[ScoreWithReasoning] (Triad)
             deactivate Judge
         end
     end
     
-    Note over Runner, DB: Step 3: Transactional Bulk Persistence
-    Runner->>DAO: bulk_insert_evaluation_metrics(metrics)
+    Note over Pipeline, DB: Step 3: Transactional Bulk Persistence
+    Pipeline->>DAO: bulk_insert_evaluation_metrics(metrics)
     DAO->>DB: INSERT INTO evaluation_metrics
     
-    Runner-->>DataScientist: Evaluation Complete
+    Pipeline-->>Runner: Evaluation Summary / Status
+    deactivate Pipeline
+    Runner-->>DataScientist: Run Complete
     deactivate Runner
 ```
 
