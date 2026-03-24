@@ -4,7 +4,36 @@ An enterprise-grade framework designed to evaluate, score, and diagnose Retrieva
 
 ---
 
-## 1. Setup & Installation
+## 1. Project Directory Structure
+
+```text
+automated-rag-evaluator/
+├── data/           # Reference corpus (HSBC 2025 Annual Report PDF) and auto-generated benchmark datasets.
+├── docs/           # Comprehensive architecture and schema design documentation (8 detailed documents).
+├── infra/          # Infrastructure schema files (SQL DDL) for the pgvector database.
+├── output/         # Required assignment deliverables (JSON Diagnosis Reports, CSV Evaluation scores, Optimizer Config).
+├── src/            # Core Python source code (structured by Domain Driven Design).
+│   ├── agents/     # High-level RAG Agent executing inference logic.
+│   ├── configs/    # Environment configurations, Database pooling, and thread-safe Logging settings.
+│   ├── dao/        # Data Access Objects (DAOs) interfacing with PostgreSQL for persistence and isolation.
+│   ├── diagnosis/  # The Stateless Heuristic Rule Engine identifying root causes based on metrics.
+│   ├── domain/     # Core entities and Data Transfer Objects (DTOs) heavily utilizing Pydantic.
+│   ├── evaluator/  # LLM-as-a-Judge logic (GoldenBaselineJudge and RagTriadJudge).
+│   ├── ingestion/  # Loaders, Chunkers, and Embedders for populating the vector database.
+│   ├── interfaces/ # Abstract Base Classes (ABCs) enforcing Polymorphism and the Open/Closed Principle.
+│   ├── llm/        # Factory pattern implementing Google Gemini generation with REST fallback proxies.
+│   ├── pipelines/  # Orchestrators chaining domain logic together (EvaluationPipeline, DiagnoserPipeline).
+│   ├── retrieval/  # Base semantic retriever logic executing vector similarity searches.
+│   └── runners/    # CLI entry points (Ignition scripts) to execute specific Pipelines.
+├── test/           # Comprehensive Pytest suite covering DAO integration and Pipeline mocks.
+├── .env.example    # Environment variable template with pre-configured live Cloud SQL settings.
+├── requirements.txt# Project dependencies (Langchain, Google-Genai, Psycopg, Pydantic, Pytest).
+└── REQUIREMENTS.md # A structured breakdown of the assignment objectives and expected system scope.
+```
+
+---
+
+## 2. Setup & Installation
 
 ### Prerequisites
 - Python 3.11+
@@ -53,7 +82,7 @@ An enterprise-grade framework designed to evaluate, score, and diagnose Retrieva
 
 ---
 
-## 2. Technology Stack & Model Roles
+## 3. Technology Stack & Model Roles
 
 ### LLM Assignments
 The framework dynamically injects specific LLM models based on the stage of the pipeline to optimize for both cost and reasoning capabilities:
@@ -71,7 +100,7 @@ The framework dynamically injects specific LLM models based on the stage of the 
 
 ---
 
-## 3. Dataset & Reference Corpus
+## 4. Dataset & Reference Corpus
 
 As per the assignment requirements ("No actual data is provided... please download some annual reports / financial statements"), this framework is built and tested against real-world financial data. 
 
@@ -81,7 +110,7 @@ As per the assignment requirements ("No actual data is provided... please downlo
 
 ---
 
-## 4. Design Documentation
+## 5. Design Documentation
 
 This project enforces strict software engineering principles (SOLID, Dependency Injection, Polymorphism). The architectural rationale is comprehensively documented across multiple design documents, detailing the evolution of each phase:
 
@@ -96,7 +125,7 @@ This project enforces strict software engineering principles (SOLID, Dependency 
 
 ---
 
-## 5. Pipeline Runners (Execution Flow)
+## 6. Pipeline Runners (Execution Flow)
 
 The system strictly decouples the entry points (`Runners`) from the core business logic (`Pipelines`). To execute the full lifecycle, run the following scripts in order:
 
@@ -126,7 +155,7 @@ python src/runners/diagnoser_runner.py
 
 ---
 
-## 6. Output Files & Artifacts
+## 7. Output Files & Artifacts
 
 All final deliverables requested by the assignment are located in the **[`output/`](./output/)** directory:
 
