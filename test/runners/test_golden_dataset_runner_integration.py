@@ -46,7 +46,11 @@ async def test_golden_dataset_runner_end_to_end_live():
     if not settings.GEMINI_API_KEY or settings.GEMINI_API_KEY.startswith("your_"):
         pytest.skip("Skipping live Golden Dataset Runner test because GEMINI_API_KEY is not configured.")
         
-    TEST_BATCH_NAME = "pytest_e2e_live_eval_v1"
+    # Generate a dynamic UUID suffix for the batch name to guarantee 100% isolation per test run.
+    # This ensures that concurrent CI runs or local developer runs never delete each other's data,
+    # and strictly protects historical/production data.
+    import uuid
+    TEST_BATCH_NAME = f"pytest_e2e_live_{uuid.uuid4().hex[:8]}"
     SAMPLE_SIZE = 2 # Keep it small to save API costs and time
     
     # 2. Assemble the components using the real implementations
