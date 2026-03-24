@@ -20,6 +20,8 @@ class GeminiLLMFactory(ILLMFactory):
             "model": model_name,
             "google_api_key": settings.GEMINI_API_KEY,
             "temperature": temperature,
+            "timeout": 30.0, # Add a hard timeout to prevent indefinite hanging
+            "max_retries": 3
         }
         
         # Vendor-specific logic: Handle networking proxies if deployed in restricted regions
