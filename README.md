@@ -36,7 +36,7 @@ automated-rag-evaluator/
 ## 2. Setup & Installation
 
 ### Prerequisites
-- Python 3.11+
+- Python 3.12+
 
 ### Environment Setup
 1. **Unzip the package and navigate to the project root:**
