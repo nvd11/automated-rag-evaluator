@@ -75,7 +75,7 @@ automated-rag-evaluator/
   | `ENABLE_PROXY` | Set this to `true` to force a REST fallback and bypass `gRPC` issues caused by proxy environments. |
 
   **Pre-configured Cloud SQL Instance**: 
-  The provided `.env.example` file contains connection details to a Google Cloud SQL (PostgreSQL + pgvector) instance (`db.jpgcp.cloud`) hosted for this assignment. You do not need to install a local database; provide your `GEMINI_API_KEY` to run the system.
+  The provided `.env.example` file contains connection details to a Google Cloud SQL (PostgreSQL + pgvector) instance (`db.jpgcp.cloud`) hosted for this assignment. You do not need to install a local database; the required `GEMINI_API_KEY` has already been pre-filled in `.env.example` for your convenience.
 
   **Note on Proxy Environments**: 
   LangChain's async structured outputs default to the `gRPC` protocol, which can cause connection timeouts over HTTP/1.1 proxies. If you are operating behind a proxy, set `ENABLE_PROXY=true` in your `.env`. This configures the LLM Factory to dynamically wrap synchronous REST requests in `asyncio.to_thread()`, bypassing the `gRPC` channel.
